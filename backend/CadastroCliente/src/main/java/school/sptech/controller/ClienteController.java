@@ -64,18 +64,20 @@ public class ClienteController {
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> atualizar(@PathVariable Integer id,
                                              @RequestBody @Valid Cliente clienteAtualizado) {
-        return repository.findById(id)
-                .map(cliente -> {
-                    cliente.setNomeCompleto(clienteAtualizado.getNomeCompleto());
-                    cliente.setCpf(clienteAtualizado.getCpf());
-                    cliente.setTelefone(clienteAtualizado.getTelefone());
-                    cliente.setEmail(clienteAtualizado.getEmail());
-                    cliente.setSenha(clienteAtualizado.getSenha());
+        if (repository.existsById(id)) {
+            Cliente clienteExistente = repository.findById(id).get();
 
-                    Cliente salvo = repository.save(cliente);
-                    return ResponseEntity.ok(salvo);
-                })
-                .orElse(ResponseEntity.notFound().build());
+            clienteExistente.setNomeCompleto(clienteAtualizado.getNomeCompleto());
+            clienteExistente.setCpf(clienteAtualizado.getCpf());
+            clienteExistente.setTelefone(clienteAtualizado.getTelefone());
+            clienteExistente.setEmail(clienteAtualizado.getEmail());
+            clienteExistente.setSenha(clienteAtualizado.getSenha());
+
+            Cliente salvo = repository.save(clienteExistente);
+            return ResponseEntity.status(200).body(salvo);
+        } else {
+            return ResponseEntity.status(404).build();
+        }
     }
 
 
