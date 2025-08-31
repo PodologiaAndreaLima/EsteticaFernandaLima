@@ -16,12 +16,14 @@ public class ClienteController {
 
     public ClienteController(ClienteRepository repository){this.repository = repository;}
 
+    // Buscar todos os clientes
     @GetMapping
     public ResponseEntity<List<Cliente>> getCliente(){
         var cliente = repository.findAll();
         return cliente.isEmpty()?ResponseEntity.status(204).build():ResponseEntity.status(200).body(cliente);
     }
 
+    // Buscando cliente filtrado pelo nome
     @GetMapping("/buscar")
     public ResponseEntity<List<Cliente>> getByNome(@RequestParam String nome) {
         var cliente = repository.findByNomeCompletoContainingIgnoreCase(nome);
@@ -30,6 +32,7 @@ public class ClienteController {
                 : ResponseEntity.status(200).body(cliente);
     }
 
+    // Buscando cliente pelo ID
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> getPetPorId(@PathVariable Integer id) {
         if (repository.existsById(id)) {
@@ -40,11 +43,13 @@ public class ClienteController {
         }
     }
 
+    // Cadastrando Cliente
     @PostMapping
     public ResponseEntity<Cliente> postPet(@RequestBody @Valid Cliente cliente) {
         return ResponseEntity.status(201).body(repository.save(cliente));
     }
 
+    // Deletando Cliente
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePetPorId(@PathVariable Integer id) {
         if (repository.existsById(id)) {
@@ -55,6 +60,7 @@ public class ClienteController {
         }
     }
 
+    // Editando Cliente
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> atualizar(@PathVariable Integer id,
                                              @RequestBody @Valid Cliente clienteAtualizado) {
