@@ -1,0 +1,19 @@
+meta {
+  name: clienteGetFilter
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:8080/cliente/buscar?nome=g
+  body: none
+  auth: inherit
+}
+
+params:query {
+  nome: g
+}
+
+settings {
+  encodeUrl: true
+}
