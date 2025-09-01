@@ -16,21 +16,21 @@ public class ClienteController {
 
     public ClienteController(ClienteRepository repository){this.repository = repository;}
 
-    // Buscar todos os clientes
     @GetMapping
-    public ResponseEntity<List<Cliente>> getCliente(){
-        var cliente = repository.findAll();
+    public ResponseEntity<List<Cliente>> getCliente(@RequestParam(required = false) String busca){
+
+        List<Cliente> cliente = null;
+
+        if(busca == null){
+            cliente = repository.findAll();
+        }else {
+            cliente = repository.findByNomeCompletoContainingIgnoreCase(busca);
+        }
+
         return cliente.isEmpty()?ResponseEntity.status(204).build():ResponseEntity.status(200).body(cliente);
     }
 
-    // Buscando cliente filtrado pelo nome
-    @GetMapping("/buscar")
-    public ResponseEntity<List<Cliente>> getByNome(@RequestParam String nome) {
-        var cliente = repository.findByNomeCompletoContainingIgnoreCase(nome);
-        return cliente.isEmpty()
-                ? ResponseEntity.status(204).build()
-                : ResponseEntity.status(200).body(cliente);
-    }
+
 
     // Buscando cliente pelo ID
     @GetMapping("/{id}")
