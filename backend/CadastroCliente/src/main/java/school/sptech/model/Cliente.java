@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -15,13 +16,16 @@ public class Cliente {
     private Integer id;
 
     @NotBlank
-    @Size(min = 5)
+    @Size(min = 3)
     private String nomeCompleto;
 
     @CPF
     private String cpf;
 
     @NotBlank
+    @Pattern(
+            regexp = "(\\(?\\d{2}\\)?\\s)?(\\d{4,5}\\-\\d{4})"
+    )
     private String telefone;
 
     @NotBlank
