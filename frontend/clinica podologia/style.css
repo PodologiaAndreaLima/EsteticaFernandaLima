@@ -1,0 +1,756 @@
+/* IMPORTAÇÃO COMPLETA DA FONTES MONTSEERRAT */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+/* APLICAR MONTSEERRAT GLOBALMENTE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  background: #f9f9f9;
+  color: #333;
+  scroll-behavior: smooth;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+header .logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: green;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 80px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  position: relative;
+}
+
+nav ul li a::after {
+  content: "";
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #2e7d32;
+  transition: width 0.3s;
+  margin-top: 3px;
+}
+
+nav ul li a:hover::after {
+  width: 100%;
+}
+
+.btn-agendar {
+  background: #3a6e49;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.3s;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-agendar:hover {
+  background: #0f2d27;
+}
+
+/* QUEM SOMOS */
+section.quem-somos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px 80px;
+  /* background: #a2d9a1; */
+  background: #3a6e49;
+
+  color: white;
+  min-height: 85vh;
+  border-top-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+  flex-wrap: wrap;
+}
+
+.quem-somos-texto {
+  flex: 1;
+  margin-right: 40px;
+}
+
+.quem-somos-texto h3 {
+  letter-spacing: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.quem-somos-texto h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.quem-somos-texto p {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.quem-somos-img {
+  flex: 0.8;
+  width: 250px;
+  height: 400px;
+  background: #ddd;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+/* SERVIÇOS */
+.servicos {
+  padding: 80px 50px;
+  background: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+.servicos-header h3 {
+  color: #2e7d32;
+  letter-spacing: 2px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.servicos-header h1 {
+  color: #133c34;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.servico {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.servico.texto-first {
+  flex-direction: row;
+}
+
+.servico.reverse {
+  flex-direction: row-reverse;
+}
+
+.servico .circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #ddd;
+  flex-shrink: 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.servico .circle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.servico .texto {
+  flex: 1;
+}
+
+.servico .texto h2 {
+  color: #2e7d32;
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.servico .texto p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* BENEFÍCIOS */
+.beneficios {
+  background: #a2d9a1;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  padding: 80px 20px;
+  color: #fff;
+}
+
+.beneficios-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.beneficios h3 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.beneficios h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+.cards {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.card {
+  flex: 1;
+  min-width: 250px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card .icon {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #3a6e49;
+}
+
+.card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #3a6e49;
+}
+
+.beneficios button {
+  background-color: #3a6e49;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.beneficios button:hover {
+  transform: translateY(-3px);
+  background-color: #145223;
+}
+
+/* SOBRE NÓS */
+.sobre-nos {
+  padding: 80px 20px;
+  background: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sobre-header h3 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.sobre-header h1 {
+  color: #2e7d32;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+.funcionario {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
+}
+
+.funcionario.reverse {
+  flex-direction: row-reverse;
+}
+
+.funcionario .texto {
+  flex: 1;
+}
+
+.funcionario .texto h2 {
+  font-size: 22px;
+  color: #2e7d32;
+  margin-bottom: 15px;
+}
+
+.funcionario .texto p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.funcionario .foto {
+  width: 220px;
+  height: 220px;
+  background: #ddd;
+  border-radius: 20px 60px;
+  flex-shrink: 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.funcionario .foto:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cta {
+  text-align: center;
+}
+
+.cta button {
+  background-color: #3a6e49;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.cta button:hover {
+  transform: translateY(-3px);
+  background-color: #145223;
+}
+
+/* MISSÃO VISÃO VALORES */
+.mvv {
+  background: #3a6e49;
+  color: #fff;
+  padding: 80px 40px;
+  border-radius: 0 50px 0 50px;
+  text-align: center;
+}
+
+.mvv-header h4 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.mvv-header h2 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 50px;
+}
+
+.mvv-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.mvv-item {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.mvv-item .icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.mvv-item h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.mvv-item p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* RELATOS */
+.relatos {
+  padding: 80px 100px;
+  background: #fff;
+  text-align: center;
+}
+
+.relatos-header h4 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #555;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.relatos-header h2 {
+  font-size: 26px;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-bottom: 50px;
+}
+
+.relatos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.relato {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.relato:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.relato-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.relato-header .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ddd;
+  flex-shrink: 0;
+}
+
+.relato-header h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.relato-header small {
+  font-size: 12px;
+  color: #777;
+}
+
+.relato p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.relatos-footer {
+  margin-top: 20px;
+}
+
+.relatos-footer .google-logo {
+  height: 80px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.relatos-footer p {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #333;
+  padding: 20px;
+}
+
+.relatos-footer .stars img {
+  width: 20px;
+  height: 20px;
+}
+
+/* CONTATO */
+.contato {
+  background: #fff;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.contato-header h4 {
+  color: #2e7d32;
+  letter-spacing: 2px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.contato-header h2 {
+  color: #133c34;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.contato-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.mapa {
+  width: 80%;
+  max-width: 800px;
+  height: 300px;
+  background: #ddd;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.contato-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  flex-wrap: wrap;
+  width: 80%;
+  max-width: 600px;
+  text-align: left;
+  font-size: 15px;
+  color: #333;
+}
+
+.info-left,
+.info-right {
+  flex: 1;
+  min-width: 250px;
+}
+
+.contato-info p {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-contato button {
+  background: #3a6e49;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.btn-contato button:hover {
+  transform: translateY(-3px);
+  background: #2e7d32;
+}
+
+/* FOOTER */
+.footer {
+  background: #3a6e49;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-container {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-icons {
+  margin-bottom: 10px;
+}
+
+.footer-icons a {
+  margin: 0 10px;
+}
+
+.footer-icons img {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s;
+}
+
+.footer-icons img:hover {
+  transform: scale(1.2);
+}
+
+.footer-line {
+  width: 100%;
+  border: none;
+  border-top: 2px solid #fff;
+  margin: 10px 0;
+}
+
+.footer-text {
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 1024px) {
+  header {
+    padding: 15px 30px;
+  }
+  nav ul {
+    gap: 40px;
+  }
+  .quem-somos {
+    flex-direction: column;
+    text-align: center;
+  }
+  .quem-somos-texto {
+    margin: 0 0 30px 0;
+  }
+  .servico {
+    flex-direction: column !important;
+    text-align: center;
+  }
+  .funcionario {
+    flex-direction: column !important;
+    text-align: center;
+  }
+  .contato-container {
+    width: 100%;
+  }
+  .contato-info {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .servicos-header h1,
+  .beneficios h1,
+  .sobre-header h1,
+  .mvv-header h2,
+  .relatos-header h2,
+  .contato-header h2 {
+    font-size: 24px;
+  }
+
+  .cards,
+  .mvv-container,
+  .relatos-container {
+    grid-template-columns: 1fr;
+  }
+
+  .quem-somos-img {
+    width: 200px;
+    height: 300px;
+  }
+
+  .funcionario .foto {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  nav ul {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .btn-agendar {
+    padding: 8px 15px;
+  }
+}
+
+.relatos-footer .stars img {
+  height: 40px;
+  width: 40px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  position: fixed; /* header sempre fixo no topo */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* para ficar acima de tudo */
+}
+
+.benefits-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  align-items: stretch; /* Faz todos os cards esticarem igualmente */
+}
+
+.benefit-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* Força o card ocupar toda a altura disponível */
+}

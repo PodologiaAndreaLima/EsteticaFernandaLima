@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login e Cadastro</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        body {
+            background: #f9f9f9;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: green;
+        }
+
+        .nav-header {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 80px;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-links li a::after {
+            content: "";
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #2e7d32;
+            transition: width 0.3s;
+            margin-top: 3px;
+        }
+
+        .nav-links li a:hover::after {
+            width: 100%;
+        }
+
+        .btn-agendar {
+            position: absolute;
+            right: 0;
+            background: #3A6E49;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-agendar:hover {
+            background: #0f2d27;
+        }
+
+        /* CONTAINER */
+        .auth-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* LEFT AND RIGHT PANELS */
+        .auth-left,
+        .auth-right {
+            flex: 1;
+            padding: 60px;
+            transition: transform 0.5s ease-in-out;
+            position: absolute;
+            width: 50%;
+            height: 100%;
+        }
+
+        .auth-left {
+            background: #A2D9A1;
+            color: #fff;
+            border-top-right-radius: 60px;
+            border-bottom-right-radius: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .auth-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* LOGIN AND CADASTRO CONTENT */
+        .login-content,
+        .cadastro-content {
+            display: none;
+        }
+
+        .login-content.active,
+        .cadastro-content.active {
+            display: block;
+        }
+
+        .auth-left h5 {
+            letter-spacing: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .auth-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .auth-left p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .auth-left ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .auth-left ul li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            text-align: left;
+        }
+
+        .auth-left ul li img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .auth-right h2 {
+            color: #146d2c;
+            font-size: 26px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* Ensures consistent spacing between all label-input pairs */
+        }
+
+        form label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        form input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .input-duo {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-duo div {
+            flex: 1;
+        }
+
+        .btn-login,
+        .btn-cadastro {
+            background: #3A6E49;
+            color: #fff;
+            padding: 10px 40px;
+            /* Adjusted padding for smaller width */
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto;
+            /* Not full-width */
+            display: block;
+            margin: 20px auto;
+            /* Increased margin-top from 15px to 20px for more spacing */
+        }
+
+        .btn-login:hover,
+        .btn-cadastro:hover {
+            background: #0f2d27;
+        }
+
+        .btn-whatsapp {
+            /* background: #008000; */
+            background: #3A6E49;
+            color: #fff;
+            padding: 10px 40px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .btn-whatsapp:hover {
+            background: #A2D9A1;
+        }
+
+        .create-account,
+        .login-link {
+            margin: 25px 0 10px;
+            /* Increased top margin to 25px for more spacing */
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .create-account a,
+        .login-link a {
+            color: #008000;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .whatsapp-text {
+            font-size: 14px;
+            text-align: center;
+            margin: 25px 0;
+            /* Increased margin to 25px for more spacing */
+        }
+
+        /* TRANSITION STYLES */
+        .auth-left.login-active {
+            transform: translateX(0);
+        }
+
+        .auth-right.login-active {
+            transform: translateX(100%);
+        }
+
+        .auth-left.cadastro-active {
+            transform: translateX(100%);
+            background: #3A6E49;
+            border-radius: 60px 0 0 60px;
+        }
+
+        .auth-right.cadastro-active {
+            transform: translateX(0);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            header {
+                padding: 15px 30px;
+            }
+
+            .nav-links {
+                gap: 40px;
+            }
+
+            .auth-left,
+            .auth-right {
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .auth-left,
+            .auth-right {
+                position: relative;
+                width: 100%;
+                transform: none !important;
+                border-radius: 0;
+            }
+
+            .auth-left {
+                padding: 40px 20px;
+            }
+
+            .auth-right {
+                padding: 40px 20px;
+            }
+
+            .login-content,
+            .cadastro-content {
+                display: none;
+            }
+
+            .login-content.active,
+            .cadastro-content.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn-agendar {
+                position: static;
+                margin-top: 10px;
+                padding: 8px 15px;
+            }
+
+            .input-duo {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="logo"></div>
+        <nav class="nav-header">
+            <ul class="nav-links">
+                <li><a href="index.html#servicos">Serviços</a></li>
+                <li><a href="index.html#sobre-nos">Sobre Nós</a></li>
+                <li><a href="index.html#relatos">Relatos</a></li>
+                <li><a href="index.html#contato">Contato</a></li>
+            </ul>
+            <a href="#" class="btn-agendar">Agende já sua consulta!</a>
+        </nav>
+
+    </header>
+
+    <!-- CONTAINER -->
+    <main class="auth-container">
+        <!-- LEFT PANEL -->
+        <div class="auth-left login-active">
+            <div class="login-content active">
+                <h5>FAÇA NO SEU RITMO</h5>
+                <h1>Estamos aqui para te atender da melhor forma!</h1>
+                <p>Ao fazer parte do nosso sistema, você pode:</p>
+                <ul>
+                    <li><img src="./assets/Tear-Off Calendar.png" alt="" class="icon-calendar"> Agendar consultas por
+                        conta própria</li>
+                    <li><img src="./assets/Vector.png" alt="" class="icon-clock"> Acompanhar históricos e consultas
+                        futuras</li>
+                    <li><img src="./assets/Light.png" alt=""> Receber dicas sobre cuidados com seus pés</li>
+                </ul>
+            </div>
+            <div class="cadastro-content">
+                <h5>BOAS VINDAS!</h5>
+                <h1>Conheça as vantagens de criar uma conta conosco</h1>
+                <p>Criando sua conta, você poderá:</p>
+                <ul>
+                    <li><img src="./assets/Tear-Off Calendar.png" alt=""> Agendar consultas por conta própria</li>
+                    <li><img src="./assets/Vector.png" alt=""> Acompanhar históricos e consultas futuras</li>
+                    <li><img src="./assets/Light.png" alt=""> Receber dicas sobre cuidados com seus pés</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="auth-right login-active">
+            <div class="login-content active">
+                <h2>Entre na sua conta</h2>
+                <form>
+                    <label>Email ou CPF:</label>
+                    <input type="text" placeholder="Insira seu Email ou CPF">
+                    <label>Senha:</label>
+                    <input type="password" placeholder="Insira sua senha">
+                    <button type="submit" class="btn-login">Entrar</button>
+                </form>
+                <p class="create-account">NÃO POSSUI UMA CONTA? <a href="#" onclick="toggleForm('cadastro')">CRIAR
+                        CONTA</a></p>
+                <p class="whatsapp-text">Se preferir, fale conosco direto pelo Whatsapp</p>
+                <button class="btn-whatsapp">Agendar via Whatsapp</button>
+            </div>
+            <div class="cadastro-content">
+                <h2>Faça parte agora mesmo!</h2>
+                <form>
+                    <label>Nome completo:</label>
+                    <input type="text" placeholder="Insira seu nome completo">
+                    <div class="input-duo">
+                        <div>
+                            <label>CPF:</label>
+                            <input type="text" style="margin-top: 5px;" placeholder="Insira seu CPF">
+                        </div>
+                        <div>
+                            <label>Telefone:</label>
+                            <input type="text" style="margin-top: 5px;" placeholder="Insira seu número">
+                        </div>
+                    </div>
+                    <label>Email:</label>
+                    <input type="email" placeholder="Insira seu email">
+                    <div class="input-duo">
+                        <div>
+                            <label>Senha:</label>
+                            <input type="password" style="margin-top: 5px;" placeholder="Insira sua senha">
+                        </div>
+                        <div>
+                            <label>Confirmar senha:</label>
+                            <input type="password" style="margin-top: 5px;" placeholder="Confirme sua senha">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-cadastro">Criar conta</button>
+                </form>
+                <p class="login-link">JÁ POSSUI UMA CONTA? <a href="#" onclick="toggleForm('login')">FAZER LOGIN</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleForm(formType) {
+            const leftPanel = document.querySelector('.auth-left');
+            const rightPanel = document.querySelector('.auth-right');
+            const loginContentLeft = document.querySelector('.auth-left .login-content');
+            const cadastroContentLeft = document.querySelector('.auth-left .cadastro-content');
+            const loginContentRight = document.querySelector('.auth-right .login-content');
+            const cadastroContentRight = document.querySelector('.auth-right .cadastro-content');
+
+            if (formType === 'cadastro') {
+                leftPanel.classList.remove('login-active');
+                leftPanel.classList.add('cadastro-active');
+                rightPanel.classList.remove('login-active');
+                rightPanel.classList.add('cadastro-active');
+                loginContentLeft.classList.remove('active');
+                cadastroContentLeft.classList.add('active');
+                loginContentRight.classList.remove('active');
+                cadastroContentRight.classList.add('active');
+            } else {
+                leftPanel.classList.remove('cadastro-active');
+                leftPanel.classList.add('login-active');
+                rightPanel.classList.remove('cadastro-active');
+                rightPanel.classList.add('login-active');
+                loginContentLeft.classList.add('active');
+                cadastroContentLeft.classList.remove('active');
+                loginContentRight.classList.add('active');
+                cadastroContentRight.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+
+</html>
