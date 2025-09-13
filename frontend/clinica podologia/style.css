@@ -210,7 +210,7 @@ section.quem-somos {
   border-top-left-radius: 50px;
   border-top-right-radius: 50px;
   padding: 80px 20px;
-  color: #fff;
+  color: #3a6e49;
 }
 
 .beneficios-container {
@@ -223,7 +223,7 @@ section.quem-somos {
   font-size: 14px;
   letter-spacing: 2px;
   margin-bottom: 10px;
-  color: #fff;
+  color: #3a6e49;
 }
 
 .beneficios h1 {
@@ -753,4 +753,9 @@ header {
   flex-direction: column;
   justify-content: space-between;
   height: 100%; /* Força o card ocupar toda a altura disponível */
+}
+
+.icon img {
+  filter: brightness(0) saturate(100%) invert(38%) sepia(10%) saturate(1146%)
+    hue-rotate(91deg) brightness(92%) contrast(87%);
 }
