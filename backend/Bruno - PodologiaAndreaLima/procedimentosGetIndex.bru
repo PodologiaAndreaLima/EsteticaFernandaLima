@@ -1,0 +1,25 @@
+meta {
+  name: procedimentosGetIndex
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:6969/procedimentos/4
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": 4,
+    "nome": "Pedicure",
+    "descricao": "Pedicure completa com hidratação",
+    "valor": 50,
+    "tempo": 35
+  }
+}
+
+settings {
+  encodeUrl: true
+}

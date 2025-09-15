@@ -8,17 +8,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/procedimentos")
+@RequestMapping("/procedimentos")
 public class ProcedimentoController {
 
     private final ProcedimentoService service;
 
     public ProcedimentoController(ProcedimentoService service) {
+
         this.service = service;
     }
 
     @GetMapping
     public List<Procedimento> listarTodos() {
+
         return service.listarTodos();
     }
 
@@ -31,6 +33,7 @@ public class ProcedimentoController {
 
     @PostMapping
     public Procedimento criar(@RequestBody Procedimento procedimento) {
+
         return service.salvar(procedimento);
     }
 

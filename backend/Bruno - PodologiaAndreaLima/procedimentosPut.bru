@@ -1,0 +1,24 @@
+meta {
+  name: procedimentosPut
+  type: http
+  seq: 11
+}
+
+put {
+  url: http://localhost:6969/procedimentos/1
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nome": "Massagem Relaxante Premium",
+    "descricao": "Massagem corporal de 1 hora com óleos essenciais",
+    "valor": 180.0,
+    "tempo": 70
+  }
+}
+
+settings {
+  encodeUrl: true
+}

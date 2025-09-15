@@ -27,6 +27,7 @@ public class Procedimento {
         return id;
     }
     public void setId(Long id) {
+
         this.id = id;
     }
 
@@ -34,6 +35,7 @@ public class Procedimento {
         return nome;
     }
     public void setNome(String nome) {
+
         this.nome = nome;
     }
 
@@ -41,20 +43,25 @@ public class Procedimento {
         return descricao;
     }
     public void setDescricao(String descricao) {
+
         this.descricao = descricao;
     }
 
     public BigDecimal getValor() {
+
         return valor;
     }
     public void setValor(BigDecimal valor) {
+
         this.valor = valor;
     }
 
     public Integer getTempo() {
+
         return tempo;
     }
     public void setTempo(Integer tempo) {
+
         this.tempo = tempo;
     }
 }
