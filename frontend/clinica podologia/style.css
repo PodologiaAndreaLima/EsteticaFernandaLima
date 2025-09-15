@@ -753,3 +753,7 @@ header {
 .icon-mvv {
   filter: brightness(0) invert(1);
 }
+
+.contato-info {
+  margin-top: 30px;
+}
