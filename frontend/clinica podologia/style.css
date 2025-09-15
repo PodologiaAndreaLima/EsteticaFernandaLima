@@ -757,3 +757,34 @@ header {
 .contato-info {
   margin-top: 30px;
 }
+
+.contato-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.info-left,
+.info-right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 220px;
+}
+
+.contato-info p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  margin: 0;
+}
+
+.contato-info img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 6px;
+}
