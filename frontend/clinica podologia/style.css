@@ -183,11 +183,6 @@ section.quem-somos {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.servico .circle:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
 .servico .texto {
   flex: 1;
 }
@@ -342,11 +337,6 @@ section.quem-somos {
   border-radius: 20px 60px;
   flex-shrink: 0;
   transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.funcionario .foto:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .cta {
@@ -758,4 +748,8 @@ header {
 .icon img {
   filter: brightness(0) saturate(100%) invert(38%) sepia(10%) saturate(1146%)
     hue-rotate(91deg) brightness(92%) contrast(87%);
+}
+
+.icon-mvv {
+  filter: brightness(0) invert(1);
 }
