@@ -23,9 +23,6 @@ public class Cliente {
     private String cpf;
 
     @NotBlank
-    @Pattern(
-            regexp = "(\\(?\\d{2}\\)?\\s)?(\\d{4,5}\\-\\d{4})"
-    )
     private String telefone;
 
     @NotBlank

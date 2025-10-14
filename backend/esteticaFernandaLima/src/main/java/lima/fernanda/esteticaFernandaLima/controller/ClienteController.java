@@ -1,8 +1,11 @@
 package lima.fernanda.esteticaFernandaLima.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
-import lima.fernanda.esteticaFernandaLima.repository.ClienteRepository;
+import lima.fernanda.esteticaFernandaLima.service.ClienteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,75 +13,68 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
+@Tag(name = "Clientes", description = "Endpoints para gerenciamento de clientes")
 public class ClienteController {
 
-    private final ClienteRepository repository;
+    private final ClienteService service;
 
-    public ClienteController(ClienteRepository repository){this.repository = repository;}
+    public ClienteController(ClienteService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> getCliente(@RequestParam(required = false) String busca){
-
-        List<Cliente> cliente = null;
-
-        if(busca == null){
-            cliente = repository.findAll();
-        }else {
-            cliente = repository.findByNomeCompletoContainingIgnoreCase(busca);
-        }
-
-        return cliente.isEmpty()?ResponseEntity.status(204).build():ResponseEntity.status(200).body(cliente);
+    @Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
+    @ApiResponse(responseCode = "200", description = "Clientes encontrados")
+    @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
+    public ResponseEntity<List<Cliente>> getCliente(@RequestParam(required = false) String busca) {
+        List<Cliente> clientes = service.buscarTodos(busca);
+        return clientes.isEmpty() ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.ok(clientes);
     }
 
-
-
-    // Buscando cliente pelo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> getPetPorId(@PathVariable Integer id) {
-        if (repository.existsById(id)) {
-            Cliente clienteEncontrado = repository.findById(id).get();
-            return ResponseEntity.ok(clienteEncontrado);
-        } else {
-            return ResponseEntity.status(404).build();
+    @Operation(summary = "Buscar cliente por ID", description = "Retorna um cliente específico pelo ID")
+    @ApiResponse(responseCode = "200", description = "Cliente encontrado")
+    @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    public ResponseEntity<Cliente> getClientePorId(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(service.buscarPorId(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // Cadastrando Cliente
     @PostMapping
-    public ResponseEntity<Cliente> postPet(@RequestBody @Valid Cliente cliente) {
-        return ResponseEntity.status(201).body(repository.save(cliente));
+    @Operation(summary = "Cadastrar cliente", description = "Cadastra um novo cliente")
+    @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso")
+    public ResponseEntity<Cliente> postCliente(@RequestBody @Valid Cliente cliente) {
+        return ResponseEntity.status(201).body(service.salvar(cliente));
     }
 
-    // Deletando Cliente
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePetPorId(@PathVariable Integer id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-            return ResponseEntity.status(204).build();
-        } else {
-            return ResponseEntity.status(404).build();
+    @Operation(summary = "Excluir cliente", description = "Remove um cliente pelo ID")
+    @ApiResponse(responseCode = "204", description = "Cliente removido com sucesso")
+    @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    public ResponseEntity<Void> deleteClientePorId(@PathVariable Integer id) {
+        try {
+            service.deletar(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // Editando Cliente
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable Integer id,
-                                             @RequestBody @Valid Cliente clienteAtualizado) {
-        if (repository.existsById(id)) {
-            Cliente clienteExistente = repository.findById(id).get();
-
-            clienteExistente.setNomeCompleto(clienteAtualizado.getNomeCompleto());
-            clienteExistente.setCpf(clienteAtualizado.getCpf());
-            clienteExistente.setTelefone(clienteAtualizado.getTelefone());
-            clienteExistente.setEmail(clienteAtualizado.getEmail());
-            clienteExistente.setSenha(clienteAtualizado.getSenha());
-
-            Cliente salvo = repository.save(clienteExistente);
-            return ResponseEntity.status(200).body(salvo);
-        } else {
-            return ResponseEntity.status(404).build();
+    @Operation(summary = "Atualizar cliente", description = "Atualiza os dados de um cliente existente")
+    @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    public ResponseEntity<Cliente> putCliente(@PathVariable Integer id,
+                                              @RequestBody @Valid Cliente cliente) {
+        try {
+            return ResponseEntity.ok(service.atualizar(id, cliente));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
-
-
 }
