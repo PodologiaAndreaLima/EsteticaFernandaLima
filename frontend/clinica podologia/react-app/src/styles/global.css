@@ -1,0 +1,55 @@
+/* IMPORTAÇÃO COMPLETA DA FONTES MONTSEERRAT */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+/* APLICAR MONTSEERRAT GLOBALMENTE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  background: #f9f9f9;
+  color: #333;
+  scroll-behavior: smooth;
+  padding-top: 85px; /* Adiciona espaço para o header fixo */
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Section divider */
+.section-divider {
+  height: 80px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(175, 133, 9, 0.5),
+    rgba(87, 60, 108, 0.5),
+    transparent
+  );
+  transform: translate(-50%, -50%);
+}

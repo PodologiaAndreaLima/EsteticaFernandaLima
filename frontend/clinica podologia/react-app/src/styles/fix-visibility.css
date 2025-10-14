@@ -1,0 +1,20 @@
+/* Estilos de visualização para garantir que todos os elementos sejam visíveis */
+.mvv-item,
+.card,
+.relato,
+.relatos,
+.eventos-container,
+.certificacoes-container,
+.eventos-heading-wrapper,
+.certificacoes-heading-wrapper,
+.evento-card,
+.certificacao-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Redefine algumas propriedades para garantir visibilidade */
+.home section {
+  overflow: visible;
+}

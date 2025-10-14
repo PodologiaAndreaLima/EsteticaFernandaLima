@@ -1,0 +1,109 @@
+/* QUEM SOMOS */
+section.quem-somos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px 80px;
+  background: #e1d4f2;
+  color: white;
+  min-height: 85vh;
+  border-top-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+  flex-wrap: wrap;
+}
+
+.quem-somos-texto {
+  flex: 1;
+  margin-right: 40px;
+  position: relative;
+}
+
+.quem-somos-texto h3 {
+  letter-spacing: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #af8509;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.quem-somos-texto h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #573c6c;
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.quem-somos-texto p {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 600px;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 15px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+}
+
+.quem-somos-img {
+  width: 350px;
+  height: 350px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.3
+  ); /* Adicionado um placeholder transparente */
+}
+
+@media (max-width: 992px) {
+  .quem-somos-content {
+    padding: 60px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .quem-somos-content {
+    flex-direction: column;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .quem-somos-texto {
+    margin-right: 0;
+    margin-bottom: 30px;
+  }
+
+  .quem-somos-img {
+    width: 100%;
+    height: 300px;
+    max-width: 450px;
+  }
+
+  .video-bg {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 480px) {
+  .quem-somos-content {
+    padding: 30px 15px;
+  }
+
+  .quem-somos-texto h1 {
+    font-size: 28px;
+  }
+
+  .quem-somos-texto p {
+    font-size: 14px;
+    padding: 12px;
+  }
+}

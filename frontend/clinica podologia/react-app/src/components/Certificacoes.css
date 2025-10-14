@@ -1,0 +1,511 @@
+/* CERTIFICAÇÕES E ESPECIALIZAÇÕES */
+.certificacoes {
+  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+  padding: 100px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.certificacoes::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(
+      circle at 80% 20%,
+      rgba(175, 133, 9, 0.03) 0%,
+      transparent 200px
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(87, 60, 108, 0.03) 0%,
+      transparent 200px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(87, 60, 108, 0.01) 0px,
+      rgba(87, 60, 108, 0.01) 1px,
+      transparent 1px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(175, 133, 9, 0.01) 0px,
+      rgba(175, 133, 9, 0.01) 1px,
+      transparent 1px,
+      transparent 20px
+    );
+  z-index: 1;
+}
+
+.certificacoes-container {
+  position: relative;
+  z-index: 2;
+}
+
+.certificacoes .decorative-element {
+  width: 100px;
+  height: 5px;
+  background: linear-gradient(to right, transparent, #573c6c, transparent);
+  margin: 0 auto 30px;
+  position: relative;
+}
+
+.certificacoes .decorative-element::before,
+.certificacoes .decorative-element::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #573c6c;
+  transform: translateY(-50%);
+}
+
+.certificacoes .decorative-element::before {
+  left: calc(50% - 50px);
+}
+
+.certificacoes .decorative-element::after {
+  right: calc(50% - 50px);
+}
+
+.certificacoes-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.certificacoes-heading-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.certificacoes .heading-icon {
+  font-size: 40px;
+  color: rgba(87, 60, 108, 0.15);
+  margin-right: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.certificacoes h3 {
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  color: #af8509;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
+}
+
+.certificacoes h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #af8509;
+}
+
+.certificacoes h1 {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #573c6c;
+  position: relative;
+}
+
+.certificacoes-descricao {
+  max-width: 800px;
+  margin: 0 auto 50px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Container do carrossel de certificações */
+.certificacoes-carrossel-container {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  display: flex;
+  align-items: center;
+}
+
+/* Botões de navegação */
+.certificacoes-carrossel-btn {
+  background: #805ba1;
+  color: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.certificacoes-carrossel-btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  transition: all 0.4s;
+  opacity: 0;
+}
+
+.certificacoes-carrossel-btn:hover {
+  background: #6a4986;
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
+.certificacoes-carrossel-btn:hover::before {
+  opacity: 1;
+  transform: rotate(45deg) translateX(10%);
+}
+
+.certificacoes-carrossel-btn:active {
+  transform: scale(0.95);
+}
+
+/* Área visível do carrossel */
+.certificacoes-carrossel-view {
+  width: 100%;
+  overflow: hidden;
+  margin: 0 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12), 0 10px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
+  padding-bottom: 15px; /* Espaço adicional na parte inferior */
+}
+
+/* Trilha que move os cards */
+.certificacoes-carrossel-track {
+  display: grid;
+  grid-gap: 20px;
+  transition: transform 0.5s ease-out;
+  padding: 10px;
+  align-items: stretch; /* Garante que todos os itens tenham a mesma altura */
+}
+
+.certificacoes-carrossel-track.transitioning {
+  transition: transform 0.5s ease-out;
+}
+
+/* Cards de certificação */
+.certificacao-card {
+  background: white;
+  border-radius: 12px;
+  overflow: visible; /* Alterado de 'hidden' para 'visible' */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.certificacao-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 40px 40px 0;
+  border-color: transparent #af8509 transparent transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 3;
+  transform: translate(5px, -5px);
+}
+
+.certificacao-card::after {
+  content: "★";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: white;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 4;
+}
+
+.certificacao-card:hover::before {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.certificacao-card:hover::after {
+  opacity: 1;
+}
+
+.certificacao-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.certificacao-img {
+  height: 160px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.certificacao-img::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, #573c6c, #af8509);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.certificacao-card:hover .certificacao-img::after {
+  opacity: 1;
+}
+
+.certificacao-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+.certificacao-card:hover .certificacao-img img {
+  transform: scale(1.07);
+}
+
+.certificacao-info {
+  padding: 20px;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, #fff 0%, #fafafa 100%);
+  transition: background 0.3s ease;
+  height: auto;
+}
+
+.certificacao-card:hover .certificacao-info {
+  background: linear-gradient(to bottom, #fff 0%, #f5f5f5 100%);
+}
+
+.certificacao-info h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #573c6c;
+  letter-spacing: 0.2px;
+  transition: color 0.3s ease;
+  display: block;
+  text-align: center;
+}
+
+.certificacao-card:hover .certificacao-info h3 {
+  color: #af8509;
+}
+
+.certificacao-detalhes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.certificacao-info .instituicao {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: color 0.3s ease;
+}
+
+.certificacao-card:hover .certificacao-info .instituicao {
+  color: #444;
+}
+
+.certificacao-info .instituicao svg {
+  color: #af8509;
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-right: 5px;
+}
+
+.certificacao-info .instituicao span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.2;
+}
+
+.certificacao-info .ano {
+  font-size: 13px;
+  color: #af8509;
+  font-weight: 500;
+  background-color: rgba(175, 133, 9, 0.08);
+  padding: 3px 10px;
+  border-radius: 12px;
+  display: inline-block;
+  margin: 5px auto 0;
+  width: fit-content;
+}
+
+/* Pontos de navegação */
+.certificacoes-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.certificacoes-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.certificacoes-dots .dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: #af8509;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.4s ease;
+}
+
+.certificacoes-dots .dot.active {
+  background: transparent;
+  border-color: #af8509;
+  transform: scale(1.2);
+  animation: dotPulse 1.5s infinite;
+}
+
+@keyframes dotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(175, 133, 9, 0.3);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(175, 133, 9, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(175, 133, 9, 0);
+  }
+}
+
+.certificacoes-dots .dot.active::before {
+  width: 6px;
+  height: 6px;
+}
+
+.certificacoes-dots .dot:hover {
+  background: #ccc;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .certificacao-info h3 {
+    font-size: 15px;
+  }
+
+  .certificacao-img {
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .certificacoes {
+    padding: 50px 20px;
+  }
+
+  .certificacao-img {
+    height: 160px;
+  }
+
+  .certificacao-info {
+    padding: 15px;
+  }
+
+  .certificacao-info h3 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .certificacoes-carrossel-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .certificacao-info .instituicao {
+    font-size: 13px;
+  }
+
+  .certificacao-info .ano {
+    font-size: 11px;
+  }
+}

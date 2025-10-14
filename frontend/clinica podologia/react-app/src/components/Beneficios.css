@@ -1,0 +1,180 @@
+/* BENEFÍCIOS */
+.beneficios {
+  background: #e1d4f2;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  padding: 80px 20px;
+  color: #3a6e49;
+}
+
+.beneficios-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.beneficios-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 20px;
+}
+
+.beneficios h3 {
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 15px;
+  color: #af8509;
+  text-transform: uppercase;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+}
+
+.beneficios h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 60px;
+  color: #573c6c;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 15px;
+}
+
+.beneficios h1::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #af8509;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-bottom: 50px;
+}
+
+.card {
+  flex: 1;
+  min-width: 300px;
+  max-width: 350px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 35px 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(87, 60, 108, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(87, 60, 108, 0.15);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: #af8509;
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+  transform-origin: left;
+}
+
+.card:hover::before {
+  transform: scaleX(1);
+}
+
+.card .icon {
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card .icon img {
+  /* Filtro para cor dourada #af8509 */
+  filter: brightness(0) saturate(100%) invert(52%) sepia(82%) saturate(434%)
+    hue-rotate(1deg) brightness(93%) contrast(91%);
+  width: 50px;
+  height: 50px;
+  padding: 10px;
+  background: rgba(175, 133, 9, 0.1);
+  border-radius: 50%;
+}
+
+.card h2 {
+  font-size: 22px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  color: #573c6c;
+  position: relative;
+}
+
+.card p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #573c6c;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.beneficios button {
+  background-color: #805ba1;
+  color: #fff;
+  border: none;
+  padding: 16px 35px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(128, 91, 161, 0.3);
+  letter-spacing: 0.5px;
+  margin-top: 20px;
+  position: relative;
+}
+
+.beneficios button:hover {
+  transform: translateY(-5px);
+  background-color: #6c4a8a; /* Um tom mais escuro de roxo */
+  box-shadow: 0 10px 25px rgba(128, 91, 161, 0.5);
+}
+
+@media (max-width: 768px) {
+  .beneficios {
+    padding: 60px 15px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+  }
+
+  .beneficios h1 {
+    font-size: 28px;
+    margin-bottom: 40px;
+  }
+
+  .cards {
+    gap: 25px;
+  }
+
+  .card {
+    min-width: 100%;
+    padding: 30px 20px;
+  }
+
+  .beneficios button {
+    width: 100%;
+    max-width: 300px;
+  }
+}

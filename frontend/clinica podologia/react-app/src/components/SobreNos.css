@@ -1,0 +1,300 @@
+/* SOBRE NÓS */
+.sobre-nos {
+  padding: 90px 0;
+  background: linear-gradient(to bottom, #f8f5ff, #fff);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.sobre-nos::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(
+    circle,
+    rgba(128, 91, 161, 0.05) 1px,
+    transparent 1px
+  );
+  background-size: 25px 25px;
+  z-index: 0;
+}
+
+.sobre-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.sobre-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sobre-header h3 {
+  font-size: 16px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  color: #af8509;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.sobre-header h1 {
+  color: #573c6c;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  line-height: 1.3;
+}
+
+.sobre-header .accent-line {
+  width: 80px;
+  height: 3px;
+  background-color: #af8509;
+  margin: 0 auto 30px;
+}
+
+.sobre-intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 50px;
+}
+
+.sobre-intro p {
+  font-size: 17px;
+  line-height: 1.7;
+  color: #573c6c;
+  opacity: 0.9;
+}
+
+.profissional {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 80px;
+  flex-wrap: wrap;
+  position: relative;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(87, 60, 108, 0.08);
+  padding: 30px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.profissional:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(87, 60, 108, 0.12);
+}
+
+.profissional .texto {
+  flex: 1;
+  min-width: 300px;
+}
+
+.profissional .texto h2 {
+  font-size: 24px;
+  color: #573c6c;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.profissional .texto .cargo {
+  display: block;
+  color: #af8509;
+  font-size: 16px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.profissional .texto .separator {
+  width: 40px;
+  height: 2px;
+  background-color: #af8509;
+  margin-bottom: 15px;
+}
+
+.profissional .texto p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.profissional .especialidades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.profissional .especialidades span {
+  background-color: rgba(175, 133, 9, 0.1);
+  color: #af8509;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.profissional .foto-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profissional .foto {
+  width: 300px;
+  height: 350px;
+  background: linear-gradient(135deg, #e1d4f2, #f1ebfc);
+  border-radius: 15px;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(87, 60, 108, 0.1);
+  border: 5px solid #fff;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.profissional .foto::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(175, 133, 9, 0.3);
+  border-radius: 15px;
+}
+
+.profissional .social-icons {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.profissional .social-icons a {
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.profissional .social-icons a:hover {
+  transform: translateY(-3px);
+  background: #af8509;
+}
+
+.profissional.reverse {
+  flex-direction: row-reverse;
+}
+
+.cta {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.cta button {
+  background: linear-gradient(135deg, #805ba1, #573c6c);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(87, 60, 108, 0.2);
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 2px solid transparent;
+}
+
+.cta button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(87, 60, 108, 0.3);
+  background: #fff;
+  color: #573c6c;
+  border: 2px solid #573c6c;
+}
+
+@media (max-width: 992px) {
+  .sobre-container {
+    padding: 0 30px;
+  }
+
+  .profissional {
+    padding: 25px;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sobre-nos {
+    padding: 60px 0 40px;
+  }
+
+  .sobre-header h1 {
+    font-size: 28px;
+  }
+
+  .sobre-intro p {
+    font-size: 16px;
+  }
+
+  .profissional,
+  .profissional.reverse {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    margin-bottom: 50px;
+  }
+
+  .profissional .foto {
+    width: 250px;
+    height: 300px;
+  }
+
+  .profissional .texto .separator {
+    margin: 0 auto 15px;
+  }
+
+  .profissional .especialidades {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .sobre-nos {
+    padding: 50px 0 30px;
+  }
+
+  .sobre-header h1 {
+    font-size: 24px;
+  }
+
+  .profissional {
+    padding: 20px 15px;
+  }
+
+  .profissional .texto h2 {
+    font-size: 22px;
+  }
+
+  .cta button {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}

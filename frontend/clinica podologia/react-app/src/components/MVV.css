@@ -1,0 +1,150 @@
+/* MISSÃO VISÃO VALORES */
+.mvv {
+  background: #e1d4f2;
+  padding: 90px 40px;
+  border-radius: 0 50px 0 50px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mvv-header {
+  margin-bottom: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.mvv-header h4 {
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  color: #af8509;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.mvv-header h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #573c6c;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 15px;
+}
+
+.mvv-header h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #af8509;
+}
+
+.mvv-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.mvv-item {
+  padding: 35px 25px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 25px rgba(87, 60, 108, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.mvv-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(87, 60, 108, 0.15);
+}
+
+.mvv-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: #af8509;
+  transform: scaleY(0);
+  transition: transform 0.4s ease;
+  transform-origin: top;
+}
+
+.mvv-item:hover::before {
+  transform: scaleY(1);
+}
+
+.mvv-item .icon {
+  margin-bottom: 25px;
+  background: rgba(175, 133, 9, 0.1);
+  border-radius: 50%;
+  width: 85px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.mvv-item:hover .icon {
+  background: rgba(175, 133, 9, 0.2);
+}
+
+.mvv-item .icon img {
+  width: 45px;
+  height: 45px;
+  filter: brightness(0) saturate(100%) invert(52%) sepia(82%) saturate(434%)
+    hue-rotate(1deg) brightness(93%) contrast(91%);
+}
+
+.mvv-item h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: #573c6c;
+  position: relative;
+}
+
+.mvv-item p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #573c6c;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .mvv {
+    padding: 60px 20px;
+    border-radius: 0 30px 0 30px;
+  }
+
+  .mvv-header h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+
+  .mvv-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .mvv-item {
+    padding: 30px 20px;
+  }
+}

@@ -1,0 +1,188 @@
+/* RELATOS */
+.relatos {
+  padding: 80px 100px;
+  background: #fff;
+  text-align: center;
+}
+
+.relatos-header h4 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #af8509;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.relatos-header h2 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #573c6c;
+  margin-bottom: 20px;
+}
+
+.relatos-header .accent-line {
+  width: 80px;
+  height: 3px;
+  background-color: #af8509;
+  margin: 0 auto 50px;
+}
+
+.relatos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+  opacity: 1; /* Ensure visibility */
+  visibility: visible;
+}
+
+.relato {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-top: 3px solid #af8509;
+}
+
+.relato:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.relato-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.relato-header .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #805ba1, #573c6c);
+  flex-shrink: 0;
+  border: 2px solid #af8509;
+}
+
+.relato-header h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  color: #573c6c;
+}
+
+.relato-header small {
+  font-size: 13px;
+  color: #777;
+}
+
+.relato .rating {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.relato .rating img {
+  width: 18px;
+  height: 18px;
+}
+
+.relato p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #444;
+  font-style: italic;
+}
+
+.relatos-footer {
+  margin-top: 30px;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Neutralizando animações do ScrollReveal */
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  visibility: visible !important;
+}
+
+.relatos-footer .google-logo {
+  height: 50px;
+  display: block;
+  margin: 0 auto 15px;
+}
+
+.relatos-footer p {
+  margin-bottom: 15px;
+  color: #444;
+  font-size: 16px;
+}
+
+.relatos-footer p strong {
+  color: #573c6c;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 25px;
+}
+
+.stars img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+  .relatos {
+    padding: 60px 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .relatos {
+    padding: 50px 30px;
+  }
+
+  .relatos-header h2 {
+    font-size: 28px;
+  }
+
+  .relatos-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .relatos {
+    padding: 40px 20px;
+  }
+
+  .relato {
+    padding: 20px;
+  }
+
+  .relatos-footer {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .relatos {
+    padding: 50px 0;
+  }
+
+  .relatos-container {
+    flex-direction: column;
+    width: 90%;
+  }
+}

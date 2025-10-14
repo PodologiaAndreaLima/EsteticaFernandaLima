@@ -1,0 +1,360 @@
+/* Dashboard Styles para Clínica de Estética */
+.dashboard-container {
+  display: flex;
+  height: calc(100vh - 80px); /* Altura total menos o header */
+  background-color: #f8f5fa;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  width: 250px;
+  background-color: #8e44ad;
+  color: white;
+  padding: 20px 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s;
+}
+
+.sidebar-user {
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+}
+
+.user-info h3 {
+  font-size: 18px;
+  margin: 0 0 5px;
+  color: white;
+}
+
+.user-info p {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.sidebar-nav {
+  flex: 1;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 5px;
+}
+
+.sidebar-nav li button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: white;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sidebar-nav li button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-nav li.active button {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+}
+
+.logout-button {
+  color: #ffcdd2 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+}
+
+/* Content area */
+.dashboard-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Dashboard Section Styles */
+.dashboard-section {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.dashboard-section h2 {
+  color: #8e44ad;
+  margin-bottom: 25px;
+  font-size: 24px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.section-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.action-button {
+  background: #8e44ad;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s;
+}
+
+.action-button:hover {
+  background: #6c3483;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px 0 0 6px;
+  width: 250px;
+}
+
+.search-box button {
+  background: #8e44ad;
+  color: white;
+  border: none;
+  padding: 9px 12px;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
+
+/* Profile Details */
+.profile-details {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.details-item {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  display: flex;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.details-item strong {
+  width: 120px;
+  color: #6c3483;
+}
+
+.btn-primary {
+  background: #8e44ad;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #6c3483;
+}
+
+.btn-secondary {
+  background: white;
+  color: #8e44ad;
+  border: 2px solid #8e44ad;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background: #f0f8f0;
+}
+
+/* Seção de agendamentos */
+.appointments-section {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  color: #3a6e49;
+  margin: 0;
+}
+
+.no-appointments {
+  padding: 30px 0;
+  text-align: center;
+  color: #757575;
+  font-style: italic;
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.appointment-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 15px;
+  transition: transform 0.2s;
+}
+
+.appointment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.appointment-header h4 {
+  margin: 0;
+  color: #3a6e49;
+  font-size: 1.1rem;
+}
+
+.appointment-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-confirmed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-pending {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.status-canceled {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.appointment-details {
+  margin-bottom: 15px;
+}
+
+.appointment-details p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-view,
+.btn-cancel {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.btn-view {
+  background-color: #e7f5ed;
+  color: #3a6e49;
+}
+
+.btn-view:hover {
+  background-color: #d0e9d8;
+}
+
+.btn-cancel {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.btn-cancel:hover {
+  background-color: #ffcdd2;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+}

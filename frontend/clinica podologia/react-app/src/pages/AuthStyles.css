@@ -1,0 +1,249 @@
+/* Auth Styles (Compartilhados entre Login e Register) */
+.auth-container {
+  display: flex;
+  height: calc(
+    100vh - 80px
+  ); /* Garantir que ocupe toda a altura da tela menos o header */
+  position: relative;
+  overflow: hidden;
+}
+
+/* LEFT AND RIGHT PANELS */
+.auth-left,
+.auth-right {
+  flex: 1;
+  padding: 60px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-left {
+  background: #be9cc1; /* Mudando para uma cor de estética (lilás/roxo) */
+  color: #fff;
+  border-top-right-radius: 60px;
+  border-bottom-right-radius: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  left: 0;
+}
+
+.auth-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  right: 0;
+}
+
+/* LOGIN AND CADASTRO CONTENT */
+.login-content,
+.cadastro-content {
+  display: block;
+}
+
+.auth-left h5 {
+  letter-spacing: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.auth-left h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.auth-left p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.auth-left ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.auth-left ul li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  text-align: left;
+}
+
+.auth-left ul li img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.auth-right h2 {
+  color: #8e44ad; /* Mudando para roxo/lilás mais escuro */
+  font-size: 26px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+form label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.input-duo {
+  display: flex;
+  gap: 15px;
+}
+
+.input-duo div {
+  flex: 1;
+}
+
+.btn-login,
+.btn-cadastro {
+  background: #8e44ad; /* Roxo para os botões principais */
+  color: #fff;
+  padding: 10px 40px;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  width: auto;
+  display: block;
+  margin: 20px auto;
+  transition: background-color 0.3s;
+}
+
+.btn-login:hover,
+.btn-cadastro:hover {
+  background: #6c3483; /* Roxo mais escuro no hover */
+}
+
+.btn-whatsapp {
+  background: #8e44ad;
+  color: #fff;
+  padding: 10px 40px;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s;
+}
+
+.btn-whatsapp:hover {
+  background: #be9cc1;
+}
+
+.create-account,
+.login-link {
+  margin: 25px 0 10px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.create-account a,
+.login-link a,
+.link-button {
+  color: #8e44ad; /* Roxo para links */
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+}
+
+.whatsapp-text {
+  font-size: 14px;
+  text-align: center;
+  margin: 25px 0;
+}
+
+/* Register Page Specific */
+.auth-left.cadastro {
+  background: #6c3483; /* Roxo mais escuro para a página de cadastro */
+  border-radius: 60px 0 0 60px;
+  left: 0;
+}
+
+/* Estilo para o select de cargo */
+.select-cargo {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  background-color: white;
+  font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .auth-left,
+  .auth-right {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .auth-left,
+  .auth-right {
+    position: relative;
+    width: 100%;
+    transform: none !important;
+    border-radius: 0;
+  }
+
+  .auth-left {
+    padding: 40px 20px;
+    min-height: 50vh; /* Garantir altura mínima na versão mobile */
+  }
+
+  .auth-right {
+    padding: 40px 20px;
+    min-height: 50vh; /* Garantir altura mínima na versão mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .input-duo {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

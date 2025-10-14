@@ -1,0 +1,89 @@
+# dependencies
+/node_modules/
+/.pnp/
+.pnp.js
+
+# testing
+/coverage/
+
+# production
+/build/
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# local env files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs_analysis.dat
+*.njsproj
+*.sln
+
+# Mac
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Parcel cache
+.cache
+
+# Next.js build output
+.next
+
+# static local files
+src/assets-temp/
+
+# Storybook
+.out
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
+
+# Lock files
+pnpm-lock.yaml
+
+# JetBrains
+.idea
+
+# Others
+coverage
+dist
+public/build
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# SASS cache
+.sass-cache
+node_modules/

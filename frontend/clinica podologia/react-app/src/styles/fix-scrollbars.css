@@ -1,0 +1,29 @@
+/* Remover setas de scroll em todos os elementos do carrossel */
+.certificacao-card::-webkit-scrollbar,
+.certificacao-info::-webkit-scrollbar,
+.certificacao-img::-webkit-scrollbar,
+.certificacoes-carrossel-track::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.certificacao-card,
+.certificacao-info,
+.certificacao-img,
+.certificacoes-carrossel-track {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  overflow-y: visible;
+}
+
+/* Adicionais fixes para garantir que não hajam scrollbars */
+.certificacao-card {
+  max-height: none;
+  overflow: visible;
+}
+
+.certificacao-info {
+  max-height: none;
+  overflow: visible;
+}
