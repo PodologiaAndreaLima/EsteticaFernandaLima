@@ -4,10 +4,10 @@ import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
 import "./AuthStyles.css";
 
-// Importe as imagens - usando importação dinâmica para evitar problemas com espaços nos nomes dos arquivos
-const calendarIcon = require("../assets/Tear-Off Calendar.png");
-const vectorIcon = require("../assets/Vector.png");
-const lightIcon = require("../assets/Light.png");
+// Importe as imagens usando importação estática que funciona com o Vite
+import calendarIcon from "../assets/Tear-Off Calendar.png";
+import vectorIcon from "../assets/Vector.png";
+import lightIcon from "../assets/Light.png";
 
 const Register = () => {
   const { register } = useAuth();

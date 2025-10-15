@@ -1,5 +1,8 @@
-import React, { useRef, useEffect } from "react";
+// Método alternativo para substituição do conteúdo do arquivo
+
+import React, { useRef } from "react";
 import "./Relatos.css";
+import images from "../utils/images.js";
 
 const Relatos = () => {
   const relatosRef = useRef(null);
@@ -26,11 +29,11 @@ const Relatos = () => {
             </div>
           </div>
           <div className="rating">
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
           </div>
           <p>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -49,11 +52,11 @@ const Relatos = () => {
             </div>
           </div>
           <div className="rating">
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
           </div>
           <p>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -72,11 +75,11 @@ const Relatos = () => {
             </div>
           </div>
           <div className="rating">
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
-            <img src="/assets/Star Filled.png" alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
+            <img src={images.starFilled} alt="Estrela" />
           </div>
           <p>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -97,26 +100,11 @@ const Relatos = () => {
           Nota <strong>5.0</strong> com base em <strong>49 avaliações</strong>
         </p>
         <div className="stars">
-          <img
-            src={process.env.PUBLIC_URL + "/assets/Star Filled.png"}
-            alt="Estrela"
-          />
-          <img
-            src={process.env.PUBLIC_URL + "/assets/Star Filled.png"}
-            alt="Estrela"
-          />
-          <img
-            src={process.env.PUBLIC_URL + "/assets/Star Filled.png"}
-            alt="Estrela"
-          />
-          <img
-            src={process.env.PUBLIC_URL + "/assets/Star Filled.png"}
-            alt="Estrela"
-          />
-          <img
-            src={process.env.PUBLIC_URL + "/assets/Star Filled.png"}
-            alt="Estrela"
-          />
+          <img src={images.starFilled} alt="Estrela" />
+          <img src={images.starFilled} alt="Estrela" />
+          <img src={images.starFilled} alt="Estrela" />
+          <img src={images.starFilled} alt="Estrela" />
+          <img src={images.starFilled} alt="Estrela" />
         </div>
       </div>
     </section>

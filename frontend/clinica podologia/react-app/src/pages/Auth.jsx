@@ -5,9 +5,9 @@ import { useAuth } from "../contexts/AuthContext";
 import "./AuthStyles.css";
 
 // Imagens
-const calendarIcon = require("../assets/Tear-Off Calendar.png");
-const vectorIcon = require("../assets/Vector.png");
-const lightIcon = require("../assets/Light.png");
+import calendarIcon from "../assets/Tear-Off Calendar.png";
+import vectorIcon from "../assets/Vector.png";
+import lightIcon from "../assets/Light.png";
 
 const Auth = () => {
   const { login, register } = useAuth();

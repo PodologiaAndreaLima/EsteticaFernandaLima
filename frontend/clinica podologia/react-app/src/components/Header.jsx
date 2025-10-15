@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./Header.css";
-// Logo da clínica Fernanda (adicionada em src/assets)
-const clinicLogo = require("../assets/logoFernandaBeautyCareV1-removebg-preview.png");
+// Importando imagens da utility
+import images from "../utils/images.js";
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -53,7 +53,7 @@ const Header = () => {
           <div className="logo">
             <Link to="/">
               <img
-                src={clinicLogo}
+                src={images.logo}
                 alt="Logo Clínica Fernanda Beauty Care"
                 className="clinic-logo"
               />

@@ -98,8 +98,6 @@ function App() {
             }
           />
 
-          {/* Rota de admin removida */}
-
           {/* Rota para cancelamento de agendamentos (protegida) */}
           <Route
             path="/agendamentos/:id/cancelar"
