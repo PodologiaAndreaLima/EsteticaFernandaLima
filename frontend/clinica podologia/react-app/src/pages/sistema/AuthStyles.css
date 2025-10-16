@@ -111,9 +111,14 @@ form label {
 
 form input {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #af8509;
   border-radius: 6px;
   width: 100%;
+  outline: none;
+}
+
+form input:focus {
+  box-shadow: 0 0 3px rgba(175, 133, 9, 0.3);
 }
 
 .input-duo {

@@ -13,6 +13,7 @@ import PaginaInicial from "./pages/sistema/PaginaInicial";
 import Clientes from "./pages/sistema/Clientes";
 import Funcionarios from "./pages/sistema/Funcionarios";
 import SistemaLayout from "./pages/sistema/SistemaLayout";
+import Servicos from "./pages/sistema/Servicos";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./styles/LoadingSpinner.css";
 import "./styles/fix-system-overflow.css";
@@ -145,10 +146,7 @@ function App() {
               element={<div>Ordem de Serviço em construção</div>}
             />
             <Route path="clientes" element={<Clientes />} />
-            <Route
-              path="servicos"
-              element={<div>Serviços em construção</div>}
-            />
+            <Route path="servicos" element={<Servicos />} />
             <Route
               path="produtos"
               element={<div>Produtos em construção</div>}

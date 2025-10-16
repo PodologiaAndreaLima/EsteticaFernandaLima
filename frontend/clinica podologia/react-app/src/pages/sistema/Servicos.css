@@ -1,12 +1,12 @@
-/* Estilos para a página de Clientes */
-.container-clientes {
+/* Estilos para a página de Serviços */
+.container-servicos {
   padding: 20px;
   max-width: 100%;
   height: 100%;
   overflow-y: auto;
 }
 
-.container-clientes h1 {
+.container-servicos h1 {
   color: #573c6c;
   margin-bottom: 20px;
   font-weight: 600;
@@ -52,14 +52,6 @@
   background-color: #4a2f5d;
 }
 
-.cartao-cliente {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px 25px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
 .linha-formulario {
   display: flex;
   gap: 20px;
@@ -79,15 +71,18 @@
   font-weight: 500;
 }
 
-.grupo-formulario input {
+.grupo-formulario input,
+.grupo-formulario textarea {
   padding: 10px 15px;
   border: 1px solid #af8509;
   border-radius: 8px;
   font-size: 14px;
   outline: none;
+  font-family: inherit;
 }
 
-.grupo-formulario input:focus {
+.grupo-formulario input:focus,
+.grupo-formulario textarea:focus {
   border-color: #af8509;
   box-shadow: 0 0 3px rgba(175, 133, 9, 0.3);
 }
@@ -282,14 +277,14 @@
   color: #666;
 }
 
-/* Estilos da tabela de clientes */
-.tabela-clientes {
+/* Estilos da tabela de serviços */
+.tabela-servicos {
   width: 100%;
   overflow-x: auto;
   margin-top: 20px;
 }
 
-.tabela-clientes table {
+.tabela-servicos table {
   width: 100%;
   border-collapse: collapse;
   background-color: white;
@@ -297,7 +292,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.tabela-clientes th {
+.tabela-servicos th {
   text-align: left;
   padding: 15px;
   background-color: #f8f8f8;
@@ -306,10 +301,18 @@
   border-bottom: 1px solid #eee;
 }
 
-.tabela-clientes td {
+.tabela-servicos td {
   padding: 15px;
   border-bottom: 1px solid #eee;
   color: #333;
+}
+
+/* Limitar o texto da descrição na tabela */
+.descricao-truncada {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .acoes-tabela {
@@ -358,17 +361,17 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
-  .form-row {
+  .linha-formulario {
     flex-direction: column;
     gap: 15px;
   }
 
-  .search-container {
+  .container-pesquisa {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .adicionar-btn {
+  .botao-adicionar {
     margin-left: 0;
     margin-top: 10px;
   }

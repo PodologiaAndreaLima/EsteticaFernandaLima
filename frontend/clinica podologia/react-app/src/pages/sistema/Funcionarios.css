@@ -35,7 +35,8 @@
 }
 
 .campo-pesquisa:focus {
-  border-color: #573c6c;
+  border-color: #af8509;
+  box-shadow: 0 0 3px rgba(175, 133, 9, 0.3);
 }
 
 .botao-adicionar {
