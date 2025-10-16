@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import { useAuth } from "../contexts/AuthContext";
+import Header from "../../components/site/Header";
+import { useAuth } from "../../contexts/AuthContext";
 import "./AuthStyles.css";
 
 // Imagens
-import calendarIcon from "../assets/Tear-Off Calendar.png";
-import vectorIcon from "../assets/Vector.png";
-import lightIcon from "../assets/Light.png";
+import calendarIcon from "../../assets/Tear-Off Calendar.png";
+import vectorIcon from "../../assets/Vector.png";
+import lightIcon from "../../assets/Light.png";
 
 const Auth = () => {
   const { login, register } = useAuth();

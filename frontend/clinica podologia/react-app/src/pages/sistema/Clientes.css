@@ -1,0 +1,378 @@
+/* Estilos para a página de Clientes */
+.container-clientes {
+  padding: 20px;
+  max-width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.container-clientes h1 {
+  color: #573c6c;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 28px;
+}
+
+.container-pesquisa {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.campo-pesquisa {
+  flex-grow: 1;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 25px;
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+}
+
+.campo-pesquisa:focus {
+  border-color: #573c6c;
+}
+
+.botao-adicionar {
+  background-color: #573c6c;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: background-color 0.2s;
+}
+
+.botao-adicionar:hover {
+  background-color: #4a2f5d;
+}
+
+.cartao-cliente {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px 25px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.linha-formulario {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.grupo-formulario {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.grupo-formulario label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.grupo-formulario input {
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.grupo-formulario input:focus {
+  border-color: #573c6c;
+}
+
+.container-botoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.botao-excluir {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 25px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.botao-excluir:hover {
+  background-color: #c0392b;
+}
+
+.botao-editar {
+  background-color: #573c6c;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 25px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.botao-editar:hover {
+  background-color: #4a2f5d;
+}
+
+/* Modal de edição/adição */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: white;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #573c6c;
+  font-size: 20px;
+}
+
+.botao-fechar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+}
+
+.rodape-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+/* Estilos para o modal de visualização */
+.modal-visualizar {
+  max-width: 650px;
+}
+
+.conteudo-visualizacao {
+  padding: 10px 0;
+}
+
+.grupo-visualizacao {
+  margin-bottom: 25px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #af8509;
+}
+
+.grupo-visualizacao h3 {
+  color: #573c6c;
+  font-size: 17px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(175, 133, 9, 0.3);
+  padding-bottom: 8px;
+}
+
+.linha-visualizacao {
+  display: flex;
+  margin-bottom: 12px;
+  gap: 20px;
+}
+
+.campo-visualizacao {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-visualizacao .rotulo {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.campo-visualizacao .valor {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.botao-fechar-visualizacao {
+  background-color: #573c6c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.botao-fechar-visualizacao:hover {
+  background-color: #4a2f5d;
+}
+
+.botao-cancelar,
+.botao-salvar {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100px;
+}
+
+.botao-cancelar {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.botao-cancelar:hover {
+  background-color: #e0e0e0;
+}
+
+.botao-salvar {
+  background-color: #573c6c;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sem-resultados {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+/* Estilos da tabela de clientes */
+.tabela-clientes {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.tabela-clientes table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tabela-clientes th {
+  text-align: left;
+  padding: 15px;
+  background-color: #f8f8f8;
+  color: #573c6c;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-clientes td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.acoes-tabela {
+  display: flex;
+  gap: 10px;
+}
+
+.botao-tabela-visualizar,
+.botao-tabela-editar,
+.botao-tabela-excluir {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.botao-tabela-visualizar {
+  background-color: #f1e6fb;
+  color: #573c6c;
+  border: 1px solid #e0d0f5;
+}
+
+.botao-tabela-visualizar:hover {
+  background-color: #e5d4f7;
+}
+
+.botao-tabela-editar {
+  background-color: #573c6c;
+  color: white;
+}
+
+.botao-tabela-editar:hover {
+  background-color: #4a2f5d;
+}
+
+.botao-tabela-excluir {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.botao-tabela-excluir:hover {
+  background-color: #c0392b;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .adicionar-btn {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .modal-container {
+    width: 95%;
+    padding: 15px;
+  }
+}

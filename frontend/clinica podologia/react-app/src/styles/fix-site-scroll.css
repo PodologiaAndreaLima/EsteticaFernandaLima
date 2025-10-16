@@ -1,0 +1,11 @@
+/* Garantir que o site institucional tenha scroll normal */
+body:not(.sistema-body) {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+/* Garantir que as seções do site sejam propriamente roladas */
+.section {
+  min-height: 100vh;
+  overflow: visible;
+}

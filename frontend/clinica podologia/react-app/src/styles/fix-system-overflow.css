@@ -1,0 +1,17 @@
+/* Correções para o sistema sem barras de rolagem */
+/* Aplicar overflow hidden apenas para o sistema interno */
+body.sistema-body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Garantir que o site institucional tenha scroll normal */
+body:not(.sistema-body) {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+/* Aplicar overflow apenas em páginas específicas do sistema que precisam de rolagem */
+.sistema-content .overflow-allowed {
+  overflow-y: auto;
+}

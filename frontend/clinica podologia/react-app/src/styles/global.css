@@ -7,7 +7,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
-  overflow-x: hidden;
 }
 
 body {
@@ -34,7 +33,7 @@ ul {
   height: 80px;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* Mantendo apenas para este elemento específico */
 }
 
 .section-divider::before {

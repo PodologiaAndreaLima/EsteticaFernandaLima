@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import { useAuth } from "../contexts/AuthContext";
+import Header from "../../components/site/Header";
+import { useAuth } from "../../contexts/AuthContext";
 import "./AuthStyles.css";
 
 // Importe as imagens usando importação estática que funciona com o Vite
-import calendarIcon from "../assets/Tear-Off Calendar.png";
-import vectorIcon from "../assets/Vector.png";
-import lightIcon from "../assets/Light.png";
+import calendarIcon from "../../assets/Tear-Off Calendar.png";
+import vectorIcon from "../../assets/Vector.png";
+import lightIcon from "../../assets/Light.png";
 
 const Register = () => {
   const { register } = useAuth();

@@ -5,12 +5,17 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
+import Login from "./pages/sistema/Login";
+import Register from "./pages/sistema/Register";
+import Home from "./pages/site/Home";
+import Dashboard from "./pages/sistema/Dashboard";
+import PaginaInicial from "./pages/sistema/PaginaInicial";
+import Clientes from "./pages/sistema/Clientes";
+import Funcionarios from "./pages/sistema/Funcionarios";
+import SistemaLayout from "./pages/sistema/SistemaLayout";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./styles/LoadingSpinner.css";
+import "./styles/fix-system-overflow.css";
 
 // Componente para exibir feedback de carregamento
 const LoadingSpinner = () => (
@@ -39,7 +44,7 @@ const PublicRoute = ({ children }) => {
     return <LoadingSpinner />;
   }
 
-  return !isAuthenticated ? children : <Navigate to="/dashboard" />;
+  return !isAuthenticated ? children : <Navigate to="/sistema" />;
 };
 
 function App() {
@@ -117,6 +122,43 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          {/* Rota especial para acesso administrativo (não exposta no menu) */}
+          <Route
+            path="/admin-login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+
+          {/* Rotas do sistema interno - temporariamente sem proteção para visualização */}
+          <Route path="/sistema" element={<SistemaLayout />}>
+            {/* Página inicial do sistema */}
+            <Route index element={<PaginaInicial />} />
+
+            {/* Páginas do sistema */}
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route
+              path="ordem-servico"
+              element={<div>Ordem de Serviço em construção</div>}
+            />
+            <Route path="clientes" element={<Clientes />} />
+            <Route
+              path="servicos"
+              element={<div>Serviços em construção</div>}
+            />
+            <Route
+              path="produtos"
+              element={<div>Produtos em construção</div>}
+            />
+            <Route path="combos" element={<div>Combos em construção</div>} />
+            <Route path="funcionarios" element={<Funcionarios />} />
+            <Route path="custos" element={<div>Custos em construção</div>} />
+            <Route path="perfil" element={<div>Perfil em construção</div>} />
+          </Route>
+
           {/* Rota para página não encontrada */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

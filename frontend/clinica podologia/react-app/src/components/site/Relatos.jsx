@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import "./Relatos.css";
-import images from "../utils/images.js";
+import images from "../../utils/images.js";
 
 const Relatos = () => {
   const relatosRef = useRef(null);

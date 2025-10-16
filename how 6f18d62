@@ -1,0 +1,185 @@
+[1mdiff --git a/frontend/clinica podologia/react-app/.gitignore b/frontend/clinica podologia/react-app/.gitignore[m
+[1mindex 2c6ba5a..2b2cd21 100644[m
+[1m--- a/frontend/clinica podologia/react-app/.gitignore[m	
+[1m+++ b/frontend/clinica podologia/react-app/.gitignore[m	
+[36m@@ -8,6 +8,7 @@[m
+ [m
+ # production[m
+ /build/[m
+[32m+[m[32m/dist/[m
+ [m
+ # misc[m
+ .DS_Store[m
+[1mdiff --git a/frontend/clinica podologia/react-app/index.html b/frontend/clinica podologia/react-app/index.html[m
+[1mnew file mode 100644[m
+[1mindex 0000000..722366e[m
+[1m--- /dev/null[m
+[1m+++ b/frontend/clinica podologia/react-app/index.html[m	
+[36m@@ -0,0 +1,37 @@[m
+[32m+[m[32m<!DOCTYPE html>[m
+[32m+[m[32m<html lang="pt-br">[m
+[32m+[m
+[32m+[m[32m<head>[m
+[32m+[m[32m    <meta charset="utf-8" />[m
+[32m+[m[32m    <link rel="icon" href="/favicon.ico" />[m
+[32m+[m[32m    <meta name="viewport" content="width=device-width, initial-scale=1" />[m
+[32m+[m[32m    <meta name="theme-color" content="#000000" />[m
+[32m+[m[32m    <meta name="description" content="Clínica de Estética - Sistema Administrativo" />[m
+[32m+[m[32m    <link rel="apple-touch-icon" href="/logo192.png" />[m
+[32m+[m[32m    <link rel="manifest" href="/manifest.json" />[m
+[32m+[m[32m    <link[m
+[32m+[m[32m        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"[m
+[32m+[m[32m        rel="stylesheet" />[m
+[32m+[m[32m    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />[m
+[32m+[m[32m    <title>Estética Andrea Lima</title>[m
+[32m+[m[32m</head>[m
+[32m+[m
+[32m+[m[32m<body>[m
+[32m+[m[32m    <noscript>Você precisa habilitar o JavaScript para executar este app.</noscript>[m
+[32m+[m[32m    <div id="root"></div>[m
+[32m+[m[32m    <script type="module" src="/src/main.jsx"></script>[m
+[32m+[m
+[32m+[m[32m    <!-- VLibras Plugin -->[m
+[32m+[m[32m    <div vw class="enabled">[m
+[32m+[m[32m        <div vw-access-button class="active"></div>[m
+[32m+[m[32m        <div vw-plugin-wrapper>[m
+[32m+[m[32m            <div class="vw-plugin-top-wrapper"></div>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m    </div>[m
+[32m+[m[32m    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>[m
+[32m+[m[32m    <script>[m
+[32m+[m[32m        new window.VLibras.Widget('https://vlibras.gov.br/app');[m
+[32m+[m[32m    </script>[m
+[32m+[m[32m</body>[m
+[32m+[m
+[32m+[m[32m</html>[m
+\ No newline at end of file[m
+[1mdiff --git a/frontend/clinica podologia/react-app/package.json b/frontend/clinica podologia/react-app/package.json[m
+[1mindex b798165..8a3e089 100644[m
+[1m--- a/frontend/clinica podologia/react-app/package.json[m	
+[1m+++ b/frontend/clinica podologia/react-app/package.json[m	
+[36m@@ -20,10 +20,10 @@[m
+     "web-vitals": "^2.1.4"[m
+   },[m
+   "scripts": {[m
+[31m-    "start": "react-scripts start",[m
+[31m-    "build": "react-scripts build",[m
+[31m-    "test": "react-scripts test",[m
+[31m-    "eject": "react-scripts eject"[m
+[32m+[m[32m    "dev": "vite",[m
+[32m+[m[32m    "build": "vite build",[m
+[32m+[m[32m    "preview": "vite preview",[m
+[32m+[m[32m    "test": "vitest"[m
+   },[m
+   "eslintConfig": {[m
+     "extends": [[m
+[36m@@ -42,5 +42,9 @@[m
+       "last 1 firefox version",[m
+       "last 1 safari version"[m
+     ][m
+[32m+[m[32m  },[m
+[32m+[m[32m  "devDependencies": {[m
+[32m+[m[32m    "@vitejs/plugin-react": "^5.0.4",[m
+[32m+[m[32m    "vite": "^7.1.10"[m
+   }[m
+ }[m
+[1mdiff --git a/frontend/clinica podologia/react-app/rename-jsx-files-manual.js b/frontend/clinica podologia/react-app/rename-jsx-files-manual.js[m
+[1mnew file mode 100644[m
+[1mindex 0000000..55c8082[m
+[1m--- /dev/null[m
+[1m+++ b/frontend/clinica podologia/react-app/rename-jsx-files-manual.js[m	
+[36m@@ -0,0 +1,65 @@[m
+[32m+[m[32m// rename-jsx-files-manual.js[m
+[32m+[m[32mconst fs = require("fs");[m
+[32m+[m[32mconst path = require("path");[m
+[32m+[m
+[32m+[m[32m// Lista de arquivos para renomear[m
+[32m+[m[32mconst filesToRename = [[m
+[32m+[m[32m  // Componentes[m
+[32m+[m[32m  "src/components/Beneficios.js",[m
+[32m+[m[32m  "src/components/Banner.js",[m
+[32m+[m[32m  "src/components/Certificacoes.js",[m
+[32m+[m[32m  "src/components/Contato.js",[m
+[32m+[m[32m  "src/components/EventosCarrossel.js",[m
+[32m+[m[32m  "src/components/Footer.js",[m
+[32m+[m[32m  "src/components/Header.js",[m
+[32m+[m[32m  "src/components/MVV.js",[m
+[32m+[m[32m  "src/components/QuemSomos.js",[m
+[32m+[m[32m  "src/components/Relatos.js",[m
+[32m+[m[32m  "src/components/Servicos.js",[m
+[32m+[m[32m  "src/components/SobreNos.js",[m
+[32m+[m[32m  // Páginas[m
+[32m+[m[32m  "src/pages/Auth.js",[m
+[32m+[m[32m  "src/pages/Dashboard.js",[m
+[32m+[m[32m  "src/pages/Home.js",[m
+[32m+[m[32m  "src/pages/HomeNoAnimation.js",[m
+[32m+[m[32m  "src/pages/Login.js",[m
+[32m+[m[32m  "src/pages/Register.js",[m
+[32m+[m[32m  // Contexts[m
+[32m+[m[32m  "src/contexts/AuthContext.js",[m
+[32m+[m[32m  // App principal[m
+[32m+[m[32m  "src/App.js",[m
+[32m+[m[32m  "src/index.js",[m
+[32m+[m[32m];[m
+[32m+[m
+[32m+[m[32m// Função para renomear arquivo[m
+[32m+[m[32mfunction renameFile(filePath) {[m
+[32m+[m[32m  try {[m
+[32m+[m[32m    const fullPath = path.resolve(__dirname, filePath);[m
+[32m+[m
+[32m+[m[32m    if (fs.existsSync(fullPath)) {[m
+[32m+[m[32m      const newPath = fullPath.replace(".js", ".jsx");[m
+[32m+[m[32m      const content = fs.readFileSync(fullPath, "utf8");[m
+[32m+[m
+[32m+[m[32m      // Primeiro cria o novo arquivo[m
+[32m+[m[32m      fs.writeFileSync(newPath, content, "utf8");[m
+[32m+[m
+[32m+[m[32m      // Depois remove o arquivo antigo[m
+[32m+[m[32m      fs.unlinkSync(fullPath);[m
+[32m+[m
+[32m+[m[32m      console.log(`Renomeado: ${filePath} -> ${path.basename(newPath)}`);[m
+[32m+[m[32m    } else {[m
+[32m+[m[32m      console.log(`Arquivo não encontrado: ${filePath}`);[m
+[32m+[m[32m    }[m
+[32m+[m[32m  } catch (error) {[m
+[32m+[m[32m    console.error(`Erro ao processar ${filePath}:`, error);[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m// Renomear cada arquivo da lista[m
+[32m+[m[32mfilesToRename.forEach((file) => {[m
+[32m+[m[32m  renameFile(file);[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mconsole.log([m
+[32m+[m[32m  "\nProcesso concluído! Verifique se todos os arquivos foram renomeados corretamente."[m
+[32m+[m[32m);[m
+[1mdiff --git a/frontend/clinica podologia/react-app/rename-jsx-files.js b/frontend/clinica podologia/react-app/rename-jsx-files.js[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9a7ec4c[m
+[1m--- /dev/null[m
+[1m+++ b/frontend/clinica podologia/react-app/rename-jsx-files.js[m	
+[36m@@ -0,0 +1,186 @@[m
+[32m+[m[32m// rename-jsx-files.js[m
+[32m+[m[32mconst fs = require("fs");[m
+[32m+[m[32mconst path = require("path");[m
+[32m+[m
+[32m+[m[32m// Diretórios para verificar arquivos JS com JSX[m
+[32m+[m[32mconst directories = [[m
+[32m+[m[32m  path.resolve(__dirname, "src/components"),[m
+[32m+[m[32m  path.resolve(__dirname, "src/pages"),[m
+[32m+[m[32m  path.resolve(__dirname, "src/contexts"),[m
+[32m+[m[32m  path.resolve(__dirname, "src"),[m
+[32m+[m[32m];[m
+[32m+[m
+[32m+[m[32m// Padrões que indicam que um arquivo provavelmente contém JSX[m
+[32m+[m[32mconst jsxPatterns = [[m
+[32m+[m[32m  /<[a-zA-Z]+[^>]*>/, // Qualquer tag HTML/JSX[m
+[32m+[m[32m  /className=/, // className é um atributo específico de React[m
+[32m+[m[32m  /import React/, // Importação do React[m
+[32m+[m[32m  /<\/[a-zA-Z]+>/, // Tag de fechamento[m
+[32m+[m[32m  /React\.createElement/,[m
+[32m+[m[32m];[m
+[32m+[m
+[32m+[m[32m// Arquivos que devem ser ignorados[m
+[32m+[m[32mconst igno

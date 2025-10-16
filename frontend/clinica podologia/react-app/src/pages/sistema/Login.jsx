@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../../components/site/Header";
 import "./AuthStyles.css";
 
 // Importe as imagens usando importação estática que funciona com o Vite
-import calendarIcon from "../assets/Tear-Off Calendar.png";
-import vectorIcon from "../assets/Vector.png";
-import lightIcon from "../assets/Light.png";
+import calendarIcon from "../../assets/Tear-Off Calendar.png";
+import vectorIcon from "../../assets/Vector.png";
+import lightIcon from "../../assets/Light.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,10 +38,10 @@ const Login = () => {
       })
     );
 
-    // Simular atraso e navegar para /admin
+    // Simular atraso e navegar para a página inicial do sistema
     setTimeout(() => {
       setIsSubmitting(false);
-      navigate("/admin");
+      navigate("/sistema");
     }, 800);
   };
 

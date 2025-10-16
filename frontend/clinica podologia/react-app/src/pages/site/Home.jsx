@@ -1,21 +1,24 @@
 import React, { useEffect } from "react";
-import Header from "../components/Header";
-import Banner from "../components/Banner";
-import QuemSomos from "../components/QuemSomos";
-import Servicos from "../components/Servicos";
-import Beneficios from "../components/Beneficios";
-import SobreNos from "../components/SobreNos";
-import EventosCarrossel from "../components/EventosCarrossel";
-import Certificacoes from "../components/Certificacoes";
-import Relatos from "../components/Relatos";
-import Contato from "../components/Contato";
-import Footer from "../components/Footer";
+import Header from "../../components/site/Header";
+import Banner from "../../components/site/Banner";
+import QuemSomos from "../../components/site/QuemSomos";
+import Servicos from "../../components/site/Servicos";
+import Beneficios from "../../components/site/Beneficios";
+import SobreNos from "../../components/site/SobreNos";
+import EventosCarrossel from "../../components/site/EventosCarrossel";
+import Certificacoes from "../../components/site/Certificacoes";
+import Relatos from "../../components/site/Relatos";
+import Contato from "../../components/site/Contato";
+import Footer from "../../components/site/Footer";
 
 // Importar ScrollReveal para efeitos de animação
 import ScrollReveal from "scrollreveal";
 
 const Home = () => {
   useEffect(() => {
+    // Garantir que o body não tenha a classe do sistema quando estiver na home
+    document.body.classList.remove("sistema-body");
+
     // Configurações de ScrollReveal (ajustado para garantir que os elementos sejam exibidos)
     const sr = ScrollReveal({
       reset: false, // Alterado para false para evitar que os elementos desapareçam

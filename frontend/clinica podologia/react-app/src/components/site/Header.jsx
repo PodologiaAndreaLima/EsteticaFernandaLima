@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import "./Header.css";
 // Importando imagens da utility
-import images from "../utils/images.js";
+import images from "../../utils/images.js";
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -97,26 +97,14 @@ const Header = () => {
 
         <div className="header-buttons">
           <div className="auth-buttons">
-            <Link to="/dashboard" className="btn-perfil">
-              Meu Perfil
-            </Link>
-            <button
-              onClick={() => {
-                // chamar logout do contexto (se existir) e limpar localStorage
-                try {
-                  logout();
-                } catch (e) {
-                  // se logout não estiver disponível, remover manualmente
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("user");
-                }
-                // navegar para a home
-                window.location.href = "/";
-              }}
-              className="btn-logout"
+            <a
+              href="https://api.whatsapp.com/send?phone=5511999999999"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-agendar"
             >
-              Sair
-            </button>
+              Agende já sua consulta!
+            </a>
           </div>
         </div>
       </div>

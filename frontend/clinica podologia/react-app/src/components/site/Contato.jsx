@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Contato.css";
-import images from "../utils/images.js";
+import images from "../../utils/images.js";
 
 const Contato = () => {
   return (

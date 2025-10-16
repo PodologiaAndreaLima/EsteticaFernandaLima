@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles/global.css";
 import "./styles/fix-visibility.css"; // Importando CSS para corrigir problemas de visibilidade
+import "./styles/fix-site-scroll.css"; // Garantindo que o site tenha scroll
 import App from "./App.jsx";
 import reportWebVitals from "./reportWebVitals";
 

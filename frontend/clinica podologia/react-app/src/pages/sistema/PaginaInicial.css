@@ -1,0 +1,189 @@
+.pagina-inicial {
+  padding: 30px;
+  overflow: hidden;
+  height: calc(100% - 60px); /* Ajuste para o padding */
+  background-color: #f9f7fa;
+}
+
+.welcome-section {
+  margin-bottom: 35px;
+  position: relative;
+}
+
+.welcome-section:after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(to right, #654576, #af8509);
+  border-radius: 3px;
+}
+
+.welcome-section h1 {
+  color: #654576;
+  font-size: 30px;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  max-height: calc(100% - 80px); /* Ajuste para o welcome section */
+  padding: 5px;
+}
+
+.quick-access-card {
+  background-color: #654576;
+  border-radius: 16px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  min-height: 120px;
+  box-shadow: 0 4px 12px rgba(101, 69, 118, 0.2);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quick-access-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(101, 69, 118, 0.3);
+  background-color: #5d3e6d; /* Ligeiramente mais escuro que o original */
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Removemos o pseudo-elemento :before que estava causando o efeito de flash */
+
+.quick-access-card:hover .card-icon-image {
+  transform: scale(1.08);
+  opacity: 1;
+}
+
+.card-icon {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.06);
+  position: relative;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.quick-access-card:hover .card-icon {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(101, 69, 118, 0.3);
+}
+
+.card-icon-image {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  opacity: 0.95;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.2));
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.3px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.quick-access-card:hover .card-title {
+  transform: scale(1.03);
+  letter-spacing: 0.4px;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .pagina-inicial {
+    padding: 25px;
+  }
+
+  .welcome-section h1 {
+    font-size: 26px;
+  }
+
+  .quick-access-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pagina-inicial {
+    padding: 20px;
+  }
+
+  .welcome-section h1 {
+    font-size: 24px;
+  }
+
+  .welcome-section:after {
+    width: 60px;
+    height: 2px;
+  }
+
+  .quick-access-grid {
+    gap: 15px;
+  }
+
+  .quick-access-card {
+    min-height: 100px;
+    padding: 18px 15px;
+  }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 12px;
+  }
+
+  .card-icon-image {
+    width: 28px;
+    height: 28px;
+  }
+
+  .card-title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .quick-access-card {
+    min-height: 100px;
+    padding: 12px;
+  }
+}

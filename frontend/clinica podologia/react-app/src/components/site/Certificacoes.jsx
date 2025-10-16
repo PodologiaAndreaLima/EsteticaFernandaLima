@@ -7,7 +7,7 @@ import {
   faCertificate,
 } from "@fortawesome/free-solid-svg-icons";
 import "./Certificacoes.css";
-import "../styles/fix-scrollbars.css";
+import "../../styles/fix-scrollbars.css";
 
 // Dados de certificações - substitua pelo conteúdo real quando disponível
 const certificacoesData = [

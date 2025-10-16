@@ -1,0 +1,326 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 100vh;
+  background-color: #f1e6fb;
+  color: #333;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden; /* Impede qualquer tipo de scroll */
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+  transition: width 0.3s ease;
+  z-index: 1000;
+  padding-top: 10px; /* Adicionado para dar espaço para o botão de toggle */
+}
+
+/* Sidebar colapsada */
+.sidebar.collapsed {
+  width: 70px; /* Reduzido para manter consistência com o media query */
+}
+
+/* Esconde textos quando colapsado */
+.sidebar.collapsed .sidebar-menu li a span,
+.sidebar.collapsed .logout-button span {
+  display: none;
+}
+
+/* Centraliza e ajusta ícones quando colapsado */
+.sidebar.collapsed .sidebar-menu li a {
+  justify-content: center;
+  padding: 10px 0; /* Aumentado para melhor espaçamento */
+  margin-right: 0;
+  width: 100%;
+}
+
+.sidebar.collapsed .sidebar-menu li a img {
+  margin-right: 0;
+}
+
+/* Ajusta botão de logout quando colapsado */
+.sidebar.collapsed .logout-button {
+  justify-content: center;
+  padding: 10px 0; /* Aumentado para melhor espaçamento */
+  width: calc(100% - 8px);
+}
+
+.sidebar.collapsed .logout-button img {
+  margin-right: 0;
+}
+
+.sidebar-header {
+  padding: 30px 20px 25px 20px; /* Aumentado o padding inferior de 20px para 25px */
+  display: flex;
+  flex-direction: column; /* Organiza os elementos verticalmente */
+  justify-content: center;
+  align-items: center;
+  background-color: #f1e6fb;
+  border-bottom: 1px solid rgba(101, 69, 118, 0.1);
+  position: relative;
+  margin-bottom: 15px; /* Aumentado de 10px para 15px */
+}
+
+/* Ajusta o header quando a sidebar está colapsada */
+.sidebar.collapsed .sidebar-header {
+  padding: 30px 10px 20px 10px;
+}
+
+/* Botão de toggle */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 5px; /* Posicionado mais acima */
+  right: 10px;
+  z-index: 10;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background-color: rgba(87, 60, 108, 0.1);
+}
+
+.hamburger-icon {
+  width: 20px;
+  height: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background-color: #573c6c;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Ícone X quando a sidebar está EXPANDIDA (não colapsada) */
+.hamburger-icon span:first-child {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger-icon span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon span:last-child {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Ícone de três riscos quando a sidebar está COLAPSADA */
+.collapsed .hamburger-icon span:first-child {
+  transform: none; /* Reset para o estado normal */
+}
+
+.collapsed .hamburger-icon span:nth-child(2) {
+  opacity: 1; /* Reset para o estado normal */
+}
+
+.collapsed .hamburger-icon span:last-child {
+  transform: none; /* Reset para o estado normal */
+}
+
+/* Purple bar removed as requested */
+
+.sidebar-logo {
+  width: 46px; /* Ligeiramente reduzido */
+  height: 46px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 100%;
+  height: 100%;
+  background-color: #654576;
+  border-radius: 50%;
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 15px 0; /* Aumentado de 10px para 15px */
+  overflow: hidden; /* Remove scroll e mantém conteúdo dentro do espaço disponível */
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribui o espaço entre os itens */
+  height: 100%; /* Ocupa todo o espaço disponível */
+}
+
+.sidebar-menu li {
+  margin: 6px 0; /* Aumentado para melhor separação vertical */
+  padding: 0;
+}
+
+.sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  padding: 10px 25px; /* Aumentado o padding vertical */
+  text-decoration: none;
+  color: #573c6c;
+  transition: all 0.3s ease, padding 0.3s ease;
+  margin-right: 15px;
+  font-size: 14px;
+  overflow: hidden; /* Evita que o texto vaze durante a transição */
+  white-space: nowrap; /* Impede quebra de linha do texto */
+}
+
+.sidebar-menu li a img {
+  margin-right: 12px;
+  width: 22px; /* Reduzido ligeiramente para garantir que não seja cortado */
+  height: 22px;
+  object-fit: contain;
+}
+
+.sidebar-menu li a svg {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-menu li.active a {
+  background-color: #654576;
+  color: white;
+  border-radius: 25px 0 0 25px;
+  font-weight: 500;
+  box-shadow: 2px 3px 8px rgba(101, 69, 118, 0.2);
+}
+
+/* Ajuste especial para item ativo quando sidebar está colapsada */
+.sidebar.collapsed .sidebar-menu li.active a {
+  border-radius: 25px 0 0 25px;
+  margin-right: 0;
+  width: 85%; /* Diminuído para evitar que o item saia da sidebar */
+  padding: 10px 0; /* Aumentado para melhor espaçamento */
+}
+
+.sidebar-menu li.active a img {
+  filter: brightness(0) invert(1) !important; /* Transforma a imagem para branco quando ativa */
+}
+
+.sidebar-menu li:not(.active) a:hover {
+  background-color: rgba(87, 60, 108, 0.1);
+  border-radius: 25px 0 0 25px;
+  padding-left: 30px;
+}
+
+.sidebar-footer {
+  padding: 20px 15px; /* Aumentado de 15px para 20px vertical */
+  border-top: 1px solid #dbc8ef;
+  margin-top: auto; /* Empurra o footer para baixo */
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  width: calc(100% - 15px);
+  padding: 8px 25px; /* Reduzido para economizar espaço */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #573c6c;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border-radius: 25px 0 0 25px;
+  text-align: left;
+  margin-left: 0;
+}
+
+.logout-button img {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  /* Cor exata #573C6C */
+  filter: invert(22%) sepia(16%) saturate(1354%) hue-rotate(246deg)
+    brightness(94%) contrast(88%);
+}
+
+.logout-button:hover {
+  background-color: rgba(87, 60, 108, 0.1);
+  color: #573c6c;
+  padding-left: 30px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px; /* Reduzindo ligeiramente para evitar o problema de corte */
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
+  .sidebar-toggle {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  /* Esconde textos em modo responsivo */
+  .sidebar-menu li a span,
+  .logout-button span {
+    display: none;
+  }
+
+  .sidebar-menu li a svg,
+  .logout-button svg,
+  .logout-button img {
+    margin-right: 0;
+  }
+
+  /* Centralização dos ícones em modo responsivo */
+  .sidebar-menu li a {
+    justify-content: center;
+    padding: 10px 0; /* Aumentado para melhor espaçamento */
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .sidebar-menu li a img {
+    width: 20px; /* Reduzido para garantir visibilidade */
+    height: 20px;
+    margin-right: 0;
+    /* Mantém o mesmo filtro de cor */
+    filter: invert(22%) sepia(16%) saturate(1354%) hue-rotate(246deg)
+      brightness(94%) contrast(88%);
+  }
+
+  /* Ajuste do botão de logout em modo responsivo */
+  .logout-button {
+    justify-content: center;
+    padding: 10px 0; /* Aumentado para melhor espaçamento */
+    width: 100%;
+    margin: 0;
+    color: #573c6c;
+  }
+
+  .logout-button img {
+    /* Cor exata #573C6C para o ícone de saída no modo mobile */
+    filter: invert(22%) sepia(16%) saturate(1354%) hue-rotate(246deg)
+      brightness(94%) contrast(88%);
+    margin-right: 0;
+  }
+}
