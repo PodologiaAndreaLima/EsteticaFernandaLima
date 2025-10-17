@@ -52,7 +52,7 @@
 }
 
 .sidebar-header {
-  padding: 30px 20px 25px 20px; /* Aumentado o padding inferior de 20px para 25px */
+  padding: 25px 20px 20px 20px;
   display: flex;
   flex-direction: column; /* Organiza os elementos verticalmente */
   justify-content: center;
@@ -60,7 +60,8 @@
   background-color: #f1e6fb;
   border-bottom: 1px solid rgba(101, 69, 118, 0.1);
   position: relative;
-  margin-bottom: 15px; /* Aumentado de 10px para 15px */
+  margin-bottom: 10px;
+  flex-shrink: 0; /* Impede que o header encolha */
 }
 
 /* Ajusta o header quando a sidebar está colapsada */
@@ -154,8 +155,8 @@
 
 .sidebar-menu {
   flex: 1;
-  padding: 15px 0; /* Aumentado de 10px para 15px */
-  overflow: hidden; /* Remove scroll e mantém conteúdo dentro do espaço disponível */
+  padding: 10px 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -167,19 +168,19 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Distribui o espaço entre os itens */
-  height: 100%; /* Ocupa todo o espaço disponível */
+  gap: 4px; /* Espaçamento sutil entre os itens */
 }
 
 .sidebar-menu li {
-  margin: 6px 0; /* Aumentado para melhor separação vertical */
+  margin: 0;
   padding: 0;
+  flex-shrink: 0; /* Impede que os itens encolham */
 }
 
 .sidebar-menu li a {
   display: flex;
   align-items: center;
-  padding: 10px 25px; /* Aumentado o padding vertical */
+  padding: 12px 25px;
   text-decoration: none;
   color: #573c6c;
   transition: all 0.3s ease, padding 0.3s ease;
@@ -187,13 +188,15 @@
   font-size: 14px;
   overflow: hidden; /* Evita que o texto vaze durante a transição */
   white-space: nowrap; /* Impede quebra de linha do texto */
+  min-height: 42px; /* Garante altura mínima para evitar corte */
 }
 
 .sidebar-menu li a img {
   margin-right: 12px;
-  width: 22px; /* Reduzido ligeiramente para garantir que não seja cortado */
+  width: 22px;
   height: 22px;
   object-fit: contain;
+  flex-shrink: 0; /* Impede que a imagem encolha */
 }
 
 .sidebar-menu li a svg {
@@ -229,32 +232,48 @@
 }
 
 .sidebar-footer {
-  padding: 20px 15px; /* Aumentado de 15px para 20px vertical */
+  padding: 15px 15px;
   border-top: 1px solid #dbc8ef;
   margin-top: auto; /* Empurra o footer para baixo */
+  flex-shrink: 0; /* Impede que o footer encolha */
 }
 
+/* Botão Sair padronizado como os itens do menu */
 .logout-button {
   display: flex;
   align-items: center;
   width: calc(100% - 15px);
-  padding: 8px 25px; /* Reduzido para economizar espaço */
+  padding: 12px 25px;
   background: none;
   border: none;
   cursor: pointer;
   color: #573c6c;
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, padding 0.3s ease;
   border-radius: 25px 0 0 25px;
   text-align: left;
   margin-left: 0;
+  min-height: 42px;
+}
+
+.logout-button.active,
+.logout-button:focus {
+  background-color: #654576;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 2px 3px 8px rgba(101, 69, 118, 0.2);
+}
+
+.logout-button:hover {
+  background-color: rgba(87, 60, 108, 0.1);
+  color: #573c6c;
+  padding-left: 30px;
 }
 
 .logout-button img {
   margin-right: 12px;
   width: 18px;
   height: 18px;
-  /* Cor exata #573C6C */
   filter: invert(22%) sepia(16%) saturate(1354%) hue-rotate(246deg)
     brightness(94%) contrast(88%);
 }

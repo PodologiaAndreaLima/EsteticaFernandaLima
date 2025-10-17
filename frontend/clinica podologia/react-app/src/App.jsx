@@ -15,6 +15,7 @@ import Funcionarios from "./pages/sistema/Funcionarios";
 import SistemaLayout from "./pages/sistema/SistemaLayout";
 import Servicos from "./pages/sistema/Servicos";
 import Produtos from "./pages/sistema/Produtos";
+import Perfil from "./pages/sistema/Perfil";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./styles/LoadingSpinner.css";
 import "./styles/fix-system-overflow.css";
@@ -152,7 +153,7 @@ function App() {
             <Route path="combos" element={<div>Combos em construção</div>} />
             <Route path="funcionarios" element={<Funcionarios />} />
             <Route path="custos" element={<div>Custos em construção</div>} />
-            <Route path="perfil" element={<div>Perfil em construção</div>} />
+            <Route path="perfil" element={<Perfil />} />
           </Route>
 
           {/* Rota para página não encontrada */}
