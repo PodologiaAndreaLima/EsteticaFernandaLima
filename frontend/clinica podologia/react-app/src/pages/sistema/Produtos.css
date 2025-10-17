@@ -1,12 +1,12 @@
-/* Estilos para a página de Serviços */
-.container-servicos {
+/* Estilos para a página de Produtos */
+.container-produtos {
   padding: 20px;
   max-width: 100%;
   height: 100%;
   overflow-y: auto;
 }
 
-.container-servicos h1 {
+.container-produtos h1 {
   color: #573c6c;
   margin-bottom: 20px;
   font-weight: 600;
@@ -277,7 +277,7 @@
   color: #666;
 }
 
-/* Estilos de cards para serviços */
+/* Estilos de cards para produtos */
 .grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -285,7 +285,7 @@
   margin-top: 20px;
 }
 
-.card-servico {
+.card-produto {
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
@@ -296,7 +296,7 @@
   border: 1px solid #f0f0f0;
 }
 
-.card-servico:hover {
+.card-produto:hover {
   transform: translateY(-3px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
@@ -317,15 +317,35 @@
   color: #573c6c;
 }
 
+.card-categoria {
+  background-color: rgba(175, 133, 9, 0.15);
+  color: #8e6b07;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .card-content {
   padding: 16px 20px;
   flex: 1;
 }
 
+.card-marca {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.card-marca span {
+  font-weight: 500;
+  color: #573c6c;
+}
+
 .card-valores {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .valor-item {
@@ -350,9 +370,9 @@
   line-height: 1.4;
   margin: 0;
   display: -webkit-box;
+  -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }

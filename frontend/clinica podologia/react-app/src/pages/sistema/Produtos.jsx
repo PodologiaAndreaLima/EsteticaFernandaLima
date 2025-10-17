@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import "./Servicos.css";
+import "./Produtos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
-// Componente Modal para Visualização de Serviço
-const ModalVisualizarServico = ({ estaAberto, aoFechar, servico }) => {
+// Componente Modal para Visualização de Produto
+const ModalVisualizarProduto = ({ estaAberto, aoFechar, produto }) => {
   if (!estaAberto) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-container modal-visualizar">
         <div className="modal-header">
-          <h2>Detalhes do Serviço</h2>
+          <h2>Detalhes do Produto</h2>
           <button className="botao-fechar" onClick={aoFechar}>
             &times;
           </button>
@@ -18,27 +18,37 @@ const ModalVisualizarServico = ({ estaAberto, aoFechar, servico }) => {
 
         <div className="conteudo-visualizacao">
           <div className="grupo-visualizacao">
-            <h3>Informações do Serviço</h3>
+            <h3>Informações do Produto</h3>
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
-                <span className="rotulo">Nome do serviço:</span>
-                <span className="valor">{servico.nome}</span>
+                <span className="rotulo">Nome do produto:</span>
+                <span className="valor">{produto.nome}</span>
               </div>
             </div>
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
                 <span className="rotulo">Descrição:</span>
-                <span className="valor">{servico.descricao}</span>
+                <span className="valor">{produto.descricao}</span>
               </div>
             </div>
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
-                <span className="rotulo">Valor de custo/despesa:</span>
-                <span className="valor">R$ {servico.valorCusto}</span>
+                <span className="rotulo">Marca:</span>
+                <span className="valor">{produto.marca}</span>
+              </div>
+              <div className="campo-visualizacao">
+                <span className="rotulo">Categoria:</span>
+                <span className="valor">{produto.categoria}</span>
+              </div>
+            </div>
+            <div className="linha-visualizacao">
+              <div className="campo-visualizacao">
+                <span className="rotulo">Valor de compra:</span>
+                <span className="valor">R$ {produto.valorCompra}</span>
               </div>
               <div className="campo-visualizacao">
                 <span className="rotulo">Valor de venda:</span>
-                <span className="valor">R$ {servico.valorVenda}</span>
+                <span className="valor">R$ {produto.valorVenda}</span>
               </div>
             </div>
           </div>
@@ -54,13 +64,15 @@ const ModalVisualizarServico = ({ estaAberto, aoFechar, servico }) => {
   );
 };
 
-// Componente Modal para Edição/Adição de Serviço
-const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
+// Componente Modal para Edição/Adição de Produto
+const ModalProduto = ({ estaAberto, aoFechar, produto, aoSalvar }) => {
   const [dadosFormulario, setDadosFormulario] = useState(
-    servico || {
+    produto || {
       nome: "",
       descricao: "",
-      valorCusto: "",
+      marca: "",
+      categoria: "",
+      valorCompra: "",
       valorVenda: "",
     }
   );
@@ -85,7 +97,7 @@ const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h2>{servico.id ? "Editar Serviço" : "Adicionar Serviço"}</h2>
+          <h2>{produto.id ? "Editar Produto" : "Adicionar Produto"}</h2>
           <button className="botao-fechar" onClick={aoFechar}>
             &times;
           </button>
@@ -94,12 +106,37 @@ const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
         <form onSubmit={enviarFormulario}>
           <div className="linha-formulario">
             <div className="grupo-formulario">
-              <label htmlFor="nome">Nome do serviço</label>
+              <label htmlFor="nome">Nome do produto</label>
               <input
                 type="text"
                 id="nome"
                 name="nome"
                 value={dadosFormulario.nome}
+                onChange={alterarCampo}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="linha-formulario">
+            <div className="grupo-formulario">
+              <label htmlFor="marca">Marca</label>
+              <input
+                type="text"
+                id="marca"
+                name="marca"
+                value={dadosFormulario.marca}
+                onChange={alterarCampo}
+                required
+              />
+            </div>
+            <div className="grupo-formulario">
+              <label htmlFor="categoria">Categoria</label>
+              <input
+                type="text"
+                id="categoria"
+                name="categoria"
+                value={dadosFormulario.categoria}
                 onChange={alterarCampo}
                 required
               />
@@ -122,12 +159,12 @@ const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
-              <label htmlFor="valorCusto">Valor de custo/despesa (R$)</label>
+              <label htmlFor="valorCompra">Valor de compra (R$)</label>
               <input
                 type="text"
-                id="valorCusto"
-                name="valorCusto"
-                value={dadosFormulario.valorCusto}
+                id="valorCompra"
+                name="valorCompra"
+                value={dadosFormulario.valorCompra}
                 onChange={alterarCampo}
                 required
                 placeholder="0,00"
@@ -161,24 +198,28 @@ const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
   );
 };
 
-const Servicos = () => {
-  // Estado para armazenar a lista de serviços
-  const [listaServicos, setListaServicos] = useState([
+const Produtos = () => {
+  // Estado para armazenar a lista de produtos
+  const [listaProdutos, setListaProdutos] = useState([
     {
       id: 1,
-      nome: "Micropigmentação",
+      nome: "Creme facial",
       descricao:
-        "Procedimento que implanta pigmento na pele para corrigir falhas, definir o formato e realçar o seu olhar. O objetivo é proporcionar sobrancelhas mais harmoniosas e expressivas, dispensando a maquiagem diária.",
-      valorCusto: "100,00",
-      valorVenda: "300,00",
+        "Marca: XPTO, Categoria: XPTO, use 1x ao dia, serve para tratar acne e espinhas",
+      marca: "XPTO",
+      categoria: "Cuidados faciais",
+      valorCompra: "20,00",
+      valorVenda: "100,00",
     },
     {
       id: 2,
-      nome: "Peeling Facial",
+      nome: "Hidratante para pés",
       descricao:
-        "Tratamento estético que promove a renovação celular da pele através da aplicação de substâncias esfoliantes. Remove células mortas, melhora textura e luminosidade, minimiza linhas finas e ajuda a controlar a oleosidade.",
-      valorCusto: "70,00",
-      valorVenda: "220,00",
+        "Hidratante especial para calcanhares ressecados e rachados, uso diário.",
+      marca: "PodoSkin",
+      categoria: "Cuidados com os pés",
+      valorCompra: "15,00",
+      valorVenda: "45,00",
     },
   ]);
 
@@ -187,81 +228,85 @@ const Servicos = () => {
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] =
     useState(false);
-  const [servicoEmEdicao, setServicoEmEdicao] = useState({});
-  const [servicoParaVisualizar, setServicoParaVisualizar] = useState({});
-  const [servicoParaExcluir, setServicoParaExcluir] = useState(null);
+  const [produtoEmEdicao, setProdutoEmEdicao] = useState({});
+  const [produtoParaVisualizar, setProdutoParaVisualizar] = useState({});
+  const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
-  // Função para adicionar um novo serviço
-  const adicionarServico = () => {
-    setServicoEmEdicao({
+  // Função para adicionar um novo produto
+  const adicionarProduto = () => {
+    setProdutoEmEdicao({
       nome: "",
       descricao: "",
-      valorCusto: "",
+      marca: "",
+      categoria: "",
+      valorCompra: "",
       valorVenda: "",
     });
     setModalEditarAberto(true);
   };
 
-  // Função para visualizar um serviço
-  const visualizarServico = (servico) => {
-    setServicoParaVisualizar({ ...servico });
+  // Função para visualizar um produto
+  const visualizarProduto = (produto) => {
+    setProdutoParaVisualizar({ ...produto });
     setModalVisualizarAberto(true);
   };
 
-  // Função para editar um serviço existente
-  const editarServico = (servico) => {
-    setServicoEmEdicao({ ...servico });
+  // Função para editar um produto existente
+  const editarProduto = (produto) => {
+    setProdutoEmEdicao({ ...produto });
     setModalEditarAberto(true);
   };
 
-  // Função para preparar a exclusão de um serviço (abre o modal)
-  const prepararExclusao = (servicoId) => {
-    setServicoParaExcluir(servicoId);
+  // Função para preparar a exclusão de um produto (abre o modal)
+  const prepararExclusao = (produtoId) => {
+    setProdutoParaExcluir(produtoId);
     setModalConfirmacaoExclusaoAberto(true);
   };
 
-  // Função para confirmar a exclusão do serviço
+  // Função para confirmar a exclusão do produto
   const confirmarExclusao = () => {
-    if (servicoParaExcluir) {
-      setListaServicos(
-        listaServicos.filter((servico) => servico.id !== servicoParaExcluir)
+    if (produtoParaExcluir) {
+      setListaProdutos(
+        listaProdutos.filter((produto) => produto.id !== produtoParaExcluir)
       );
       setModalConfirmacaoExclusaoAberto(false);
-      setServicoParaExcluir(null);
+      setProdutoParaExcluir(null);
     }
   };
 
-  // Função para salvar um serviço (novo ou editado)
-  const salvarServico = (dadosServico) => {
-    if (dadosServico.id) {
-      // Atualizar serviço existente
-      const servicosAtualizados = listaServicos.map((servico) =>
-        servico.id === dadosServico.id
-          ? { ...servico, ...dadosServico }
-          : servico
+  // Função para salvar um produto (novo ou editado)
+  const salvarProduto = (dadosProduto) => {
+    if (dadosProduto.id) {
+      // Atualizar produto existente
+      const produtosAtualizados = listaProdutos.map((produto) =>
+        produto.id === dadosProduto.id
+          ? { ...produto, ...dadosProduto }
+          : produto
       );
-      setListaServicos(servicosAtualizados);
+      setListaProdutos(produtosAtualizados);
     } else {
-      // Adicionar novo serviço
-      const novoServico = {
+      // Adicionar novo produto
+      const novoProduto = {
         id: Date.now(), // ID temporário
-        ...dadosServico,
+        ...dadosProduto,
       };
-      setListaServicos([...listaServicos, novoServico]);
+      setListaProdutos([...listaProdutos, novoProduto]);
     }
   };
 
-  // Filtrar serviços com base no termo de pesquisa
-  const servicosFiltrados = listaServicos.filter(
-    (servico) =>
-      servico.nome.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
-      servico.descricao.toLowerCase().includes(termoPesquisa.toLowerCase())
+  // Filtrar produtos com base no termo de pesquisa
+  const produtosFiltrados = listaProdutos.filter(
+    (produto) =>
+      produto.nome.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
+      produto.descricao.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
+      produto.marca.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
+      produto.categoria.toLowerCase().includes(termoPesquisa.toLowerCase())
   );
 
   return (
-    <div className="container-servicos">
-      <h1>Serviços</h1>
+    <div className="container-produtos">
+      <h1>Produtos</h1>
 
       <div className="container-pesquisa">
         <input
@@ -271,48 +316,51 @@ const Servicos = () => {
           value={termoPesquisa}
           onChange={(e) => setTermoPesquisa(e.target.value)}
         />
-        <button className="botao-adicionar" onClick={adicionarServico}>
-          Adicionar Serviço
+        <button className="botao-adicionar" onClick={adicionarProduto}>
+          Adicionar Produto
         </button>
       </div>
 
-      {/* Lista de serviços em formato de cards */}
+      {/* Lista de produtos em formato de cards */}
       <div className="grid-cards">
-        {servicosFiltrados.map((servico) => (
-          <div key={servico.id} className="card-servico">
+        {produtosFiltrados.map((produto) => (
+          <div key={produto.id} className="card-produto">
             <div className="card-header">
-              <h3>{servico.nome}</h3>
+              <h3>{produto.nome}</h3>
+              <span className="card-categoria">{produto.categoria}</span>
             </div>
             <div className="card-content">
-              <p className="card-descricao-truncada">{servico.descricao}</p>
-
+              <p className="card-marca">
+                <span>Marca:</span> {produto.marca}
+              </p>
               <div className="card-valores">
                 <div className="valor-item">
-                  <span>Valor de Custo</span>
-                  <strong>R$ {servico.valorCusto}</strong>
+                  <span>Compra:</span>
+                  <strong>R$ {produto.valorCompra}</strong>
                 </div>
                 <div className="valor-item">
-                  <span>Valor de Venda</span>
-                  <strong>R$ {servico.valorVenda}</strong>
+                  <span>Venda:</span>
+                  <strong>R$ {produto.valorVenda}</strong>
                 </div>
               </div>
+              <p className="card-descricao-truncada">{produto.descricao}</p>
             </div>
             <div className="card-actions">
               <button
                 className="card-button-visualizar"
-                onClick={() => visualizarServico(servico)}
+                onClick={() => visualizarProduto(produto)}
               >
                 Visualizar
               </button>
               <button
                 className="card-button-editar"
-                onClick={() => editarServico(servico)}
+                onClick={() => editarProduto(produto)}
               >
                 Editar
               </button>
               <button
                 className="card-button-excluir"
-                onClick={() => prepararExclusao(servico.id)}
+                onClick={() => prepararExclusao(produto.id)}
               >
                 Excluir
               </button>
@@ -321,25 +369,25 @@ const Servicos = () => {
         ))}
       </div>
 
-      {servicosFiltrados.length === 0 && (
+      {produtosFiltrados.length === 0 && (
         <div className="sem-resultados">
-          <p>Nenhum serviço encontrado.</p>
+          <p>Nenhum produto encontrado.</p>
         </div>
       )}
 
-      {/* Modal para adicionar/editar serviço */}
-      <ModalServico
+      {/* Modal para adicionar/editar produto */}
+      <ModalProduto
         estaAberto={modalEditarAberto}
         aoFechar={() => setModalEditarAberto(false)}
-        servico={servicoEmEdicao}
-        aoSalvar={salvarServico}
+        produto={produtoEmEdicao}
+        aoSalvar={salvarProduto}
       />
 
-      {/* Modal para visualizar detalhes do serviço */}
-      <ModalVisualizarServico
+      {/* Modal para visualizar detalhes do produto */}
+      <ModalVisualizarProduto
         estaAberto={modalVisualizarAberto}
         aoFechar={() => setModalVisualizarAberto(false)}
-        servico={servicoParaVisualizar}
+        produto={produtoParaVisualizar}
       />
 
       {/* Modal de confirmação de exclusão */}
@@ -348,7 +396,7 @@ const Servicos = () => {
         aoFechar={() => setModalConfirmacaoExclusaoAberto(false)}
         aoConfirmar={confirmarExclusao}
         titulo="Confirmar exclusão"
-        mensagem="Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita."
+        mensagem="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
         textoBotaoConfirmar="Excluir"
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
@@ -357,4 +405,4 @@ const Servicos = () => {
   );
 };
 
-export default Servicos;
+export default Produtos;
