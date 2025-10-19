@@ -271,6 +271,8 @@ const Produtos = () => {
       setListaProdutos(
         listaProdutos.filter((produto) => produto.id !== produtoParaExcluir)
       );
+      setMensagemNotificacao("Produto excluído com sucesso!");
+      setNotificacaoVisivel(true);
       setModalConfirmacaoExclusaoAberto(false);
       setProdutoParaExcluir(null);
     }
@@ -290,7 +292,7 @@ const Produtos = () => {
           : produto
       );
       setListaProdutos(produtosAtualizados);
-      setMensagemNotificacao("Produto atualizado com sucesso!");
+      // Não exibe notificação ao editar
     } else {
       // Adicionar novo produto
       const novoProduto = {

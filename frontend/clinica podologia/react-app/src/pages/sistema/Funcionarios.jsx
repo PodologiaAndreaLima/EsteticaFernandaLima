@@ -358,6 +358,8 @@ const Funcionarios = () => {
           (funcionario) => funcionario.id !== funcionarioParaExcluir
         )
       );
+      setMensagemNotificacao("Funcionário excluído com sucesso!");
+      setNotificacaoVisivel(true);
       setModalConfirmacaoExclusaoAberto(false);
       setFuncionarioParaExcluir(null);
     }
@@ -377,7 +379,7 @@ const Funcionarios = () => {
           : funcionario
       );
       setListaFuncionarios(funcionariosAtualizados);
-      setMensagemNotificacao("Funcionário atualizado com sucesso!");
+      // Não exibe notificação ao editar
     } else {
       // Adicionar novo funcionário
       const novoFuncionario = {

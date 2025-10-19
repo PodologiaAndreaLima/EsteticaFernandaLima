@@ -228,6 +228,8 @@ const Servicos = () => {
       setListaServicos(
         listaServicos.filter((servico) => servico.id !== servicoParaExcluir)
       );
+      setMensagemNotificacao("Serviço excluído com sucesso!");
+      setNotificacaoVisivel(true);
       setModalConfirmacaoExclusaoAberto(false);
       setServicoParaExcluir(null);
     }
@@ -247,7 +249,7 @@ const Servicos = () => {
           : servico
       );
       setListaServicos(servicosAtualizados);
-      setMensagemNotificacao("Serviço atualizado com sucesso!");
+      // Não exibe notificação ao editar
     } else {
       // Adicionar novo serviço
       const novoServico = {

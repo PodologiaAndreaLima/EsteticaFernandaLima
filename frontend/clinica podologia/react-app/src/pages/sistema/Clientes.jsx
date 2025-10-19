@@ -64,13 +64,15 @@ const ModalVisualizarCliente = ({ estaAberto, aoFechar, cliente }) => {
 // Componente Modal para Edição/Adição de Cliente
 const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
   const [dadosFormulario, setDadosFormulario] = useState(
-    cliente || {
-      nomeCompleto: "",
-      cpf: "",
-      email: "",
-      telefone: "",
-      dataNascimento: "",
-    }
+    cliente && cliente.id !== undefined
+      ? { ...cliente }
+      : {
+          nomeCompleto: "",
+          cpf: "",
+          email: "",
+          telefone: "",
+          dataNascimento: "",
+        }
   );
 
   const alterarCampo = (e) => {
@@ -83,6 +85,7 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
 
   const enviarFormulario = (e) => {
     e.preventDefault();
+    // Garante que o id será enviado se estiver editando
     aoSalvar(dadosFormulario);
     aoFechar();
   };
@@ -238,6 +241,8 @@ const Clientes = () => {
       setListaClientes(
         listaClientes.filter((cliente) => cliente.id !== clienteParaExcluir)
       );
+      setMensagemNotificacao("Cliente excluído com sucesso!");
+      setNotificacaoVisivel(true);
       setModalConfirmacaoExclusaoAberto(false);
       setClienteParaExcluir(null);
     }
@@ -257,7 +262,7 @@ const Clientes = () => {
           : cliente
       );
       setListaClientes(clientesAtualizados);
-      setMensagemNotificacao("Cliente atualizado com sucesso!");
+      // Não exibe notificação ao editar
     } else {
       // Adicionar novo cliente
       const novoCliente = {
@@ -266,8 +271,8 @@ const Clientes = () => {
       };
       setListaClientes([...listaClientes, novoCliente]);
       setMensagemNotificacao("Cliente adicionado com sucesso!");
+      setNotificacaoVisivel(true);
     }
-    setNotificacaoVisivel(true);
   };
 
   // Filtrar clientes com base no termo de pesquisa

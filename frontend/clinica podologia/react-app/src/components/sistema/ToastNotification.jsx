@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import './ToastNotification.css';
+import React, { useEffect } from "react";
+import "./ToastNotification.css";
 
 const ToastNotification = ({ message, show, onClose, duration = 3000 }) => {
   useEffect(() => {
@@ -13,11 +13,7 @@ const ToastNotification = ({ message, show, onClose, duration = 3000 }) => {
 
   if (!show) return null;
 
-  return (
-    <div className="toast-notification">
-      {message}
-    </div>
-  );
+  return <div className="toast-notification">{message}</div>;
 };
 
 export default ToastNotification;
