@@ -1,0 +1,52 @@
+package lima.fernanda.esteticaFernandaLima.controller;
+
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lima.fernanda.esteticaFernandaLima.model.CustoExtra;
+import lima.fernanda.esteticaFernandaLima.service.CustoExtraService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/custos-extras")
+public class CustoExtraController {
+
+    private final CustoExtraService service;
+
+    public CustoExtraController(CustoExtraService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar custos extras", description = "Retorna todos os custos extras cadastrados")
+    @ApiResponse(responseCode = "200", description = "Custos extras encontrados")
+    public ResponseEntity<List<CustoExtra>> listarTodos() {
+        List<CustoExtra> custosExtras = service.listarTodos();
+        return ResponseEntity.ok(custosExtras);
+    }
+
+    @PostMapping
+    @Operation(summary = "Cadastrar custo extra", description = "Cadastra um novo custo extra")
+    @ApiResponse(responseCode = "201", description = "Custo extra cadastrado com sucesso")
+    public ResponseEntity<CustoExtra> criarCustoExtra(CustoExtra custoExtra) {
+        CustoExtra novoCustoExtra = service.salvar(custoExtra);
+        return ResponseEntity.status(201).body(novoCustoExtra);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir custo extra", description = "Remove um custo extra pelo ID")
+    @ApiResponse(responseCode = "204", description = "Custo extra removido com sucesso")
+    @ApiResponse(responseCode = "404", description = "Custo extra não encontrado")
+    public ResponseEntity<Void> deletarCustoExtra(@PathVariable Integer id) {
+        try {
+            service.deletar(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+}
