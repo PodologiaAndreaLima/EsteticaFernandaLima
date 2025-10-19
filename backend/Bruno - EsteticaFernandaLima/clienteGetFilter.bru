@@ -1,0 +1,19 @@
+meta {
+  name: clienteGetFilter
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:8080/cliente?busca=m
+  body: none
+  auth: inherit
+}
+
+params:query {
+  busca: m
+}
+
+settings {
+  encodeUrl: true
+}

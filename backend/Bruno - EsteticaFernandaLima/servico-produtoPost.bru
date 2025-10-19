@@ -1,0 +1,24 @@
+meta {
+  name: servico-produtoPost
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:8080/servico-produto
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nome": "Pedicure",
+    "descricao": "Pedicure completa com hidratação",
+    "valor": 50.0
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}
