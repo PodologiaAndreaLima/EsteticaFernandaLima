@@ -1,0 +1,38 @@
+
+.notificacao-toast {
+  position: fixed;
+  bottom: 36px;
+  right: 36px;
+  min-width: 240px;
+  max-width: 340px;
+  background: linear-gradient(90deg, #f8f4ff 0%, #f1e6fb 100%);
+  color: #573c6c;
+  padding: 16px 32px 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px 0 rgba(87, 60, 108, 0.10), 0 1.5px 6px 0 rgba(87, 60, 108, 0.08);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 500;
+  z-index: 12000;
+  opacity: 0.98;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid #e3d0f7;
+  animation: fadeInToast 0.4s cubic-bezier(.4,1.4,.6,1) both;
+}
+
+.notificacao-toast::before {
+  content: '\f058';
+  font-family: 'Font Awesome 5 Free', 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  color: #7e4cc2;
+  font-size: 1.3em;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+@keyframes fadeInToast {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to { opacity: 0.98; transform: translateY(0) scale(1); }
+}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NotificacaoToast from "../../components/sistema/NotificacaoToast";
 import "./Servicos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
@@ -232,6 +233,10 @@ const Servicos = () => {
     }
   };
 
+  // Estado para notificação toast
+  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
+  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
+
   // Função para salvar um serviço (novo ou editado)
   const salvarServico = (dadosServico) => {
     if (dadosServico.id) {
@@ -242,6 +247,7 @@ const Servicos = () => {
           : servico
       );
       setListaServicos(servicosAtualizados);
+      setMensagemNotificacao("Serviço atualizado com sucesso!");
     } else {
       // Adicionar novo serviço
       const novoServico = {
@@ -249,7 +255,9 @@ const Servicos = () => {
         ...dadosServico,
       };
       setListaServicos([...listaServicos, novoServico]);
+      setMensagemNotificacao("Serviço adicionado com sucesso!");
     }
+    setNotificacaoVisivel(true);
   };
 
   // Filtrar serviços com base no termo de pesquisa
@@ -352,6 +360,12 @@ const Servicos = () => {
         textoBotaoConfirmar="Excluir"
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
+      />
+      {/* Notificação Toast */}
+      <NotificacaoToast
+        mensagem={mensagemNotificacao}
+        visivel={notificacaoVisivel}
+        aoFechar={() => setNotificacaoVisivel(false)}
       />
     </div>
   );

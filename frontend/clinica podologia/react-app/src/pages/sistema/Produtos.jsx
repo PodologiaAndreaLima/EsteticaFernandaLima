@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NotificacaoToast from "../../components/sistema/NotificacaoToast";
 import "./Produtos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
@@ -275,6 +276,10 @@ const Produtos = () => {
     }
   };
 
+  // Estado para notificação toast
+  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
+  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
+
   // Função para salvar um produto (novo ou editado)
   const salvarProduto = (dadosProduto) => {
     if (dadosProduto.id) {
@@ -285,6 +290,7 @@ const Produtos = () => {
           : produto
       );
       setListaProdutos(produtosAtualizados);
+      setMensagemNotificacao("Produto atualizado com sucesso!");
     } else {
       // Adicionar novo produto
       const novoProduto = {
@@ -292,7 +298,9 @@ const Produtos = () => {
         ...dadosProduto,
       };
       setListaProdutos([...listaProdutos, novoProduto]);
+      setMensagemNotificacao("Produto adicionado com sucesso!");
     }
+    setNotificacaoVisivel(true);
   };
 
   // Filtrar produtos com base no termo de pesquisa
@@ -400,6 +408,12 @@ const Produtos = () => {
         textoBotaoConfirmar="Excluir"
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
+      />
+      {/* Notificação Toast */}
+      <NotificacaoToast
+        mensagem={mensagemNotificacao}
+        visivel={notificacaoVisivel}
+        aoFechar={() => setNotificacaoVisivel(false)}
       />
     </div>
   );

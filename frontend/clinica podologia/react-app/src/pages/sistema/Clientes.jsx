@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NotificacaoToast from "../../components/sistema/NotificacaoToast";
 import "./Clientes.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
@@ -242,6 +243,10 @@ const Clientes = () => {
     }
   };
 
+  // Estado para notificação toast
+  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
+  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
+
   // Função para salvar um cliente (novo ou editado)
   const salvarCliente = (dadosCliente) => {
     if (dadosCliente.id) {
@@ -252,6 +257,7 @@ const Clientes = () => {
           : cliente
       );
       setListaClientes(clientesAtualizados);
+      setMensagemNotificacao("Cliente atualizado com sucesso!");
     } else {
       // Adicionar novo cliente
       const novoCliente = {
@@ -259,7 +265,9 @@ const Clientes = () => {
         ...dadosCliente,
       };
       setListaClientes([...listaClientes, novoCliente]);
+      setMensagemNotificacao("Cliente adicionado com sucesso!");
     }
+    setNotificacaoVisivel(true);
   };
 
   // Filtrar clientes com base no termo de pesquisa
@@ -369,6 +377,12 @@ const Clientes = () => {
         textoBotaoConfirmar="Excluir"
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
+      />
+      {/* Notificação Toast */}
+      <NotificacaoToast
+        mensagem={mensagemNotificacao}
+        visivel={notificacaoVisivel}
+        aoFechar={() => setNotificacaoVisivel(false)}
       />
     </div>
   );
