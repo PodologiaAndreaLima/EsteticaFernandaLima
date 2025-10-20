@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lima.fernanda.esteticaFernandaLima.model.CustoExtra;
 import lima.fernanda.esteticaFernandaLima.service.CustoExtraService;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,19 @@ public class CustoExtraController {
         try {
             service.deletar(id);
             return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar custo extra", description = "Atualiza um custo extra existente pelo ID")
+    @ApiResponse(responseCode = "200", description = "Custo extra atualizado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Custo extra não encontrado")
+    public ResponseEntity<CustoExtra> atualizarCustoExtra(@PathVariable Integer id, @RequestBody @Valid CustoExtra custoExtra) {
+        try {
+            CustoExtra custoExtraAtualizado = service.atualizar(id, custoExtra);
+            return ResponseEntity.ok(custoExtraAtualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

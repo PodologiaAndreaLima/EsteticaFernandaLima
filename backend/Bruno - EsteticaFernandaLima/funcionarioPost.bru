@@ -1,19 +1,18 @@
 meta {
-  name: servico-produtoPut
+  name: funcionarioPost
   type: http
-  seq: 11
+  seq: 13
 }
 
-put {
-  url: http://localhost:8080/servico-produto/1
+post {
+  url: http://localhost:8080/servico-produto
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "idProdutoServico": 1,
-    "nome": "stringe",
+    "nome": "string",
     "despesa": 0,
     "valorVenda": 0,
     "descricao": "string",

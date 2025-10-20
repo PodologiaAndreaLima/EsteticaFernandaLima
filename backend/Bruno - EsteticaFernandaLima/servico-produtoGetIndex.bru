@@ -5,20 +5,12 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/servico-produto/
+  url: http://localhost:8080/servico-produto/1
   body: json
   auth: inherit
 }
 
-body:json {
-  {
-    "id": 4,
-    "nome": "Pedicure",
-    "descricao": "Pedicure completa com hidratação",
-    "valor": 50
-  }
-}
-
 settings {
   encodeUrl: true
+  timeout: 0
 }

@@ -9,6 +9,8 @@ import lima.fernanda.esteticaFernandaLima.service.ServicoProdutoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/servico-produto")
 public class ServicoProdutoController {
@@ -23,7 +25,7 @@ public class ServicoProdutoController {
     @Operation(summary = "Listar serviços/produtos", description = "Retorna todos os serviços/produtos ou filtra por nome")
     @ApiResponse(responseCode = "200", description = "Serviços/produtos encontrados")
     @ApiResponse(responseCode = "204", description = "Nenhum serviço/produto encontrado")
-        public ResponseEntity<java.util.List<ServicoProduto>> getServicoProduto() {
+        public ResponseEntity<List<ServicoProduto>> getServicoProduto() {
         java.util.List<ServicoProduto> servicoProdutos = service.buscarTodos();
         return servicoProdutos.isEmpty() ?
                 ResponseEntity.noContent().build() :
