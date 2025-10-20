@@ -3,6 +3,8 @@ package lima.fernanda.esteticaFernandaLima.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.Table;
 import lima.fernanda.esteticaFernandaLima.model.Combo;
 import lima.fernanda.esteticaFernandaLima.service.ComboService;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/combo")
+@Tag(name = "Combos", description = "Endpoints para gerenciamento de combos")
 public class ComboController {
 
     private final ComboService service;

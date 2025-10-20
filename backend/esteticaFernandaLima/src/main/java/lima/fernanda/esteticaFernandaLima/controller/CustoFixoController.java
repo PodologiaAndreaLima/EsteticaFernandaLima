@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lima.fernanda.esteticaFernandaLima.model.CustoFixo;
 import lima.fernanda.esteticaFernandaLima.service.CustoFixoService;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/custos-fixos")
+@Tag(name = "Custos Fixos", description = "Endpoints para gerenciamento de custos fixos")
 public class CustoFixoController {
 
     private final CustoFixoService service;

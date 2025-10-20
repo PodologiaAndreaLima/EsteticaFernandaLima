@@ -8,21 +8,21 @@ import jakarta.persistence.Id;
 import java.time.LocalDate;
 
 @Entity
-public class VendaAgendamento {
+public class OrdemServico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idVendaAgendamento;
+    private Integer idOrdemServico;
     private Float valorFinal;
     private LocalDate dtHora;
     private String observacao;
 
-    public Integer getIdVendaAgendamento() {
-        return idVendaAgendamento;
+    public Integer getIdOrdemServico() {
+        return idOrdemServico;
     }
 
-    public void setIdVendaAgendamento(Integer idVendaAgendamento) {
-        this.idVendaAgendamento = idVendaAgendamento;
+    public void setIdOrdemServico(Integer idOrdemServico) {
+        this.idOrdemServico = idOrdemServico;
     }
 
     public Float getValorFinal() {
