@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NotificacaoToast from "../../components/sistema/NotificacaoToast";
 import "./Funcionarios.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
@@ -357,10 +358,16 @@ const Funcionarios = () => {
           (funcionario) => funcionario.id !== funcionarioParaExcluir
         )
       );
+      setMensagemNotificacao("Funcionário excluído com sucesso!");
+      setNotificacaoVisivel(true);
       setModalConfirmacaoExclusaoAberto(false);
       setFuncionarioParaExcluir(null);
     }
   };
+
+  // Estado para notificação toast
+  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
+  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
 
   // Função para salvar um funcionário (novo ou editado)
   const salvarFuncionario = (dadosFuncionario) => {
@@ -372,6 +379,7 @@ const Funcionarios = () => {
           : funcionario
       );
       setListaFuncionarios(funcionariosAtualizados);
+      // Não exibe notificação ao editar
     } else {
       // Adicionar novo funcionário
       const novoFuncionario = {
@@ -379,7 +387,9 @@ const Funcionarios = () => {
         ...dadosFuncionario,
       };
       setListaFuncionarios([...listaFuncionarios, novoFuncionario]);
+      setMensagemNotificacao("Funcionário adicionado com sucesso!");
     }
+    setNotificacaoVisivel(true);
   };
 
   // Filtrar funcionários com base no termo de pesquisa
@@ -496,6 +506,12 @@ const Funcionarios = () => {
         textoBotaoConfirmar="Excluir"
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
+      />
+      {/* Notificação Toast */}
+      <NotificacaoToast
+        mensagem={mensagemNotificacao}
+        visivel={notificacaoVisivel}
+        aoFechar={() => setNotificacaoVisivel(false)}
       />
     </div>
   );
