@@ -27,15 +27,11 @@ const SobreNos = () => {
         {/* Profissional 1 */}
         <div className="profissional">
           <div className="foto-container">
-            <div className="foto"></div>
-            <div className="social-icons">
-              <a href="#" title="Instagram">
-                <i className="instagram-icon"></i>
-              </a>
-              <a href="#" title="LinkedIn">
-                <i className="linkedin-icon"></i>
-              </a>
-            </div>
+            <img
+              src="/assets/fernanda-lima-foto.jpg"
+              alt="Fernanda Lima"
+              className="foto"
+            />
           </div>
           <div className="texto">
             <h2>Fernanda Lima</h2>
@@ -64,14 +60,6 @@ const SobreNos = () => {
         <div className="profissional reverse">
           <div className="foto-container">
             <div className="foto"></div>
-            <div className="social-icons">
-              <a href="#" title="Instagram">
-                <i className="instagram-icon"></i>
-              </a>
-              <a href="#" title="LinkedIn">
-                <i className="linkedin-icon"></i>
-              </a>
-            </div>
           </div>
           <div className="texto">
             <h2>Parceiro Profissional</h2>

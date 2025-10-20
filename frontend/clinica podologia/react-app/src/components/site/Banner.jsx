@@ -9,7 +9,6 @@ const Banner = () => {
           <source src="./assets/videoplayback.mp4" type="video/mp4" />
           Seu navegador não suporta vídeos HTML5.
         </video>
-        <div className="video-overlay"></div>
       </div>
     </section>
   );

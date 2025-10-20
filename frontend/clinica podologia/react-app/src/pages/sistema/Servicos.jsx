@@ -169,9 +169,33 @@ const Servicos = () => {
       id: 1,
       nome: "Micropigmentação",
       descricao:
-        "Procedimento que implanta pigmento na pele para corrigir falhas, definir o formato e realçar o seu olhar. O objetivo é proporcionar sobrancelhas mais harmoniosas e expressivas, dispensando a maquiagem diária.",
-      valorCusto: "100,00",
-      valorVenda: "300,00",
+        "Micropigmentação de sobrancelhas é uma técnica estética que deposita pigmentos na pele para preencher falhas, definir e realçar a sobrancelha, resultando em um visual mais denso e harmonioso. Ao contrário de tatuagens, ela é semipermanente, sendo aplicada em uma camada superficial da pele e exigindo retoques periódicos para manter o resultado.",
+      valorCusto: "",
+      valorVenda: "599,00",
+    },
+    {
+      id: 4,
+      nome: "Design de Sobrancelhas",
+      descricao:
+        "Design de sobrancelhas é um procedimento estético que modela e realça o formato natural das sobrancelhas, respeitando as proporções do rosto e as características individuais da pessoa.",
+      valorCusto: "",
+      valorVenda: "60,00",
+    },
+    {
+      id: 5,
+      nome: "Design de Sobrancelhas com Tintura",
+      descricao:
+        "Inclui o procedimento de design tradicional com aplicação de tintura para realçar ainda mais o formato e a cor das sobrancelhas.",
+      valorCusto: "",
+      valorVenda: "65,00",
+    },
+    {
+      id: 6,
+      nome: "Brow Lamination",
+      descricao:
+        "Brow Lamination é uma técnica de design de sobrancelhas que alinha os fios, criando um efeito volumoso e preenchido.",
+      valorCusto: "",
+      valorVenda: "150,00",
     },
     {
       id: 2,
@@ -180,6 +204,22 @@ const Servicos = () => {
         "Tratamento estético que promove a renovação celular da pele através da aplicação de substâncias esfoliantes. Remove células mortas, melhora textura e luminosidade, minimiza linhas finas e ajuda a controlar a oleosidade.",
       valorCusto: "70,00",
       valorVenda: "220,00",
+    },
+    {
+      id: 3,
+      nome: "Lash Lifting",
+      descricao:
+        "Lash lifting é um procedimento estético que curva e alonga os cílios naturais, criando um efeito similar ao uso de curvex e máscara mas com durabilidade prolongada. A técnica não utiliza fio sintéticos, mas sim aplica produtos específicos para moldar os cílios.",
+      valorCusto: "",
+      valorVenda: "160,00",
+    },
+    {
+      id: 4,
+      nome: "Limpeza de Pele",
+      descricao:
+        "Limpeza de pele é um procedimento estético que remove profundamente impurezas, células mortas e excesso de oleosidade da pele, como cravos e espinhas.",
+      valorCusto: "",
+      valorVenda: "150,00",
     },
   ]);
 

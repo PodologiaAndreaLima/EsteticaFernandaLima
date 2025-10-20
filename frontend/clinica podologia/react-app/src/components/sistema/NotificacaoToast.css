@@ -1,38 +1,40 @@
 .notificacao-toast {
   position: fixed;
-  bottom: 36px;
-  right: 36px;
-  min-width: 240px;
-  max-width: 340px;
-  background: linear-gradient(90deg, #f8f4ff 0%, #f1e6fb 100%);
-  color: #573c6c;
-  padding: 16px 32px 16px 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px 0 rgba(87, 60, 108, 0.1),
-    0 1.5px 6px 0 rgba(87, 60, 108, 0.08);
+  bottom: 28px;
+  right: 28px;
+  min-width: 180px;
+  max-width: 300px;
+  background: linear-gradient(90deg, #f8fafc 0%, #f3f7fa 100%);
+  color: #3a5a40;
+  padding: 8px 20px 8px 14px;
+  border-radius: 14px;
+  box-shadow: 0 6px 32px 0 rgba(87, 60, 108, 0.08),
+    0 1.5px 8px 0 rgba(87, 60, 108, 0.04);
   font-family: "Montserrat", sans-serif;
-  font-size: 1.08rem;
-  font-weight: 500;
+  font-size: 0.97rem;
+  font-weight: 400;
   z-index: 12000;
   opacity: 0.98;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border: 1.5px solid #e3d0f7;
-  animation: fadeInToast 0.4s cubic-bezier(0.4, 1.4, 0.6, 1) both;
+  gap: 8px;
+  border: 0.5px solid #e3e3e3;
+  animation: fadeInToast 0.32s cubic-bezier(0.4, 1.4, 0.6, 1) both;
+  transition: opacity 0.3s, background 0.3s, color 0.3s;
 }
 
 .notificacao-toast__icone {
-  font-size: 1.3em;
-  margin-right: 6px;
+  font-size: 1em;
+  margin-right: 3px;
   display: inline-block;
+  opacity: 0.8;
 }
 
 /* Cores para cada tipo */
 .notificacao-toast--sucesso {
-  background: #e6ffe6;
-  color: #2e7d32;
-  border-color: #b2f2c2;
+  background: linear-gradient(90deg, #f6fff2 0%, #eaf7e9 100%);
+  color: #3a5a40;
+  border-color: #cbeed6;
 }
 
 @keyframes fadeInToast {

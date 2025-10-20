@@ -23,6 +23,16 @@
 
 .footer-logo {
   margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.footer-logo-img {
+  max-width: 240px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
 }
 
 .footer-logo h2 {

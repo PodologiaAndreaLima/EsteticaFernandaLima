@@ -7,8 +7,11 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-top">
           <div className="footer-logo">
-            <h2>Fernanda Lima</h2>
-            <p>Beauty Care</p>
+            <img
+              src="/assets/footerLogo-removebg-preview.png"
+              alt="Logo Fernanda Lima"
+              className="footer-logo-img"
+            />
           </div>
 
           <div className="footer-links">
