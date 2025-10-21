@@ -1,3 +1,7 @@
+.grid-cards {
+  overflow-y: auto;
+  max-height: 100vh;
+}
 /* Estilos para a página de Produtos */
 .container-produtos {
   padding: 20px;

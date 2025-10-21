@@ -197,30 +197,30 @@ const Servicos = () => {
       valorCusto: "",
       valorVenda: "150,00",
     },
-    {
-      id: 2,
-      nome: "Peeling Facial",
-      descricao:
-        "Tratamento estético que promove a renovação celular da pele através da aplicação de substâncias esfoliantes. Remove células mortas, melhora textura e luminosidade, minimiza linhas finas e ajuda a controlar a oleosidade.",
-      valorCusto: "70,00",
-      valorVenda: "220,00",
-    },
-    {
-      id: 3,
-      nome: "Lash Lifting",
-      descricao:
-        "Lash lifting é um procedimento estético que curva e alonga os cílios naturais, criando um efeito similar ao uso de curvex e máscara mas com durabilidade prolongada. A técnica não utiliza fio sintéticos, mas sim aplica produtos específicos para moldar os cílios.",
-      valorCusto: "",
-      valorVenda: "160,00",
-    },
-    {
-      id: 4,
-      nome: "Limpeza de Pele",
-      descricao:
-        "Limpeza de pele é um procedimento estético que remove profundamente impurezas, células mortas e excesso de oleosidade da pele, como cravos e espinhas.",
-      valorCusto: "",
-      valorVenda: "150,00",
-    },
+    // {
+    //   id: 2,
+    //   nome: "Peeling Facial",
+    //   descricao:
+    //     "Tratamento estético que promove a renovação celular da pele através da aplicação de substâncias esfoliantes. Remove células mortas, melhora textura e luminosidade, minimiza linhas finas e ajuda a controlar a oleosidade.",
+    //   valorCusto: "70,00",
+    //   valorVenda: "220,00",
+    // },
+    // {
+    //   id: 3,
+    //   nome: "Lash Lifting",
+    //   descricao:
+    //     "Lash lifting é um procedimento estético que curva e alonga os cílios naturais, criando um efeito similar ao uso de curvex e máscara mas com durabilidade prolongada. A técnica não utiliza fio sintéticos, mas sim aplica produtos específicos para moldar os cílios.",
+    //   valorCusto: "",
+    //   valorVenda: "160,00",
+    // },
+    // {
+    //   id: 4,
+    //   nome: "Limpeza de Pele",
+    //   descricao:
+    //     "Limpeza de pele é um procedimento estético que remove profundamente impurezas, células mortas e excesso de oleosidade da pele, como cravos e espinhas.",
+    //   valorCusto: "",
+    //   valorVenda: "150,00",
+    // },
   ]);
 
   // Estados para os modais

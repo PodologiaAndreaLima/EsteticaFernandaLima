@@ -59,7 +59,11 @@ const SobreNos = () => {
         {/* Profissional 2 */}
         <div className="profissional reverse">
           <div className="foto-container">
-            <div className="foto"></div>
+            <img
+              src="/assets/parceiro-profissional-foto.png"
+              alt="Parceiro Profissional"
+              className="foto"
+            />
           </div>
           <div className="texto">
             <h2>Parceiro Profissional</h2>

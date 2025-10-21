@@ -98,10 +98,18 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
       if (funcionario && Object.keys(funcionario).length > 0) {
         setDadosFormulario({ ...funcionario });
       } else {
-        setDadosFormulario({ ...formInicial });
+        setDadosFormulario({
+          nomeCompleto: "",
+          cpf: "",
+          telefone: "",
+          servicosPrestados: [],
+          email: "",
+          senha: "",
+          bio: "",
+        });
       }
     }
-  }, [estaAberto, funcionario, formInicial]);
+  }, [estaAberto, funcionario]);
 
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
@@ -299,15 +307,10 @@ const Funcionarios = () => {
       nomeCompleto: "Fulano da Silva",
       cpf: "123.456.789-00",
       telefone: "(00) 90000-0000",
-      servicosPrestados: ["Podologia", "Massagem"],
-      email: "fulano@gmail.com",
-      senha: "********",
-      bio: "Gosto de estética, comecei em 2016...",
+      servicosPrestados: ["Podologia"],
+      // ...outros campos se necessário
     },
   ]);
-
-  // Estados para os modais
-  const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] =
     useState(false);
@@ -317,6 +320,7 @@ const Funcionarios = () => {
   );
   const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
+  const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
   // Função para adicionar um novo funcionário
   const adicionarFuncionario = () => {

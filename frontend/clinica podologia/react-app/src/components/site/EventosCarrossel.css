@@ -31,50 +31,15 @@
 }
 
 .eventos-container {
-  position: relative;
-  z-index: 2;
-}
-
-.decorative-element {
-  width: 100px;
-  height: 5px;
-  background: linear-gradient(to right, transparent, #af8509, transparent);
-  margin: 0 auto 30px;
-  position: relative;
-}
-
-.decorative-element::before,
-.decorative-element::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #af8509;
-  transform: translateY(-50%);
-}
-
-.decorative-element::before {
-  left: calc(50% - 50px);
-}
-
-.decorative-element::after {
-  right: calc(50% - 50px);
-}
-
-.eventos-container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
-  text-align: center;
+  padding: 0;
+  background: none;
 }
 
 .eventos-heading-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  position: relative;
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .heading-icon {
@@ -128,6 +93,15 @@
   position: relative;
 }
 
+.eventos-subtitulo {
+  color: #af8509;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
 .eventos-descricao {
   max-width: 800px;
   margin: 0 auto 50px;
@@ -138,32 +112,32 @@
 
 /* Container do carrossel */
 .carrossel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
   position: relative;
   max-width: 1000px;
   margin: 0 auto 30px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
 }
 
 /* Botões de navegação */
 .carrossel-btn {
-  background: #805ba1;
-  color: white;
+  background: #7c4d9e;
+  color: #fff;
   border: none;
-  width: 45px;
-  height: 45px;
   border-radius: 50%;
-  font-size: 22px;
-  font-weight: 600;
+  width: 48px;
+  height: 48px;
+  font-size: 2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(128, 91, 161, 0.08);
+  transition: background 0.2s;
   z-index: 5;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  outline: none;
   position: relative;
   overflow: hidden;
 }
@@ -182,7 +156,7 @@
 }
 
 .carrossel-btn:hover {
-  background: #6a4986;
+  background: #573c6c;
   transform: scale(1.1);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
   color: #fff;
@@ -199,17 +173,15 @@
 
 /* Área visível do carrossel */
 .carrossel-view {
-  width: 100%;
+  width: 760px;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  margin: 0 20px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12), 0 10px 40px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.4),
-    rgba(255, 255, 255, 0)
-  );
+  border-radius: 32px;
+  background: none;
+  box-shadow: none;
 }
 
 /* Trilha que move os slides */
@@ -231,16 +203,35 @@
 
 /* Cards de eventos */
 .evento-card {
+  width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
-  background-color: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.4s ease;
-  position: relative;
-  cursor: pointer;
+  align-items: stretch;
+  justify-content: stretch;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.evento-card .evento-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.evento-card .evento-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 32px;
+  box-shadow: none;
+  background: none;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 
 .evento-card::before {
@@ -288,9 +279,11 @@
 }
 
 .evento-image {
-  height: 55%;
-  overflow: hidden;
-  position: relative;
+  width: 95%;
+  height: 95%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .evento-image::before {
@@ -308,11 +301,13 @@
   z-index: 1;
 }
 
-.evento-image img {
+.evento-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.8s ease;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(128, 91, 161, 0.08);
+  background: #fff;
 }
 
 .evento-card:hover .evento-image img {

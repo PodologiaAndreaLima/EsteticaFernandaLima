@@ -37,7 +37,11 @@ const Servicos = () => {
           </p>
         </div>
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img
+            src="/assets/design-sobrancelhas-foto.jpg"
+            alt="Design de Sobrancelhas"
+            className="servico-img"
+          />
         </div>
       </div>
 
@@ -83,7 +87,11 @@ const Servicos = () => {
           </p>
         </div>
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img
+            src="/assets/limpeza-de-pele-foto.jpg"
+            alt="Limpeza de Pele"
+            className="servico-img"
+          />
         </div>
       </div>
       {/* Serviço 3 - Peeling Facial */}
@@ -148,6 +156,18 @@ const Servicos = () => {
             naturais, criando um efeito similar ao uso de curvex e máscara mas
             com durabilidade prolongada. A técnica não utiliza fios sintéticos,
             mas sim aplica produtos específicos para moldar os cílios.
+          </p>
+        </div>
+      </div>
+      {/* Serviço Capilar */}
+      <div className="servico">
+        <div className="circle">
+          <img src="" alt="Serviço Capilar" className="servico-img" />
+        </div>
+        <div className="texto">
+          <h2>Serviço Capilar</h2>
+          <p>
+            Tratamentos capilares para saúde, beleza e fortalecimento dos fios.
           </p>
         </div>
       </div>
