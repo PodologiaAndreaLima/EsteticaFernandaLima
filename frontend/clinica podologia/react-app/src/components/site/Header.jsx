@@ -51,11 +51,13 @@ const Header = () => {
       <div className="header-container">
         <div className="logo-menu-container">
           <div className="logo">
-            <img
-              src="/assets/logo-atualizado-fotologo-removebg-preview.png"
-              alt="Logo Clínica Fernanda Beauty Care"
-              className="clinic-logo"
-            />
+            <Link to="/">
+              <img
+                src="/assets/logo-atualizado-fotologo-removebg-preview.png"
+                alt="Logo Clínica Fernanda Beauty Care"
+                className="clinic-logo"
+              />
+            </Link>
           </div>
           <button
             className="mobile-menu-toggle"

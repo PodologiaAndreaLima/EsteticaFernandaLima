@@ -6,7 +6,6 @@
 .container-clientes {
   padding: 20px;
   max-width: 100%;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -17,6 +16,10 @@
   margin-bottom: 20px;
   font-weight: 600;
   font-size: 28px;
+}
+.container-clientes {
+  height: 80vh;
+  overflow-y: auto;
 }
 
 .container-pesquisa {
@@ -291,10 +294,10 @@
 /* Estilos da tabela de clientes */
 .tabela-clientes {
   width: 100%;
-  flex: 1 1 auto;
-  overflow-y: auto;
-  min-height: 0;
-  max-height: calc(100vh - 170px);
+  flex: none;
+  overflow: hidden; /* Remover overflow para evitar scroll duplo */
+  min-height: auto;
+  max-height: none;
   box-sizing: border-box;
 }
 

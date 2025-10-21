@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import "./Sidebar.css";
 
 const Sidebar = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   // Verificar qual rota está ativa
   const isActive = (path) => {
@@ -18,8 +21,8 @@ const Sidebar = () => {
 
   // Função para logout (temporariamente redirecionando para a página inicial)
   const handleLogout = () => {
-    // Para visualização, apenas redirecionamos para a página inicial do site
-    window.location.href = "/";
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -63,7 +66,7 @@ const Sidebar = () => {
           </li>
           <li className={isActive("/sistema/dashboard") ? "active" : ""}>
             <Link to="/sistema/dashboard">
-              <img src="/assets/Dashboard-Sidebar.png" alt="Dashboard" />
+              <img src="/assets/icone-dash-sidebar.png" alt="Dashboard" />
               <span>Dashboard</span>
             </Link>
           </li>
