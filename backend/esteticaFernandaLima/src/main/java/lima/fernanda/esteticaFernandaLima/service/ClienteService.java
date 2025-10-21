@@ -1,25 +1,37 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
+import lima.fernanda.esteticaFernandaLima.adapter.Adapter;
+import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.repository.ClienteRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
 
     private final ClienteRepository repository;
+    private final Adapter<Cliente, ClienteResponse> clienteAdapter;
 
-    public ClienteService(ClienteRepository repository) {
+
+    public ClienteService(ClienteRepository repository, Adapter<Cliente, ClienteResponse> clienteAdapter) {
         this.repository = repository;
+        this.clienteAdapter = clienteAdapter;
     }
 
-    public List<Cliente> buscarTodos(String busca) {
+    public List<ClienteResponse> buscarTodos(String busca) {
         if (busca == null) {
-            return repository.findAll();
+            return repository.findAll()
+                    .stream()
+                    .map(clienteAdapter::adapt)
+                    .collect(Collectors.toList());
         }
-        return repository.findByNomeCompletoContainingIgnoreCase(busca);
+        return repository.findByNomeCompletoContainingIgnoreCase(busca)
+                .stream()
+                .map(clienteAdapter::adapt)
+                .collect(Collectors.toList());
     }
 
     public Cliente buscarPorId(Integer id) {

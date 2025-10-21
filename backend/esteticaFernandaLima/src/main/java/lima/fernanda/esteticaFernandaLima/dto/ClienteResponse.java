@@ -1,22 +1,18 @@
 package lima.fernanda.esteticaFernandaLima.dto;
 
-import lima.fernanda.esteticaFernandaLima.model.Cliente;
+public class ClienteResponse {
+    private Integer id;
+    private String nomeCompleto;
+    private String email;
 
-
-public record ClienteResponse(
-        Integer id,
-        String nomeCompleto,
-        String cpf,
-        String telefone,
-        String email
-) {
-    public static ClienteResponse fromCliente(Cliente cliente) {
-        return new ClienteResponse(
-                cliente.getId(),
-                cliente.getNomeCompleto(),
-                cliente.getCpf(),
-                cliente.getTelefone(),
-                cliente.getEmail()
-        );
+    public ClienteResponse(Integer id, String nomeCompleto, String email) {
+        this.id = id;
+        this.nomeCompleto = nomeCompleto;
+        this.email = email;
     }
+
+    // getters e setters
+    public Integer getId() { return id; }
+    public String getNomeCompleto() { return nomeCompleto; }
+    public String getEmail() { return email; }
 }
