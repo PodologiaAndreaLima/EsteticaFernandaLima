@@ -8,10 +8,7 @@
 
 /* Container principal */
 .container-funcionarios {
-  /* Aproximar conteúdo do topo e alinhar espaçamento com outras páginas */
-  padding: 0 20px 12px 40px;
-  /* Garantir que o título não fique cortado */
-  margin-top: 0;
+  padding: 20px;
   max-width: 100%;
   height: 80vh;
   overflow-y: auto;

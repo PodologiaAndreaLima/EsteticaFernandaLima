@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Beneficios.css";
+import AgendarButton from "./AgendarButton";
 
 const Beneficios = () => {
   return (
@@ -49,9 +50,7 @@ const Beneficios = () => {
           </div>
         </div>
 
-        <Link to="/agendar">
-          <button>Agende sua consulta online</button>
-        </Link>
+        <AgendarButton to="/agendar" text="Agende sua consulta online" />
       </div>
     </section>
   );

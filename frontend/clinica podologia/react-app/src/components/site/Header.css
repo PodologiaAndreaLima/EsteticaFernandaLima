@@ -25,7 +25,8 @@ header.scrolled {
   padding: 0 32px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* align children to the start; nav (flex:1) will center its content and buttons will be pushed right */
+  justify-content: flex-start;
   min-height: 64px;
   height: 64px;
   background: none;
@@ -34,8 +35,10 @@ header.scrolled {
 .logo-menu-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: auto;
+  /* small gap to separate logo from centered nav */
+  margin-right: 24px;
 }
 
 header .logo {
@@ -108,6 +111,9 @@ header .logo {
 nav {
   display: flex;
   align-items: center;
+  /* let nav take available space so menu stays centered and buttons align to the far right */
+  flex: 1;
+  justify-content: center;
 }
 
 nav ul {
@@ -126,6 +132,8 @@ nav ul li a {
 .header-buttons {
   display: flex;
   align-items: center;
+  /* push the header buttons to the far right */
+  margin-left: auto;
 }
 
 .auth-buttons {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./SobreNos.css";
+import AgendarButton from "./AgendarButton";
 
 const SobreNos = () => {
   return (
@@ -60,13 +61,13 @@ const SobreNos = () => {
         <div className="profissional reverse">
           <div className="foto-container">
             <img
-              src="/assets/parceiro-profissional-foto.png"
+              src="/assets/Avelino Mouta-foto.jpg"
               alt="Parceiro Profissional"
               className="foto"
             />
           </div>
           <div className="texto">
-            <h2>Parceiro Profissional</h2>
+            <h2>Avelino Mouta</h2>
             <span className="cargo">Esteticista</span>
             <div className="separator"></div>
             <p>
@@ -87,9 +88,10 @@ const SobreNos = () => {
 
         {/* Botão */}
         <div className="cta">
-          <Link to="/agendar">
-            <button>Agende seu horário em nossa clínica</button>
-          </Link>
+          <AgendarButton
+            to="/agendar"
+            text="Agende seu horário em nossa clínica"
+          />
         </div>
       </div>
     </section>

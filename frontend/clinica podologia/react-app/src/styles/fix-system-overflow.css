@@ -1,10 +1,8 @@
 /* Correções para o sistema sem barras de rolagem */
-/* Aplicar controle de overflow para o sistema interno.
-   Não forçamos mais `overflow: hidden` no body porque isso corta elementos
-   posicionados relativamente ao topo. Em vez disso a rolagem será gerenciada
-   pela área de conteúdo (".content-area") no layout do sistema. */
+/* Aplicar overflow hidden apenas para o sistema interno */
 body.sistema-body {
   height: 100%;
+  overflow: hidden;
 }
 
 /* Garantir que o site institucional tenha scroll normal */

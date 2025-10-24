@@ -13,8 +13,8 @@ body {
   background: #f9f9f9;
   color: #333;
   scroll-behavior: smooth;
-  /* Ajustado conforme solicitado pelo usuário */
-  padding-top: 50px;
+  /* Ajustado para alinhar conteúdo abaixo do header fixo. Reduza se quiser aproximar mais o conteúdo do topo. */
+  padding-top: 10px; /* originalmente 85px */
 }
 
 a {
