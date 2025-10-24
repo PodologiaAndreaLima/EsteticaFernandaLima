@@ -97,7 +97,11 @@ const Servicos = () => {
       {/* Serviço 3 - Peeling Facial */}
       <div className="servico">
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img
+            src="/assets/peeling-facial-v1.jpg"
+            alt="Peeling Facial"
+            className="servico-img"
+          />
         </div>
         <div className="texto">
           <h2>Peeling Facial</h2>

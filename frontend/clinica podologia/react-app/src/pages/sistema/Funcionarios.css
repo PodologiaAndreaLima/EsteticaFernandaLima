@@ -8,7 +8,10 @@
 
 /* Container principal */
 .container-funcionarios {
-  padding: 20px;
+  /* Aproximar conteúdo do topo e alinhar espaçamento com outras páginas */
+  padding: 0 20px 12px 40px;
+  /* Garantir que o título não fique cortado */
+  margin-top: 0;
   max-width: 100%;
   height: 80vh;
   overflow-y: auto;
@@ -428,6 +431,28 @@
   margin: 0;
   white-space: pre-line;
   line-height: 1.5;
+  /* Permitir quebra de palavras muito longas sem espaços */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Limitar altura da área de biografia e permitir rolagem interna */
+.bio-visualizacao {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 6px; /* espaço para a scrollbar */
+}
+
+/* Estilizar scrollbar para melhor aparência (WebKit) */
+.bio-visualizacao::-webkit-scrollbar {
+  width: 8px;
+}
+.bio-visualizacao::-webkit-scrollbar-track {
+  background: transparent;
+}
+.bio-visualizacao::-webkit-scrollbar-thumb {
+  background-color: rgba(87, 60, 108, 0.25);
+  border-radius: 8px;
 }
 
 .botao-fechar-visualizacao {

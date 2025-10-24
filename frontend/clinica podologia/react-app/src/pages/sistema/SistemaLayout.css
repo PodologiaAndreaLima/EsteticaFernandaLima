@@ -9,8 +9,11 @@
 .sistema-content {
   flex: 1;
   margin-left: 250px;
-  padding: 20px;
-  overflow: hidden;
+  /* reduzir padding-top para aproximar o conteúdo do topo do sistema */
+  padding: 0 20px;
+  /* deixar overflow visível no container principal; a rolagem será
+     controlada por `.content-area` abaixo */
+  overflow: visible;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -24,7 +27,8 @@
 
 .content-area {
   flex: 1;
-  overflow: hidden;
+  /* permitir rolagem apenas na área de conteúdo do sistema */
+  overflow-y: auto;
 }
 
 /* Responsividade */

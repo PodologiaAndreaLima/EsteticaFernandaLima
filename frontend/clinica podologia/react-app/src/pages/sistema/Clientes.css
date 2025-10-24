@@ -4,7 +4,12 @@
 }
 /* Estilos para a página de Clientes */
 .container-clientes {
-  padding: 20px;
+  /* Remover padding-top para aproximar o conteúdo do topo do sistema.
+    Aumentar padding-left para deslocar o container mais para a direita e
+    reduzir espaço vago à esquerda. Ajuste fino pode ser feito se necessário. */
+  padding: 0 20px 12px 40px;
+  /* Ajuste revertido: sem margem negativa para evitar corte do título */
+  margin-top: 0;
   max-width: 100%;
   display: flex;
   flex-direction: column;
@@ -13,7 +18,7 @@
 
 .container-clientes h1 {
   color: #573c6c;
-  margin-bottom: 20px;
+  margin: 0 0 12px 0; /* remover margin-top e reduzir margin-bottom */
   font-weight: 600;
   font-size: 28px;
 }

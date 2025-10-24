@@ -274,8 +274,6 @@
   margin-right: 12px;
   width: 18px;
   height: 18px;
-  filter: invert(22%) sepia(16%) saturate(1354%) hue-rotate(246deg)
-    brightness(94%) contrast(88%);
 }
 
 .logout-button:hover {

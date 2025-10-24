@@ -53,7 +53,7 @@ const Header = () => {
           <div className="logo">
             <Link to="/">
               <img
-                src="/assets/logo-atualizado-fotologo-removebg-preview.png"
+                src="/assets/fotoLogoRoxo-removebg-preview.png"
                 alt="Logo Clínica Fernanda Beauty Care"
                 className="clinic-logo"
               />

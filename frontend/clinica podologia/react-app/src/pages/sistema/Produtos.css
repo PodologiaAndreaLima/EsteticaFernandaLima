@@ -7,7 +7,10 @@
 
 /* Estilos para a página de Produtos */
 .container-produtos {
-  padding: 20px;
+  /* Aproximar conteúdo do topo e alinhar espaçamento com outras páginas */
+  padding: 0 20px 12px 40px;
+  /* Garantir que o título não fique cortado */
+  margin-top: 0;
   max-width: 100%;
   height: 80vh;
   overflow-y: auto;
@@ -234,6 +237,32 @@
   font-size: 15px;
   font-weight: 500;
   color: #333;
+}
+
+/* Limitar a descrição nos modais de produto e permitir rolagem interna */
+.campo-visualizacao .valor {
+  /* Permitir quebra de palavras longas */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Se a descrição for muito longa, limitar a altura quando estiver em bloco de visualização */
+.grupo-visualizacao .campo-visualizacao .valor {
+  max-height: 140px;
+  overflow-y: auto;
+  padding-right: 6px; /* espaço para a scrollbar */
+}
+
+/* Scrollbar para WebKit */
+.grupo-visualizacao .campo-visualizacao .valor::-webkit-scrollbar {
+  height: 8px;
+}
+.grupo-visualizacao .campo-visualizacao .valor::-webkit-scrollbar-track {
+  background: transparent;
+}
+.grupo-visualizacao .campo-visualizacao .valor::-webkit-scrollbar-thumb {
+  background-color: rgba(87, 60, 108, 0.25);
+  border-radius: 8px;
 }
 
 .botao-fechar-visualizacao {

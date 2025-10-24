@@ -2,39 +2,69 @@
   position: fixed;
   bottom: 28px;
   right: 28px;
-  min-width: 180px;
-  max-width: 300px;
-  background: linear-gradient(90deg, #f8fafc 0%, #f3f7fa 100%);
-  color: #3a5a40;
-  padding: 8px 20px 8px 14px;
-  border-radius: 14px;
-  box-shadow: 0 6px 32px 0 rgba(87, 60, 108, 0.08),
-    0 1.5px 8px 0 rgba(87, 60, 108, 0.04);
+  min-width: 220px;
+  max-width: 360px;
+  /* off-white card background (not pure #fff) for a softer look */
+  background: #fbfbfc;
+  color: #263238; /* dark slate for text */
+  padding: 12px 18px;
+  border-radius: 12px;
+  /* lighter, more delicate shadow for a softer appearance */
+  box-shadow: 0 3px 10px rgba(38, 50, 56, 0.04), 0 1px 4px rgba(38, 50, 56, 0.03);
   font-family: "Montserrat", sans-serif;
-  font-size: 0.97rem;
-  font-weight: 400;
+  font-size: 0.98rem;
+  font-weight: 500;
   z-index: 12000;
-  opacity: 0.98;
+  opacity: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  border: 0.5px solid #e3e3e3;
+  gap: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   animation: fadeInToast 0.32s cubic-bezier(0.4, 1.4, 0.6, 1) both;
-  transition: opacity 0.3s, background 0.3s, color 0.3s;
+  transition: transform 0.22s ease, opacity 0.22s ease;
 }
 
 .notificacao-toast__icone {
-  font-size: 1em;
-  margin-right: 3px;
-  display: inline-block;
-  opacity: 0.8;
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.03);
+  color: #2e7d32; /* default success green tone for the icon */
+  box-shadow: 0 1px 3px rgba(38, 50, 56, 0.04) inset;
 }
 
 /* Cores para cada tipo */
 .notificacao-toast--sucesso {
-  background: linear-gradient(90deg, #f6fff2 0%, #eaf7e9 100%);
-  color: #3a5a40;
-  border-color: #cbeed6;
+  /* subtle, pastel success style: no icon, soft green background and lighter accents */
+  background: #e8f5e9; /* pastel light green */
+  color: #1b3b1b;
+  border-left: 3px solid #66bb6a; /* softer success accent */
+  border-top: 3px solid #66bb6a; /* top accent to match left */
+  padding-top: 14px; /* small visual lift to balance the top accent */
+}
+
+/* Hide the icon element specifically for success to honor the "no icon" request */
+.notificacao-toast--sucesso .notificacao-toast__icone {
+  display: none;
+}
+
+/* Other variants for future use (error / warning) */
+.notificacao-toast--erro {
+  background: #fff8f8;
+  color: #4a1f1f;
+  border-left: 4px solid #e53935;
+  border-top: 4px solid #e53935;
+}
+
+.notificacao-toast--aviso {
+  background: #fffef8;
+  color: #4a3b1f;
+  border-left: 4px solid #f6b93b;
+  border-top: 4px solid #f6b93b;
 }
 
 @keyframes fadeInToast {
