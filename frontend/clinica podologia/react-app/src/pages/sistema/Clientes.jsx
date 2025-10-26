@@ -63,17 +63,35 @@ const ModalVisualizarCliente = ({ estaAberto, aoFechar, cliente }) => {
 
 // Componente Modal para Edição/Adição de Cliente
 const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
-  const [dadosFormulario, setDadosFormulario] = useState(
-    cliente && cliente.id !== undefined
-      ? { ...cliente }
-      : {
+  // Inicializa o estado vazio; será sincronizado abaixo quando o modal abrir
+  const [dadosFormulario, setDadosFormulario] = useState({
+    nomeCompleto: "",
+    cpf: "",
+    email: "",
+    telefone: "",
+    dataNascimento: "",
+  });
+
+  // Sincroniza os dados do formulário sempre que o cliente ou a abertura do
+  // modal mudar. Isso corrige o problema em que o componente é montado
+  // quando o modal está fechado e o estado inicial não refletia o cliente
+  // selecionado para edição — resultando em criação de novo registro ao
+  // salvar em vez de atualizar o existente.
+  React.useEffect(() => {
+    if (estaAberto) {
+      if (cliente && cliente.id !== undefined) {
+        setDadosFormulario({ ...cliente });
+      } else {
+        setDadosFormulario({
           nomeCompleto: "",
           cpf: "",
           email: "",
           telefone: "",
           dataNascimento: "",
-        }
-  );
+        });
+      }
+    }
+  }, [cliente, estaAberto]);
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
@@ -262,7 +280,9 @@ const Clientes = () => {
           : cliente
       );
       setListaClientes(clientesAtualizados);
-      // Não exibe notificação ao editar
+      // Exibe notificação ao editar
+      setMensagemNotificacao("Cliente editado com sucesso!");
+      setNotificacaoVisivel(true);
     } else {
       // Adicionar novo cliente
       const novoCliente = {

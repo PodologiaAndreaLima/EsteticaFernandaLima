@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import NotificacaoToast from "../../components/sistema/NotificacaoToast";
 import "./Servicos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
+import ServiceCard from "../../components/sistema/ServiceCard";
 
 // Componente Modal para Visualização de Serviço
 const ModalVisualizarServico = ({ estaAberto, aoFechar, servico }) => {
@@ -57,14 +58,28 @@ const ModalVisualizarServico = ({ estaAberto, aoFechar, servico }) => {
 
 // Componente Modal para Edição/Adição de Serviço
 const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
-  const [dadosFormulario, setDadosFormulario] = useState(
-    servico || {
-      nome: "",
-      descricao: "",
-      valorCusto: "",
-      valorVenda: "",
+  // Inicia com formulário vazio e sincroniza quando o modal abre
+  const [dadosFormulario, setDadosFormulario] = useState({
+    nome: "",
+    descricao: "",
+    valorCusto: "",
+    valorVenda: "",
+  });
+
+  React.useEffect(() => {
+    if (estaAberto) {
+      if (servico && servico.id !== undefined) {
+        setDadosFormulario({ ...servico });
+      } else {
+        setDadosFormulario({
+          nome: "",
+          descricao: "",
+          valorCusto: "",
+          valorVenda: "",
+        });
+      }
     }
-  );
+  }, [servico, estaAberto]);
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
@@ -289,7 +304,8 @@ const Servicos = () => {
           : servico
       );
       setListaServicos(servicosAtualizados);
-      // Não exibe notificação ao editar
+      // Exibe notificação ao editar
+      setMensagemNotificacao("Serviço editado com sucesso!");
     } else {
       // Adicionar novo serviço
       const novoServico = {
@@ -329,45 +345,13 @@ const Servicos = () => {
       {/* Lista de serviços em formato de cards */}
       <div className="grid-cards">
         {servicosFiltrados.map((servico) => (
-          <div key={servico.id} className="card-servico">
-            <div className="card-header">
-              <h3>{servico.nome}</h3>
-            </div>
-            <div className="card-content">
-              <p className="card-descricao-truncada">{servico.descricao}</p>
-
-              <div className="card-valores">
-                <div className="valor-item">
-                  <span>Valor de Custo</span>
-                  <strong>R$ {servico.valorCusto}</strong>
-                </div>
-                <div className="valor-item">
-                  <span>Valor de Venda</span>
-                  <strong>R$ {servico.valorVenda}</strong>
-                </div>
-              </div>
-            </div>
-            <div className="card-actions">
-              <button
-                className="card-button-visualizar"
-                onClick={() => visualizarServico(servico)}
-              >
-                Visualizar
-              </button>
-              <button
-                className="card-button-editar"
-                onClick={() => editarServico(servico)}
-              >
-                Editar
-              </button>
-              <button
-                className="card-button-excluir"
-                onClick={() => prepararExclusao(servico.id)}
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
+          <ServiceCard
+            key={servico.id}
+            servico={servico}
+            onVisualizar={visualizarServico}
+            onEditar={editarServico}
+            onExcluir={prepararExclusao}
+          />
         ))}
       </div>
 

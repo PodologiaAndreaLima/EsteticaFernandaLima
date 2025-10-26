@@ -36,7 +36,7 @@ const SobreNos = () => {
           </div>
           <div className="texto">
             <h2>Fernanda Lima</h2>
-            <span className="cargo">Proprietária & Esteticista</span>
+            <span className="cargo">Proprietária & Enfermeira</span>
             <div className="separator"></div>
             <p>
               Atuando na área de estética desde 2016, Fernanda fundou sua
@@ -68,7 +68,7 @@ const SobreNos = () => {
           </div>
           <div className="texto">
             <h2>Avelino Mouta</h2>
-            <span className="cargo">Esteticista</span>
+            <span className="cargo">Micropigmentador</span>
             <div className="separator"></div>
             <p>
               Profissional especializado em atendimentos estéticos

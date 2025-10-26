@@ -257,6 +257,10 @@
   min-height: 42px;
 }
 
+.logout-button span {
+  color: #573c6c;
+}
+
 .logout-button.active,
 .logout-button:focus {
   background-color: #654576;

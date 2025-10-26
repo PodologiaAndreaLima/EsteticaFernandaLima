@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import NotificacaoToast from "../../components/sistema/NotificacaoToast";
 import "./Produtos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
+import ProductCard from "../../components/sistema/ProductCard";
 
 // Componente Modal para Visualização de Produto
 const ModalVisualizarProduto = ({ estaAberto, aoFechar, produto }) => {
@@ -67,16 +68,31 @@ const ModalVisualizarProduto = ({ estaAberto, aoFechar, produto }) => {
 
 // Componente Modal para Edição/Adição de Produto
 const ModalProduto = ({ estaAberto, aoFechar, produto, aoSalvar }) => {
-  const [dadosFormulario, setDadosFormulario] = useState(
-    produto || {
-      nome: "",
-      descricao: "",
-      marca: "",
-      categoria: "",
-      valorCompra: "",
-      valorVenda: "",
+  const [dadosFormulario, setDadosFormulario] = useState({
+    nome: "",
+    descricao: "",
+    marca: "",
+    categoria: "",
+    valorCompra: "",
+    valorVenda: "",
+  });
+
+  React.useEffect(() => {
+    if (estaAberto) {
+      if (produto && produto.id !== undefined) {
+        setDadosFormulario({ ...produto });
+      } else {
+        setDadosFormulario({
+          nome: "",
+          descricao: "",
+          marca: "",
+          categoria: "",
+          valorCompra: "",
+          valorVenda: "",
+        });
+      }
     }
-  );
+  }, [produto, estaAberto]);
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
@@ -292,7 +308,8 @@ const Produtos = () => {
           : produto
       );
       setListaProdutos(produtosAtualizados);
-      // Não exibe notificação ao editar
+      // Exibe notificação ao editar
+      setMensagemNotificacao("Produto editado com sucesso!");
     } else {
       // Adicionar novo produto
       const novoProduto = {
@@ -334,48 +351,13 @@ const Produtos = () => {
       {/* Lista de produtos em formato de cards */}
       <div className="grid-cards">
         {produtosFiltrados.map((produto) => (
-          <div key={produto.id} className="card-produto">
-            <div className="card-header">
-              <h3>{produto.nome}</h3>
-              <span className="card-categoria">{produto.categoria}</span>
-            </div>
-            <div className="card-content">
-              <p className="card-marca">
-                <span>Marca:</span> {produto.marca}
-              </p>
-              <div className="card-valores">
-                <div className="valor-item">
-                  <span>Compra:</span>
-                  <strong>R$ {produto.valorCompra}</strong>
-                </div>
-                <div className="valor-item">
-                  <span>Venda:</span>
-                  <strong>R$ {produto.valorVenda}</strong>
-                </div>
-              </div>
-              <p className="card-descricao-truncada">{produto.descricao}</p>
-            </div>
-            <div className="card-actions">
-              <button
-                className="card-button-visualizar"
-                onClick={() => visualizarProduto(produto)}
-              >
-                Visualizar
-              </button>
-              <button
-                className="card-button-editar"
-                onClick={() => editarProduto(produto)}
-              >
-                Editar
-              </button>
-              <button
-                className="card-button-excluir"
-                onClick={() => prepararExclusao(produto.id)}
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
+          <ProductCard
+            key={produto.id}
+            produto={produto}
+            onVisualizar={visualizarProduto}
+            onEditar={editarProduto}
+            onExcluir={prepararExclusao}
+          />
         ))}
       </div>
 

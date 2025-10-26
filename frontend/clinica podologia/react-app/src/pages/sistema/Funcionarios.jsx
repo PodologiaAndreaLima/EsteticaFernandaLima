@@ -383,7 +383,8 @@ const Funcionarios = () => {
           : funcionario
       );
       setListaFuncionarios(funcionariosAtualizados);
-      // Não exibe notificação ao editar
+      // Exibe notificação ao editar
+      setMensagemNotificacao("Funcionário editado com sucesso!");
     } else {
       // Adicionar novo funcionário
       const novoFuncionario = {
