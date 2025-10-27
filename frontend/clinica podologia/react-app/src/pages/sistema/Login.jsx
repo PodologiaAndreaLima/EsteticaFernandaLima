@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/site/Header";
+import api from "../../services/api";
 import "./AuthStyles.css";
 
 // Importe as imagens usando importação estática que funciona com o Vite
@@ -20,30 +21,31 @@ const Login = () => {
     if (error) setError("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    // Simular login de administrador: armazenar usuário e token localmente
-    localStorage.setItem("token", "admin-token-simulated");
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: "admin-1",
-        nomeCompleto: "Administrador",
-        email: credentials.identifier || "admin@clinica.com",
-        cargo: "Administrador",
-        isStaff: true,
-        isAdmin: true,
-      })
-    );
+  try {
+    const response = await api.post("/usuarios/login", {
+      email: credentials.identifier,
+      senha: credentials.senha
+    });
 
-    // Simular atraso e navegar para a página inicial do sistema
-    setTimeout(() => {
-      setIsSubmitting(false);
+    if (response.data) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify({
+        id: response.data.userId,
+        nome: response.data.nome,
+        email: response.data.email
+      }));
       navigate("/sistema");
-    }, 800);
-  };
+    }
+  } catch (error) {
+    setError(error.response?.data?.message || "Credenciais inválidas");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <>
