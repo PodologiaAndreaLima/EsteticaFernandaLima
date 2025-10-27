@@ -37,10 +37,13 @@ const Sidebar = () => {
       </button>
 
       <div className="sidebar-header">
-        {/* Logo ou Avatar */}
+        {/* Logo ou Avatar - substituído por logo da clínica */}
         <div className="sidebar-logo">
-          {/* Você pode substituir por um logo */}
-          <div className="avatar-circle"></div>
+          <img
+            src="/assets/fotoLogoRoxo-removebg-preview.png"
+            alt="Logo Clínica Fernanda Lima"
+            className="sidebar-logo__img"
+          />
         </div>
       </div>
 

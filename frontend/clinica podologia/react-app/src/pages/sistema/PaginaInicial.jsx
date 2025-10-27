@@ -4,7 +4,7 @@ import "./PaginaInicial.css";
 
 const PaginaInicial = () => {
   // Definir nome padrão para saudação para visualização sem autenticação
-  const firstName = "Fernanda";
+  const firstName = "Seja Bem-vindo";
 
   // Cards de acesso rápido com ícones
   const quickAccessCards = [

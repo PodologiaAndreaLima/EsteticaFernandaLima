@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Contato.css";
+import AgendarButton from "./AgendarButton";
 import images from "../../utils/images.js";
 
 const Contato = () => {
@@ -54,9 +55,7 @@ const Contato = () => {
         </div>
       </div>
       <div className="btn-contato">
-        <Link to="/agendar">
-          <button>Agende sua consulta online</button>
-        </Link>
+        <AgendarButton to="/agendar" text="Agende sua consulta online" />
       </div>
     </section>
   );

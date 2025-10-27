@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Header.css";
+import AgendarButton from "./AgendarButton";
 // Importando imagens da utility
 import images from "../../utils/images.js";
 
@@ -53,7 +54,7 @@ const Header = () => {
           <div className="logo">
             <Link to="/">
               <img
-                src="/assets/logo-atualizado-fotologo-removebg-preview.png"
+                src="/assets/fotoLogoRoxo-removebg-preview.png"
                 alt="Logo Clínica Fernanda Beauty Care"
                 className="clinic-logo"
               />
@@ -97,14 +98,12 @@ const Header = () => {
 
         <div className="header-buttons">
           <div className="auth-buttons">
-            <a
-              href="https://api.whatsapp.com/send?phone=5511999999999"
-              target="_blank"
-              rel="noopener noreferrer"
+            <AgendarButton
+              to="https://api.whatsapp.com/send?phone=5511999999999"
+              external
+              text="Agende já sua consulta!"
               className="btn-agendar"
-            >
-              Agende já sua consulta!
-            </a>
+            />
           </div>
         </div>
       </div>

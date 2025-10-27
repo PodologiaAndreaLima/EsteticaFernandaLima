@@ -236,6 +236,32 @@
   color: #333;
 }
 
+/* Limitar a descrição nos modais de produto e permitir rolagem interna */
+.campo-visualizacao .valor {
+  /* Permitir quebra de palavras longas */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Se a descrição for muito longa, limitar a altura quando estiver em bloco de visualização */
+.grupo-visualizacao .campo-visualizacao .valor {
+  max-height: 140px;
+  overflow-y: auto;
+  padding-right: 6px; /* espaço para a scrollbar */
+}
+
+/* Scrollbar para WebKit */
+.grupo-visualizacao .campo-visualizacao .valor::-webkit-scrollbar {
+  height: 8px;
+}
+.grupo-visualizacao .campo-visualizacao .valor::-webkit-scrollbar-track {
+  background: transparent;
+}
+.grupo-visualizacao .campo-visualizacao .valor::-webkit-scrollbar-thumb {
+  background-color: rgba(87, 60, 108, 0.25);
+  border-radius: 8px;
+}
+
 .botao-fechar-visualizacao {
   background-color: #573c6c;
   color: white;

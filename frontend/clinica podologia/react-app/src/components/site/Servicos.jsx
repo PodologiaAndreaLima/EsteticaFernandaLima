@@ -54,7 +54,8 @@ const Servicos = () => {
           <h2>Design de Sobrancelhas com Tintura</h2>
           <p>
             Inclui o procedimento de design tradicional com aplicação de tintura
-            para realçar ainda mais o formato e a cor das sobrancelhas.
+            para realçar ainda mais o formato e a cor das sobrancelhas. Também é
+            indicado para tingimento de pelos brancos nas sobrancelhas.
           </p>
         </div>
       </div>
@@ -97,7 +98,11 @@ const Servicos = () => {
       {/* Serviço 3 - Peeling Facial */}
       <div className="servico">
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img
+            src="/assets/peeling-facial-v1.jpg"
+            alt="Peeling Facial"
+            className="servico-img"
+          />
         </div>
         <div className="texto">
           <h2>Peeling Facial</h2>
@@ -130,14 +135,12 @@ const Servicos = () => {
       {/* Serviço 4 */}
       <div className="servico texto-first">
         <div className="texto">
-          <h2>Depilação Completa</h2>
+          <h2>Depilação</h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur.
+            Oferecemos depilação masculina (opção completa) e depilação feminina
+            (todas as áreas, exceto depilação íntima). Utilizamos técnicas
+            seguras e produtos de qualidade para garantir conforto e um
+            resultado uniforme.
           </p>
         </div>
         <div className="circle">
