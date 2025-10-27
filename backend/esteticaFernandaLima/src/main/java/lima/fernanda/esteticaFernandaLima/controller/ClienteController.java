@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.service.ClienteService;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,8 @@ public class ClienteController {
     @Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
     @ApiResponse(responseCode = "200", description = "Clientes encontrados")
     @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
-    public ResponseEntity<List<Cliente>> getCliente(@RequestParam(required = false) String busca) {
-        List<Cliente> clientes = service.buscarTodos(busca);
+    public ResponseEntity<List<ClienteResponse>> getCliente(@RequestParam(required = false) String busca) {
+        List<ClienteResponse> clientes = service.buscarTodos(busca);
         return clientes.isEmpty() ?
                 ResponseEntity.noContent().build() :
                 ResponseEntity.ok(clientes);

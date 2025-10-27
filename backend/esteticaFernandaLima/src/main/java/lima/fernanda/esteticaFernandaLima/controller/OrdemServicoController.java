@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lima.fernanda.esteticaFernandaLima.model.OrdemServico;
 import lima.fernanda.esteticaFernandaLima.service.OrdemServicoService;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/ordem-servico")
 @Tag(name = "Ordem de Serviço", description = "Endpoints para gerenciamento de ordens de serviço")
+@SecurityRequirement(name = "Bearer")
 public class OrdemServicoController {
 
     private final OrdemServicoService service;

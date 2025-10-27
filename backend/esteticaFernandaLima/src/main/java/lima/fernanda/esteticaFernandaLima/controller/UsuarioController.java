@@ -1,6 +1,7 @@
 package lima.fernanda.esteticaFernandaLima.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
 
 @RestController
 @RequestMapping("/usuarios")
+@Tag(name = "Usuarios", description = "Endpoints para gerenciamento de usuários da aplicação")
 public class UsuarioController {
 
     @Autowired

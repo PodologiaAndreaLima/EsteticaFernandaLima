@@ -7,45 +7,26 @@ export const AuthService = {
   // Função para fazer login
   login: async (identifier, senha) => {
     try {
-      // Para o login, precisamos implementar um endpoint específico no backend
-      // Por enquanto, estamos adaptando para a implementação atual
-      // O ideal seria ter um endpoint /auth/login no backend
-
-      // Agora usamos apenas email para login de funcionários
-      const loginData = {
+      const response = await api.post("/usuarios/login", {
         email: identifier,
-        senha,
-        isStaff: true, // Indica que é login de funcionário
-      };
+        senha: senha
+      });
 
-      // Fazemos a chamada para o backend
-      const response = await api.post(
-        API_CONFIG.ENDPOINTS.AUTH.LOGIN,
-        loginData
-      );
-
-      // Armazena o token no localStorage
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
-        // Salva os dados do funcionário se disponíveis
-        if (response.data.funcionario) {
-          const funcionario = Funcionario.fromAPI(response.data.funcionario);
-          localStorage.setItem("user", JSON.stringify(funcionario));
-        }
+        localStorage.setItem("user", JSON.stringify(response.data.usuario));
       }
 
       return {
         success: true,
-        user: response.data.funcionario
-          ? Funcionario.fromAPI(response.data.funcionario)
-          : null,
-        token: response.data.token,
+        user: response.data.usuario,
+        token: response.data.token
       };
     } catch (error) {
-      console.error("Erro no login:", error);
-      const errorMessage =
-        error.response?.data?.message || "Erro ao fazer login";
-      return { success: false, error: errorMessage };
+      return {
+        success: false,
+        error: error.response?.data?.message || "Credenciais inválidas"
+      };
     }
   },
 

@@ -10,6 +10,6 @@ public class ClienteAdapter implements Adapter<Cliente, ClienteResponse> {
     @Override
     public ClienteResponse adapt(Cliente cliente) {
         if (cliente == null) return null;
-        return new ClienteResponse(cliente.getId(), cliente.getNomeCompleto(), cliente.getCpf());
+        return new ClienteResponse(cliente.getId(), cliente.getNomeCompleto(), cliente.getEmail());
     }
 }

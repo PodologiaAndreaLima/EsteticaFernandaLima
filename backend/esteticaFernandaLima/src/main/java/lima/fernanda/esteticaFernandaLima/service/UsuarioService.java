@@ -15,11 +15,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Service
 public class UsuarioService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -55,6 +59,12 @@ public class UsuarioService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final String token = gerenciadorTokenJwt.generateToken(authentication);
+
+        logger.info("=== Login realizado com sucesso ===");
+        logger.info("ID: {}", usuarioAutenticado.getId());
+        logger.info("Email: {}", usuarioAutenticado.getEmail());
+        logger.info("Token: {}", token);
+        logger.info("================================");
 
         return UsuarioMapper.of(usuarioAutenticado, token);
     }

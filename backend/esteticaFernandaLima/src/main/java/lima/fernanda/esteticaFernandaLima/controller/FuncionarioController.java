@@ -2,6 +2,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/funcionarios")
 @Tag(name = "Funcionários", description = "Endpoints para gerenciamento de funcionários")
+@SecurityRequirement(name = "Bearer")
 public class FuncionarioController {
 
     private final FuncionarioService service;
