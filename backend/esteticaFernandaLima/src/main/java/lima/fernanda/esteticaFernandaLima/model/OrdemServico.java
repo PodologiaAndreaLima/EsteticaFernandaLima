@@ -1,9 +1,8 @@
+// java
 package lima.fernanda.esteticaFernandaLima.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDate;
 
@@ -17,35 +16,19 @@ public class OrdemServico {
     private LocalDate dtHora;
     private String observacao;
 
-    public Integer getIdOrdemServico() {
-        return idOrdemServico;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    @JsonBackReference
+    private Cliente cliente;
 
-    public void setIdOrdemServico(Integer idOrdemServico) {
-        this.idOrdemServico = idOrdemServico;
-    }
-
-    public Float getValorFinal() {
-        return valorFinal;
-    }
-
-    public void setValorFinal(Float valorFinal) {
-        this.valorFinal = valorFinal;
-    }
-
-    public LocalDate getDtHora() {
-        return dtHora;
-    }
-
-    public void setDtHora(LocalDate dtHora) {
-        this.dtHora = dtHora;
-    }
-
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
-    }
+    public Integer getIdOrdemServico() { return idOrdemServico; }
+    public void setIdOrdemServico(Integer idOrdemServico) { this.idOrdemServico = idOrdemServico; }
+    public Float getValorFinal() { return valorFinal; }
+    public void setValorFinal(Float valorFinal) { this.valorFinal = valorFinal; }
+    public LocalDate getDtHora() { return dtHora; }
+    public void setDtHora(LocalDate dtHora) { this.dtHora = dtHora; }
+    public String getObservacao() { return observacao; }
+    public void setObservacao(String observacao) { this.observacao = observacao; }
+    public Cliente getCliente() { return cliente; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
 }

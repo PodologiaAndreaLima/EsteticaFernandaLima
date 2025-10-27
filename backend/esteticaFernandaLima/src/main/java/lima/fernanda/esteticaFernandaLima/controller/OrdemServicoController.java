@@ -39,7 +39,7 @@ public class OrdemServicoController {
     @PostMapping
     @Operation(summary = "Cadastrar ordem de serviço", description = "Cadastra uma nova ordem de serviço")
     @ApiResponse(responseCode = "201", description = "Ordem de serviço cadastrada com sucesso")
-    public ResponseEntity<OrdemServico> postOrdemServico(OrdemServico ordemServico) {
+    public ResponseEntity<OrdemServico> postOrdemServico(@RequestBody OrdemServico ordemServico) {
         return ResponseEntity.status(201).body(service.salvar(ordemServico));
 
     }

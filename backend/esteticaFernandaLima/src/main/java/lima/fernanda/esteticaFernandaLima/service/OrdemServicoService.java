@@ -1,13 +1,27 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
+import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.model.OrdemServico;
+import lima.fernanda.esteticaFernandaLima.repository.ClienteRepository;
 import lima.fernanda.esteticaFernandaLima.repository.OrdemServicoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class OrdemServicoService {
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    public void setClienteRepository(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
+
+    public OrdemServicoRepository getRepository() {
+        return repository;
+    }
 
     private final OrdemServicoRepository repository;
 
@@ -20,6 +34,11 @@ public class OrdemServicoService {
     }
 
     public OrdemServico salvar(OrdemServico ordemServico) {
+        if (ordemServico.getCliente() != null && ordemServico.getCliente().getId() != null) {
+            Cliente cliente = clienteRepository.findById(ordemServico.getCliente().getId())
+                    .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+            ordemServico.setCliente(cliente);
+        }
         return repository.save(ordemServico);
     }
 
