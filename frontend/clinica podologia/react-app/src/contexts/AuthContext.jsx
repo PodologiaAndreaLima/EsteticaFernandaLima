@@ -79,7 +79,8 @@ export const AuthProvider = ({ children }) => {
 
       if (result.success) {
         setUser(result.user);
-        localStorage.setItem("user", JSON.stringify(result.user));
+        console.log("Usuário setado no contexto:", result.user);
+        return result; // Retorna { success: true, user: {...}, token: "..." }
       }
 
       return result;

@@ -13,14 +13,26 @@ export const AuthService = {
       });
 
       if (response.data.token) {
+        // Ajustando para pegar o usuário corretamente da resposta
+        const userData = {
+          id: response.data.userId,
+          nome: response.data.nome,
+          email: response.data.email
+        };
+
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.usuario));
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        return {
+          success: true,
+          user: userData,  // Retornando o usuário estruturado
+          token: response.data.token
+        };
       }
 
       return {
-        success: true,
-        user: response.data.usuario,
-        token: response.data.token
+        success: false,
+        error: "Resposta inválida do servidor"
       };
     } catch (error) {
       return {
@@ -28,7 +40,7 @@ export const AuthService = {
         error: error.response?.data?.message || "Credenciais inválidas"
       };
     }
-  },
+},
 
   // Função para registrar novo funcionário
   register: async (userData) => {

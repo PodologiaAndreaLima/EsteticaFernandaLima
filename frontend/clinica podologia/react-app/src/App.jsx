@@ -42,6 +42,8 @@ const PrivateRoute = ({ children }) => {
 // Componente de rota pública (redireciona se já estiver autenticado)
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
+  console.log("PublicRoute - isAuthenticated:", isAuthenticated);
+  console.log("PublicRoute - loading:", loading);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -137,7 +139,12 @@ function App() {
           />
 
           {/* Rotas do sistema interno - temporariamente sem proteção para visualização */}
-          <Route path="/sistema" element={<SistemaLayout />}>
+          <Route path="/sistema" element={
+            <PrivateRoute>
+            <SistemaLayout />
+            </PrivateRoute>
+          }
+          >
             {/* Página inicial do sistema */}
             <Route index element={<PaginaInicial />} />
 

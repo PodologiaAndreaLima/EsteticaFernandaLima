@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/site/Header";
 import api from "../../services/api";
 import "./AuthStyles.css";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Importe as imagens usando importação estática que funciona com o Vite
 import calendarIcon from "../../assets/Tear-Off Calendar.png";
@@ -11,6 +12,7 @@ import lightIcon from "../../assets/Light.png";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [credentials, setCredentials] = useState({ identifier: "", senha: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,24 +26,23 @@ const Login = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   setIsSubmitting(true);
+  setError("");
 
   try {
-    const response = await api.post("/usuarios/login", {
-      email: credentials.identifier,
-      senha: credentials.senha
-    });
-
-    if (response.data) {
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify({
-        id: response.data.userId,
-        nome: response.data.nome,
-        email: response.data.email
-      }));
-      navigate("/sistema");
+    console.log("Tentando login com:", credentials);
+    const result = await login(credentials.identifier, credentials.senha);
+    console.log("Resultado do login:", result);
+    
+    if (result.success && result.user) {
+      console.log("Login bem-sucedido, usuário:", result.user);
+      navigate("/sistema", { replace: true });
+    } else {
+      console.log("Login falhou:", result.error);
+      setError(result.error || "Credenciais inválidas");
     }
   } catch (error) {
-    setError(error.response?.data?.message || "Credenciais inválidas");
+    console.error("Erro no login:", error);
+    setError("Erro ao realizar login");
   } finally {
     setIsSubmitting(false);
   }
