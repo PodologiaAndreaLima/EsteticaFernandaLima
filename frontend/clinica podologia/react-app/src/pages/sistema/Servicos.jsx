@@ -189,14 +189,6 @@ const Servicos = () => {
       valorVenda: "599,00",
     },
     {
-      id: 4,
-      nome: "Design de Sobrancelhas",
-      descricao:
-        "Design de sobrancelhas é um procedimento estético que modela e realça o formato natural das sobrancelhas, respeitando as proporções do rosto e as características individuais da pessoa.",
-      valorCusto: "",
-      valorVenda: "60,00",
-    },
-    {
       id: 5,
       nome: "Design de Sobrancelhas com Tintura",
       descricao:

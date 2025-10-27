@@ -54,8 +54,8 @@ const Servicos = () => {
           <h2>Design de Sobrancelhas com Tintura</h2>
           <p>
             Inclui o procedimento de design tradicional com aplicação de tintura
-            para realçar ainda mais o formato e a cor das sobrancelhas. Também
-            é indicado para tingimento de pelos brancos nas sobrancelhas.
+            para realçar ainda mais o formato e a cor das sobrancelhas. Também é
+            indicado para tingimento de pelos brancos nas sobrancelhas.
           </p>
         </div>
       </div>
@@ -137,10 +137,10 @@ const Servicos = () => {
         <div className="texto">
           <h2>Depilação</h2>
           <p>
-            Oferecemos depilação masculina (opção completa) e depilação
-            feminina (todas as áreas, exceto depilação íntima). Utilizamos
-            técnicas seguras e produtos de qualidade para garantir conforto e
-            um resultado uniforme.
+            Oferecemos depilação masculina (opção completa) e depilação feminina
+            (todas as áreas, exceto depilação íntima). Utilizamos técnicas
+            seguras e produtos de qualidade para garantir conforto e um
+            resultado uniforme.
           </p>
         </div>
         <div className="circle">

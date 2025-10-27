@@ -54,10 +54,10 @@ const Footer = () => {
             <div className="footer-column">
               <h3>Contato</h3>
               <ul>
-                <li>Tel: (11) 97249-2829</li>
-                <li>Rua Doutor Olavo Egídio, 665</li>
-                <li>Santana - São Paulo, SP</li>
-                <li>CEP: 02037-001</li>
+                <li>Tel: (11) 98014-1736</li>
+                <li>Av. Guapira, 600</li>
+                <li>Tucuruvi, São Paulo - SP</li>
+                <li>CEP: 02265-001</li>
               </ul>
             </div>
           </div>

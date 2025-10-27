@@ -97,7 +97,7 @@ const Relatos = () => {
           className="google-logo"
         />
         <p>
-          Nota <strong>5.0</strong> com base em <strong>49 avaliações</strong>
+          Nota <strong>5.0</strong>
         </p>
         <div className="stars">
           <img src={images.starFilled} alt="Estrela" />
