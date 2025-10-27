@@ -7,6 +7,7 @@ import "./styles/fix-scrollbars.css";
 import "./styles/fix-images.css"; // Correções de estilo para imagens
 import "./config/env.js"; // Importar configuração de ambiente
 import App from "./App.jsx";
+import { Toaster } from "react-hot-toast";
 
 console.log("Inicializando aplicação React com Vite...");
 
@@ -39,6 +40,8 @@ checkDomReady().then(() => {
       ReactDOM.createRoot(rootElement).render(
         <React.StrictMode>
           <App />
+          {/* Use react-hot-toast default styling but set global duration to 3500ms */}
+          <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
         </React.StrictMode>
       );
       console.log("Aplicação React renderizada com sucesso!");

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NotificacaoToast from "../../components/sistema/NotificacaoToast";
+import { success, error, promise } from "../../services/toastService";
 import "./Funcionarios.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
@@ -362,16 +362,13 @@ const Funcionarios = () => {
           (funcionario) => funcionario.id !== funcionarioParaExcluir
         )
       );
-      setMensagemNotificacao("Funcionário excluído com sucesso!");
-      setNotificacaoVisivel(true);
+      success("Funcionário excluído com sucesso!");
       setModalConfirmacaoExclusaoAberto(false);
       setFuncionarioParaExcluir(null);
     }
   };
 
-  // Estado para notificação toast
-  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
-  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
+  // Notificações agora via react-hot-toast (toastService)
 
   // Função para salvar um funcionário (novo ou editado)
   const salvarFuncionario = (dadosFuncionario) => {
@@ -384,7 +381,7 @@ const Funcionarios = () => {
       );
       setListaFuncionarios(funcionariosAtualizados);
       // Exibe notificação ao editar
-      setMensagemNotificacao("Funcionário editado com sucesso!");
+      success("Funcionário editado com sucesso!");
     } else {
       // Adicionar novo funcionário
       const novoFuncionario = {
@@ -392,9 +389,8 @@ const Funcionarios = () => {
         ...dadosFuncionario,
       };
       setListaFuncionarios([...listaFuncionarios, novoFuncionario]);
-      setMensagemNotificacao("Funcionário adicionado com sucesso!");
+      success("Funcionário adicionado com sucesso!");
     }
-    setNotificacaoVisivel(true);
   };
 
   // Filtrar funcionários com base no termo de pesquisa
@@ -512,12 +508,7 @@ const Funcionarios = () => {
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
       />
-      {/* Notificação Toast */}
-      <NotificacaoToast
-        mensagem={mensagemNotificacao}
-        visivel={notificacaoVisivel}
-        aoFechar={() => setNotificacaoVisivel(false)}
-      />
+      {/* notifications handled by react-hot-toast (Toaster is global) */}
     </div>
   );
 };

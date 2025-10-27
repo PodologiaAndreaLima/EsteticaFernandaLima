@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NotificacaoToast from "../../components/sistema/NotificacaoToast";
+import { success, error, promise } from "../../services/toastService";
 import "./Produtos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 import ProductCard from "../../components/sistema/ProductCard";
@@ -287,16 +287,13 @@ const Produtos = () => {
       setListaProdutos(
         listaProdutos.filter((produto) => produto.id !== produtoParaExcluir)
       );
-      setMensagemNotificacao("Produto excluído com sucesso!");
-      setNotificacaoVisivel(true);
+      success("Produto excluído com sucesso!");
       setModalConfirmacaoExclusaoAberto(false);
       setProdutoParaExcluir(null);
     }
   };
 
-  // Estado para notificação toast
-  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
-  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
+  // Notificações agora via react-hot-toast (toastService)
 
   // Função para salvar um produto (novo ou editado)
   const salvarProduto = (dadosProduto) => {
@@ -309,7 +306,7 @@ const Produtos = () => {
       );
       setListaProdutos(produtosAtualizados);
       // Exibe notificação ao editar
-      setMensagemNotificacao("Produto editado com sucesso!");
+      success("Produto editado com sucesso!");
     } else {
       // Adicionar novo produto
       const novoProduto = {
@@ -317,9 +314,9 @@ const Produtos = () => {
         ...dadosProduto,
       };
       setListaProdutos([...listaProdutos, novoProduto]);
-      setMensagemNotificacao("Produto adicionado com sucesso!");
+      success("Produto adicionado com sucesso!");
     }
-    setNotificacaoVisivel(true);
+    // toast shown via success()
   };
 
   // Filtrar produtos com base no termo de pesquisa
@@ -393,12 +390,7 @@ const Produtos = () => {
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
       />
-      {/* Notificação Toast */}
-      <NotificacaoToast
-        mensagem={mensagemNotificacao}
-        visivel={notificacaoVisivel}
-        aoFechar={() => setNotificacaoVisivel(false)}
-      />
+      {/* notifications handled by react-hot-toast (Toaster is global) */}
     </div>
   );
 };

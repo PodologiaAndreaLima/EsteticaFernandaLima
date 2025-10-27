@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NotificacaoToast from "../../components/sistema/NotificacaoToast";
+import { success, error, promise } from "../../services/toastService";
 import "./Clientes.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 
@@ -259,16 +259,13 @@ const Clientes = () => {
       setListaClientes(
         listaClientes.filter((cliente) => cliente.id !== clienteParaExcluir)
       );
-      setMensagemNotificacao("Cliente excluído com sucesso!");
-      setNotificacaoVisivel(true);
+      success("Cliente excluído com sucesso!");
       setModalConfirmacaoExclusaoAberto(false);
       setClienteParaExcluir(null);
     }
   };
 
-  // Estado para notificação toast
-  const [notificacaoVisivel, setNotificacaoVisivel] = useState(false);
-  const [mensagemNotificacao, setMensagemNotificacao] = useState("");
+  // Notificações agora via react-hot-toast (toastService)
 
   // Função para salvar um cliente (novo ou editado)
   const salvarCliente = (dadosCliente) => {
@@ -281,8 +278,7 @@ const Clientes = () => {
       );
       setListaClientes(clientesAtualizados);
       // Exibe notificação ao editar
-      setMensagemNotificacao("Cliente editado com sucesso!");
-      setNotificacaoVisivel(true);
+      success("Cliente editado com sucesso!");
     } else {
       // Adicionar novo cliente
       const novoCliente = {
@@ -290,8 +286,7 @@ const Clientes = () => {
         ...dadosCliente,
       };
       setListaClientes([...listaClientes, novoCliente]);
-      setMensagemNotificacao("Cliente adicionado com sucesso!");
-      setNotificacaoVisivel(true);
+      success("Cliente adicionado com sucesso!");
     }
   };
 
@@ -403,12 +398,7 @@ const Clientes = () => {
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
       />
-      {/* Notificação Toast */}
-      <NotificacaoToast
-        mensagem={mensagemNotificacao}
-        visivel={notificacaoVisivel}
-        aoFechar={() => setNotificacaoVisivel(false)}
-      />
+      {/* notifications handled by react-hot-toast (Toaster is global) */}
     </div>
   );
 };
