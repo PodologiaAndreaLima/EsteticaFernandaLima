@@ -42,10 +42,10 @@ const Footer = () => {
             <div className="footer-column">
               <h3>Atendimento</h3>
               <ul>
-                <li>Segunda a Sexta</li>
-                <li>9:00 - 19:00</li>
+                <li>Terça a Sexta</li>
+                <li>8:00 - 19:00</li>
                 <li>Sábado</li>
-                <li>9:00 - 15:00</li>
+                <li>8:00 - 15:00</li>
                 <li>Domingo</li>
                 <li>Fechado</li>
               </ul>

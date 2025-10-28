@@ -11,7 +11,7 @@ const Servicos = () => {
       {/* Serviço - Micropigmentação de Sobrancelhas */}
       <div className="servico">
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img src="/assets/micropigmentação-foto.jpg" alt="Micropigmentação de Sobrancelhas" className="servico-img" />
         </div>
         <div className="texto">
           <h2>Micropigmentação de Sobrancelhas</h2>
@@ -38,7 +38,7 @@ const Servicos = () => {
         </div>
         <div className="circle">
           <img
-            src="/assets/design-sobrancelhas-foto.jpg"
+            src="/assets/design-de-sombrancelhas-foto.jpg"
             alt="Design de Sobrancelhas"
             className="servico-img"
           />
@@ -48,7 +48,7 @@ const Servicos = () => {
       {/* Serviço - Design de Sobrancelhas com Tintura */}
       <div className="servico">
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img src="/assets/design de sobrancelhas com tintura-foto.jpg" alt="Design de Sobrancelhas com Tintura" className="servico-img" />
         </div>
         <div className="texto">
           <h2>Design de Sobrancelhas com Tintura</h2>
@@ -56,24 +56,6 @@ const Servicos = () => {
             Inclui o procedimento de design tradicional com aplicação de tintura
             para realçar ainda mais o formato e a cor das sobrancelhas. Também é
             indicado para tingimento de pelos brancos nas sobrancelhas.
-          </p>
-        </div>
-      </div>
-
-      {/* Serviço - Micropigmentação de Sobrancelhas */}
-      <div className="servico">
-        <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
-        </div>
-        <div className="texto">
-          <h2>Micropigmentação de Sobrancelhas</h2>
-          <p>
-            Micropigmentação de sobrancelhas é uma técnica estética que deposita
-            pigmentos na pele para preencher falhas, definir e realçar a
-            sobrancelha, resultando em um visual mais denso e harmonioso. Ao
-            contrário de tatuagens, ela é semipermanente, sendo aplicada em uma
-            camada superficial da pele e exigindo retoques periódicos para
-            manter o resultado.
           </p>
         </div>
       </div>
@@ -119,7 +101,11 @@ const Servicos = () => {
       {/* Serviço 3 */}
       <div className="servico">
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img
+            src="/assets/estrias.jpeg"
+            alt="Tratamento de Estrias - Relive Skin Method"
+            className="servico-img"
+          />
         </div>
         <div className="texto">
           <h2>Tratamento de Estrias - Relive Skin Method</h2>
@@ -144,13 +130,13 @@ const Servicos = () => {
           </p>
         </div>
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img src="/assets/depilacao-foto.webp" alt="Depilação" className="servico-img" />
         </div>
       </div>
       {/* Serviço 5 - Lash Lifting */}
       <div className="servico">
         <div className="circle">
-          {/* Aqui pode ser inserida uma imagem relacionada ao serviço */}
+          <img src="/assets/lash-lifting-foto.jpg" alt="Lash Lifting" className="servico-img" />
         </div>
         <div className="texto">
           <h2>Lash Lifting</h2>
@@ -165,7 +151,7 @@ const Servicos = () => {
       {/* Serviço Capilar */}
       <div className="servico">
         <div className="circle">
-          <img src="" alt="Serviço Capilar" className="servico-img" />
+          <img src="/assets/capilar-foto.jpg" alt="Serviço Capilar" className="servico-img" />
         </div>
         <div className="texto">
           <h2>Serviço Capilar</h2>

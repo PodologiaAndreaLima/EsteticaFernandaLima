@@ -41,15 +41,11 @@ const Contato = () => {
           <div className="info-right">
             <p>
               <img src={images.whatsapp} alt="WhatsApp" />
-              (11) 97249-2829
+              (11) 98014-1736
             </p>
             <p>
               <img src={images.instagram} alt="Instagram" />
-              fernandalima_beauty
-            </p>
-            <p>
-              <img src={images.facebook} alt="Facebook" />
-              Fernanda Lima Beauty Care
+              fernandalimabeautycare
             </p>
           </div>
         </div>
