@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { success, error, promise } from "../../services/toastService";
+import CatalogService from "../../services/catalogService";
 import "./Produtos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 import ProductCard from "../../components/sistema/ProductCard";
@@ -216,29 +217,17 @@ const ModalProduto = ({ estaAberto, aoFechar, produto, aoSalvar }) => {
 };
 
 const Produtos = () => {
-  // Estado para armazenar a lista de produtos
-  const [listaProdutos, setListaProdutos] = useState([
-    {
-      id: 1,
-      nome: "Creme facial",
-      descricao:
-        "Marca: XPTO, Categoria: XPTO, use 1x ao dia, serve para tratar acne e espinhas",
-      marca: "XPTO",
-      categoria: "Cuidados faciais",
-      valorCompra: "20,00",
-      valorVenda: "100,00",
-    },
-    {
-      id: 2,
-      nome: "Hidratante para pés",
-      descricao:
-        "Hidratante especial para calcanhares ressecados e rachados, uso diário.",
-      marca: "PodoSkin",
-      categoria: "Cuidados com os pés",
-      valorCompra: "15,00",
-      valorVenda: "45,00",
-    },
-  ]);
+  // Estado para armazenar a lista de produtos (fonte: CatalogService)
+  const [listaProdutos, setListaProdutos] = useState(
+    CatalogService.getProdutos()
+  );
+
+  useEffect(() => {
+    const unsub = CatalogService.subscribeProdutos((next) =>
+      setListaProdutos(next)
+    );
+    return () => unsub();
+  }, []);
 
   // Estados para os modais
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
@@ -284,9 +273,11 @@ const Produtos = () => {
   // Função para confirmar a exclusão do produto
   const confirmarExclusao = () => {
     if (produtoParaExcluir) {
-      setListaProdutos(
-        listaProdutos.filter((produto) => produto.id !== produtoParaExcluir)
+      const updated = listaProdutos.filter(
+        (produto) => produto.id !== produtoParaExcluir
       );
+      setListaProdutos(updated);
+      CatalogService.setProdutos(updated);
       success("Produto excluído com sucesso!");
       setModalConfirmacaoExclusaoAberto(false);
       setProdutoParaExcluir(null);
@@ -305,6 +296,7 @@ const Produtos = () => {
           : produto
       );
       setListaProdutos(produtosAtualizados);
+      CatalogService.setProdutos(produtosAtualizados);
       // Exibe notificação ao editar
       success("Produto editado com sucesso!");
     } else {
@@ -313,7 +305,9 @@ const Produtos = () => {
         id: Date.now(), // ID temporário
         ...dadosProduto,
       };
-      setListaProdutos([...listaProdutos, novoProduto]);
+      const updated = [...listaProdutos, novoProduto];
+      setListaProdutos(updated);
+      CatalogService.setProdutos(updated);
       success("Produto adicionado com sucesso!");
     }
     // toast shown via success()

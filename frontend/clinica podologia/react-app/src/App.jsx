@@ -16,6 +16,7 @@ import SistemaLayout from "./pages/sistema/SistemaLayout";
 import Servicos from "./pages/sistema/Servicos";
 import Produtos from "./pages/sistema/Produtos";
 import Perfil from "./pages/sistema/Perfil";
+import OrdemServico from "./pages/sistema/OrdemServico";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./styles/LoadingSpinner.css";
 import "./styles/fix-system-overflow.css";
@@ -139,21 +140,20 @@ function App() {
           />
 
           {/* Rotas do sistema interno - temporariamente sem proteção para visualização */}
-          <Route path="/sistema" element={
-            <PrivateRoute>
-            <SistemaLayout />
-            </PrivateRoute>
-          }
+          <Route
+            path="/sistema"
+            element={
+              <PrivateRoute>
+                <SistemaLayout />
+              </PrivateRoute>
+            }
           >
             {/* Página inicial do sistema */}
             <Route index element={<PaginaInicial />} />
 
             {/* Páginas do sistema */}
             <Route path="dashboard" element={<Dashboard />} />
-            <Route
-              path="ordem-servico"
-              element={<div>Ordem de Serviço em construção</div>}
-            />
+            <Route path="ordem-servico" element={<OrdemServico />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="servicos" element={<Servicos />} />
             <Route path="produtos" element={<Produtos />} />
