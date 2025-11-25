@@ -2,7 +2,41 @@
 .dashboard-container {
   display: flex;
   height: calc(100vh - 80px); /* Altura total menos o header */
-  background-color: #f8f5fa;
+  background-color: #f4eef8; /* tom levemente roxo do protótipo */
+  overflow-x: hidden; /* prevent horizontal scroll when sidebar toggles */
+}
+
+/* Novo layout da dashboard */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.dashboard-header h1 {
+  color: #5a2f73;
+  margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.view-toggle button {
+  margin-left: 6px;
+}
+
+.period {
+  text-align: right;
+  font-size: 0.9rem;
+  color: #6b6b6b;
+}
+.sub-title {
+  color: #6f5b78;
+  font-size: 0.9rem;
 }
 
 /* Sidebar */
@@ -83,6 +117,188 @@
   flex: 1;
   padding: 30px;
   overflow-y: auto;
+  overflow-x: hidden; /* avoid horizontal scrollbar inside content */
+  min-width: 0; /* allow flex child to shrink to prevent overflow */
+}
+
+/* Grid geral */
+.dashboard-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.top-grid {
+  grid-template-columns: 1fr;
+}
+
+.mid-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.bottom-grid {
+  grid-template-columns: 1fr;
+}
+
+.metrics-card .metrics-row {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.metrics-list {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Quando estiver na versão vertical (KPIs acima dos gráficos) usamos grid para duas colunas */
+.metrics-row.vertical .metrics-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.metrics-top .metric-item {
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.metrics-bottom {
+  width: 100%;
+}
+
+.metrics-bottom .metrics-charts {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.metrics-bottom .line-chart {
+  flex: 2;
+  height: 220px;
+}
+
+.metrics-bottom .doughnut-chart {
+  flex: 1;
+  height: 220px;
+}
+
+.metric-item span {
+  display: block;
+  color: #7a6a8a;
+}
+
+.metric-item strong {
+  font-size: 1.05rem;
+  color: #333;
+}
+
+.metrics-charts {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.line-chart {
+  flex: 2;
+  height: 200px;
+}
+
+.doughnut-chart {
+  flex: 1;
+  height: 160px;
+}
+
+.line-chart canvas,
+.doughnut-chart canvas,
+.small-chart canvas,
+.employee-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.small-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.small-chart {
+  height: 110px;
+  margin-bottom: 8px;
+}
+
+.small-stat {
+  font-size: 1.3rem;
+
+  /* Inner grid used by middle and bottom cards */
+  .card-inner-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .card-metrics-left {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .metric-block .metric-label {
+    color: #8b6e9a;
+    font-size: 0.85rem;
+  }
+
+  .metric-block .metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #303030;
+  }
+
+  .card-charts-center,
+  .card-charts-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .small-panel h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #6d4b86;
+  }
+
+  .bottom-card .card-inner-grid {
+    grid-template-columns: 340px 1fr 340px;
+  }
+  color: #333;
+  font-weight: 700;
+}
+
+.employee-metrics {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.employee-left {
+  flex: 1;
+}
+
+.employee-right {
+  width: 420px;
+}
+
+.large-value {
+  font-size: 1.4rem;
+  color: #6c3483;
+  font-weight: 700;
 }
 
 .loading {
@@ -103,19 +319,18 @@
 
 /* Dashboard Section Styles */
 .dashboard-section {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(90, 54, 120, 0.06);
+  margin-bottom: 18px;
+  border: 1px solid rgba(110, 85, 140, 0.06);
 }
 
 .dashboard-section h2 {
-  color: #8e44ad;
-  margin-bottom: 25px;
-  font-size: 24px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 15px;
+  color: #7a4c93;
+  margin-bottom: 18px;
+  font-size: 20px;
 }
 
 .section-actions {
@@ -213,6 +428,500 @@
 
 .btn-secondary:hover {
   background: #f0f8f0;
+}
+
+/* Overrides / spacing improvements for KPIs (aplicadas por último para garantir prioridade) */
+.metrics-row.vertical .metrics-list {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px; /* aumenta espaço entre os KPIs */
+}
+
+.metrics-top .metric-item {
+  padding: 14px 16px;
+  min-height: 68px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+}
+
+.metrics-top .metric-item span {
+  font-size: 0.95rem;
+  color: #8b6e9a;
+  line-height: 1.35;
+}
+
+.metrics-top .metric-item strong {
+  font-size: 1.18rem;
+  color: #2f2f2f;
+  margin-top: 6px;
+  line-height: 1.1;
+}
+
+.metric-variation.small {
+  margin-top: 12px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.metric-variation.small .variation-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-variation.small .variation-receita {
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+.metric-variation.small .variation-custo {
+  color: #c62828;
+  font-weight: 700;
+}
+
+.metric-variation.small .variation-right .gross-margin {
+  color: #5b3e6a;
+  font-size: 0.95rem;
+}
+
+.metrics-bottom .metrics-charts {
+  gap: 24px;
+  align-items: center;
+}
+
+.metrics-bottom .line-chart {
+  height: 240px;
+}
+
+.metrics-bottom .doughnut-chart {
+  height: 240px;
+}
+
+/* Botões de toggle ativo */
+.view-toggle .btn-primary.active,
+.view-toggle .btn-secondary.active {
+  box-shadow: none;
+}
+
+/* Dentro do pill toggle: botão selecionado = roxo escuro; não selecionado = lilás claro */
+.view-toggle.pill .btn-primary,
+.view-toggle.pill .btn-secondary {
+  background: #efe6f7; /* lilás claro */
+  color: #6c3483; /* roxo escuro texto */
+  border: 1px solid rgba(108, 99, 255, 0.12);
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.view-toggle.pill .btn-primary.active,
+.view-toggle.pill .btn-secondary.active {
+  background: #6c3483; /* roxo escuro quando ativo */
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Estilos para a view simples */
+.simple-grid {
+  grid-template-columns: 1fr;
+}
+
+.simple-card .simple-kpis {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.simple-card .simple-kpi {
+  background: transparent;
+  padding: 12px 14px;
+  border-radius: 10px;
+  flex: 1;
+  text-align: left;
+}
+
+.simple-card .simple-kpi span {
+  display: block;
+  color: #8b6e9a;
+  font-size: 0.95rem;
+}
+
+.simple-card .simple-kpi strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-top: 6px;
+  color: #2f2f2f;
+}
+
+.simple-card .simple-chart {
+  height: 160px;
+}
+
+/* Novo layout para a view simples: KPIs à esquerda, gráfico à direita */
+.simple-card.metrics-card {
+  padding: 18px;
+}
+
+.simple-inner-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.simple-kpis-left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.simple-kpi-large {
+  background: transparent;
+  padding: 12px 10px;
+  border-radius: 10px;
+}
+
+.simple-kpi-large span {
+  display: block;
+  color: #6f5b78;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.simple-kpi-large strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.15rem;
+  color: #2f2f2f;
+}
+
+.simple-chart-right .chart-title {
+  text-align: center;
+  color: #6d4b86;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.simple-chart-right .chart-canvas {
+  height: 120px;
+}
+
+.simple-chart-right .chart-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Estilos para o novo card simples com ordens e pequenos gráficos */
+.simple-small-card {
+  padding: 16px;
+}
+
+.small-inner-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.orders-count {
+  padding: 12px 10px;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.orders-count .orders-label {
+  color: #6f5b78;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.orders-count .orders-value {
+  margin-top: 8px;
+  font-size: 2rem;
+  color: #6c3483;
+  font-weight: 800;
+}
+
+.small-charts-row {
+  display: flex;
+  gap: 72px; /* increased gap between the two chart boxes (a bit more) */
+  align-items: stretch;
+  justify-content: flex-start; /* force charts to start at left of the right column */
+  flex-wrap: nowrap;
+}
+
+.small-chart-box {
+  flex: 0 0 420px; /* fixed width so two charts occupy predictable space */
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.small-chart-title {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #6d4b86;
+  margin-bottom: 6px;
+}
+
+.small-chart {
+  height: 140px; /* aumentar área para que barras pareçam mais delicadas */
+}
+
+.small-chart-legend {
+  margin-top: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #6d4b86;
+  font-size: 0.92rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.doughnut-legend .legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6d4b86;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.doughnut-side {
+  display: flex;
+  flex-direction: row; /* place legend beside doughnut */
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.detail-dough-canvas {
+  width: 110px;
+  height: 110px;
+}
+
+/* Keep the small charts card slightly taller for balance; first card returns to its original sizing */
+.simple-small-card {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure only small-inner-grid centers content vertically */
+.simple-small-card .small-inner-grid {
+  align-items: center;
+}
+
+/* Último card da view simples: 3 KPIs em colunas */
+.simple-footer-card {
+  padding: 16px 18px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.footer-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px 14px;
+  background: transparent;
+}
+
+.footer-label {
+  color: #6f5b78;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.footer-value {
+  margin-top: 8px;
+  font-size: 1.5rem;
+  color: #6c3483;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-item {
+    text-align: left;
+  }
+}
+
+/* Styles for the detailed extra card */
+.detailed-extra-card {
+  padding: 18px;
+}
+
+.detail-extra-inner {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.detail-kpis-left {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 8px;
+  border-right: 1px solid #f0f0f0;
+  justify-content: space-between; /* distribute KPI items vertically */
+  min-height: 420px; /* ensure KPIs fill vertical space alongside charts */
+}
+
+.kpi-item {
+  /* match the metrics style from the first card for visual consistency */
+  background: transparent;
+  padding: 14px 16px;
+  min-height: 68px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.kpi-label {
+  font-size: 0.95rem;
+  color: #8b6e9a;
+  line-height: 1.35;
+}
+
+.kpi-value {
+  font-size: 1.18rem;
+  color: #2f2f2f;
+  margin-top: 6px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.detail-charts-wrapper {
+  flex: 1;
+}
+
+.detail-charts-grid {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+
+.detail-charts-grid.detail-grid-2x2 {
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: auto;
+}
+
+.detail-chart-box {
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.detail-chart-title {
+  text-align: center;
+  color: #6d4b86;
+  margin-bottom: 8px;
+}
+
+.detail-chart-canvas,
+.detail-dough-canvas {
+  height: 140px;
+}
+
+.detail-chart-canvas canvas,
+.detail-dough-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.doughnut-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-chart-legend {
+  margin-top: 10px;
+  text-align: center;
+  color: #6d4b86;
+}
+
+/* Styles for final detailed card */
+.final-detailed-card {
+  padding: 18px;
+}
+
+.final-inner {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.final-kpis-left {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 8px;
+  border-right: 1px solid #f0f0f0;
+  justify-content: space-between;
+  min-height: 320px;
+}
+
+.final-charts-wrapper {
+  flex: 1;
+}
+
+.final-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: auto;
+  gap: 18px;
+}
+
+.final-chart-box {
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.final-chart-bottom {
+  grid-column: 1 / -1; /* span both columns */
+}
+
+.final-chart-canvas {
+  height: 140px;
+}
+
+.final-chart-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 1000px) {
+  .detail-charts-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Seção de agendamentos */
@@ -379,7 +1088,7 @@
 }
 
 .construction-container h1 {
-  color: #573C6C;
+  color: #573c6c;
   margin-bottom: 20px;
   font-size: 2rem;
 }
