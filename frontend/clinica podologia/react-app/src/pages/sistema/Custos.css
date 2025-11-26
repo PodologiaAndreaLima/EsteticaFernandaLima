@@ -1,0 +1,497 @@
+.grid-cards {
+  /* Remover overflow para evitar scroll duplo */
+  overflow: hidden;
+}
+/**************************************
+ * Estilos para a página de Funcionários
+ **************************************/
+
+/* Container principal */
+.container-custos {
+  padding: 20px;
+  max-width: 100%;
+  height: 80vh;
+  overflow-y: auto;
+}
+
+.container-custos h1 {
+  color: #573c6c;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 28px;
+}
+
+.container-pesquisa {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.campo-pesquisa {
+  flex-grow: 1;
+  padding: 12px 16px;
+  border: 1px solid #af8509;
+  border-radius: 25px;
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+}
+
+.campo-pesquisa:focus {
+  border-color: #af8509;
+  box-shadow: 0 0 3px rgba(175, 133, 9, 0.3);
+}
+
+.botao-adicionar {
+  background-color: #573c6c;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: background-color 0.2s;
+}
+
+.botao-adicionar:hover {
+  background-color: #4a2f5d;
+}
+
+/* Estilos da tabela de funcionários */
+.tabela-custos {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.tabela-custos table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tabela-custos th {
+  text-align: left;
+  padding: 15px;
+  background-color: #f8f8f8;
+  color: #573c6c;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-custos td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.acoes-tabela {
+  display: flex;
+  gap: 10px;
+}
+
+.botao-tabela-visualizar,
+.botao-tabela-editar,
+.botao-tabela-excluir {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.botao-tabela-visualizar {
+  background-color: #f1e6fb;
+  color: #573c6c;
+  border: 1px solid #e0d0f5;
+}
+
+.botao-tabela-visualizar:hover {
+  background-color: #e5d4f7;
+}
+
+.botao-tabela-editar {
+  background-color: #573c6c;
+  color: white;
+}
+
+.botao-tabela-editar:hover {
+  background-color: #4a2f5d;
+}
+
+.botao-tabela-excluir {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.botao-tabela-excluir:hover {
+  background-color: #c0392b;
+}
+
+/* Modal de edição/adição */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: white;
+  width: 90%;
+  max-width: 600px;
+  /* Removendo o max-height e overflow para evitar scroll no modal principal */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #573c6c;
+  font-size: 18px;
+}
+
+.botao-fechar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+}
+
+.linha-formulario {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.grupo-formulario {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.grupo-formulario label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.grupo-formulario input,
+.grupo-formulario select,
+.grupo-formulario textarea {
+  padding: 8px 12px;
+  border: 1px solid #af8509;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.grupo-formulario input:focus,
+.grupo-formulario select:focus,
+.grupo-formulario textarea:focus {
+  border-color: #8e6b07;
+  box-shadow: 0 0 3px rgba(175, 133, 9, 0.3);
+}
+
+.grupo-formulario textarea {
+  resize: vertical;
+  height: 70px; /* Reduzido para 70px com altura fixa */
+  min-height: 50px;
+}
+
+/* Estilos para seleção de serviços */
+.servicos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px;
+  border: 1px solid #af8509;
+  border-radius: 8px;
+  background-color: rgba(
+    175,
+    133,
+    9,
+    0.08
+  ); /* Light gold background with low opacity */
+  height: 100px; /* Altura fixa menor para o container de serviços */
+  overflow-y: auto;
+  /* Estiliza a barra de rolagem para este elemento específico */
+  scrollbar-width: thin;
+  scrollbar-color: #573c6c rgba(87, 60, 108, 0.1);
+}
+
+.servico-item {
+  min-width: 160px;
+  margin-bottom: 3px;
+}
+
+/* Estilo de scrollbar para o container de serviços em navegadores WebKit */
+.servicos-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.servicos-container::-webkit-scrollbar-track {
+  background: rgba(87, 60, 108, 0.1);
+}
+
+.servicos-container::-webkit-scrollbar-thumb {
+  background-color: #573c6c;
+  border-radius: 10px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: #573c6c;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  color: #333;
+  transition: color 0.2s;
+}
+
+/* Estilo para o container quando o checkbox estiver marcado */
+.checkbox-container input[type="checkbox"]:checked + .checkbox-label {
+  color: #573c6c;
+  font-weight: 600;
+}
+
+.grupo-formulario .senha-container {
+  position: relative;
+}
+
+.grupo-formulario .senha-container input {
+  width: 100%;
+  padding-right: 40px; /* Espaço para o ícone */
+}
+
+.grupo-formulario .senha-container .toggle-senha {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #573c6c;
+  font-size: 18px;
+}
+
+.rodape-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.botao-cancelar,
+.botao-salvar {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100px;
+}
+
+.botao-cancelar {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.botao-cancelar:hover {
+  background-color: #e0e0e0;
+}
+
+.botao-salvar {
+  background-color: #573c6c;
+  color: white;
+}
+
+.sem-resultados {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+/* Estilos para o modal de visualização */
+.modal-visualizar {
+  max-width: 650px;
+}
+
+.conteudo-visualizacao {
+  padding: 10px 0;
+}
+
+.grupo-visualizacao {
+  margin-bottom: 25px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #af8509;
+}
+
+.grupo-visualizacao h3 {
+  color: #573c6c;
+  font-size: 17px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(175, 133, 9, 0.3);
+  padding-bottom: 8px;
+}
+
+.linha-visualizacao {
+  display: flex;
+  margin-bottom: 12px;
+  gap: 20px;
+}
+
+.campo-visualizacao {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-visualizacao .rotulo {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.campo-visualizacao .valor {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.servicos-visualizacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.servico-badge {
+  background-color: rgba(87, 60, 108, 0.1);
+  color: #573c6c;
+  border: 1px solid rgba(87, 60, 108, 0.3);
+  border-radius: 15px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sem-servicos {
+  font-style: italic;
+  color: #888;
+  margin: 0;
+}
+
+.bio-visualizacao p {
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.5;
+  /* Permitir quebra de palavras muito longas sem espaços */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Limitar altura da área de biografia e permitir rolagem interna */
+.bio-visualizacao {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 6px; /* espaço para a scrollbar */
+}
+
+/* Estilizar scrollbar para melhor aparência (WebKit) */
+.bio-visualizacao::-webkit-scrollbar {
+  width: 8px;
+}
+.bio-visualizacao::-webkit-scrollbar-track {
+  background: transparent;
+}
+.bio-visualizacao::-webkit-scrollbar-thumb {
+  background-color: rgba(87, 60, 108, 0.25);
+  border-radius: 8px;
+}
+
+.botao-fechar-visualizacao {
+  background-color: #573c6c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.botao-fechar-visualizacao:hover {
+  background-color: #4a2f5d;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .linha-formulario {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .container-pesquisa {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .botao-adicionar {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .modal-container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .acoes-tabela {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

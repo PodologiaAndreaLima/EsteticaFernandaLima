@@ -17,6 +17,8 @@ import Servicos from "./pages/sistema/Servicos";
 import Produtos from "./pages/sistema/Produtos";
 import Perfil from "./pages/sistema/Perfil";
 import OrdemServico from "./pages/sistema/OrdemServico";
+import Custos from "./pages/sistema/Custos";
+import Combos from "./pages/sistema/Combos";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./styles/LoadingSpinner.css";
 import "./styles/fix-system-overflow.css";
@@ -55,7 +57,7 @@ const PublicRoute = ({ children }) => {
 
 const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   const { userRole, loading } = useAuth();
-  
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -171,16 +173,16 @@ function App() {
             <Route path="clientes" element={<Clientes />} />
             <Route path="servicos" element={<Servicos />} />
             <Route path="produtos" element={<Produtos />} />
-            <Route path="combos" element={<div>Combos em construção</div>} />
-            <Route 
-  path="funcionarios" 
-  element={
-    <ProtectedRoute requiredRoles={["ADMIN", "GERENTE"]}>
-      <Funcionarios />
-    </ProtectedRoute>
-  } 
-/>
-            <Route path="custos" element={<div>Custos em construção</div>} />
+            <Route path="combos" element={<Combos />} />
+            <Route
+              path="funcionarios"
+              element={
+                <ProtectedRoute requiredRoles={["ADMIN", "GERENTE"]}>
+                  <Funcionarios />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="custos" element={<Custos />} />
             <Route path="perfil" element={<Perfil />} />
           </Route>
 
