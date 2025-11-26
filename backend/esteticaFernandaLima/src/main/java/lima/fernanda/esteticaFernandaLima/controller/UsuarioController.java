@@ -6,23 +6,24 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioListarDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioMapper;
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import lima.fernanda.esteticaFernandaLima.service.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
+
 
 @RestController
 @RequestMapping("/usuarios")
 @Tag(name = "Usuarios", description = "Endpoints para gerenciamento de usuários da aplicação")
 public class UsuarioController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioService usuarioService;
@@ -30,7 +31,6 @@ public class UsuarioController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> criar(@RequestBody @Valid UsuarioCriacaoDto usuarioCriacaoDto) {
-
         final Usuario novoUsuario = UsuarioMapper.of(usuarioCriacaoDto);
         this.usuarioService.criar(novoUsuario);
         return ResponseEntity.status(201).build();
@@ -57,4 +57,32 @@ public class UsuarioController {
         return ResponseEntity.status(200).body(usuariosEncontrados);
 
     }
+
+    @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+public ResponseEntity<UsuarioListarDto> atualizar(
+    @PathVariable Long id,
+    @RequestBody @Valid UsuarioCriacaoDto usuarioCriacaoDto) {
+    try {
+        Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioCriacaoDto);
+        logger.info("Usuário atualizado: {}", id);
+        return ResponseEntity.ok(UsuarioMapper.of(usuarioAtualizado));
+    } catch (Exception e) {
+        logger.error("Erro ao atualizar usuário: {}", e.getMessage());
+        return ResponseEntity.status(400).build();
+    }
+}
+
+@DeleteMapping("/{id}")
+@SecurityRequirement(name = "Bearer")
+public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    try {
+        usuarioService.deletar(id);
+        logger.info("Usuário deletado com sucesso: {}", id);
+        return ResponseEntity.noContent().build();
+    } catch (Exception e) {
+        logger.error("Erro ao deletar usuário: {}", e.getMessage());
+        return ResponseEntity.status(400).build();
+    }
+}
 }

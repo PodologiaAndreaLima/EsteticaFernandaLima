@@ -53,6 +53,20 @@ const PublicRoute = ({ children }) => {
   return !isAuthenticated ? children : <Navigate to="/sistema" />;
 };
 
+const ProtectedRoute = ({ children, requiredRoles = [] }) => {
+  const { userRole, loading } = useAuth();
+  
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!userRole || !requiredRoles.includes(userRole)) {
+    return <Navigate to="/sistema" />;
+  }
+
+  return children;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -158,7 +172,14 @@ function App() {
             <Route path="servicos" element={<Servicos />} />
             <Route path="produtos" element={<Produtos />} />
             <Route path="combos" element={<div>Combos em construção</div>} />
-            <Route path="funcionarios" element={<Funcionarios />} />
+            <Route 
+  path="funcionarios" 
+  element={
+    <ProtectedRoute requiredRoles={["ADMIN", "GERENTE"]}>
+      <Funcionarios />
+    </ProtectedRoute>
+  } 
+/>
             <Route path="custos" element={<div>Custos em construção</div>} />
             <Route path="perfil" element={<Perfil />} />
           </Route>

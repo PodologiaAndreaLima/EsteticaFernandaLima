@@ -13,26 +13,19 @@ export const AuthService = {
       });
 
       if (response.data.token) {
-        // Ajustando para pegar o usuário corretamente da resposta
-        const userData = {
-          id: response.data.userId,
-          nome: response.data.nome,
-          email: response.data.email
-        };
-
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(userData));
-
-        return {
-          success: true,
-          user: userData,  // Retornando o usuário estruturado
-          token: response.data.token
-        };
+        localStorage.setItem("user", JSON.stringify({
+          id: response.data.userId,
+          nome: response.data.nomeCompleto,
+          email: response.data.email,
+          role: response.data.role
+        }));
       }
 
       return {
-        success: false,
-        error: "Resposta inválida do servidor"
+        success: true,
+        user: response.data,
+        token: response.data.token
       };
     } catch (error) {
       return {
@@ -40,44 +33,79 @@ export const AuthService = {
         error: error.response?.data?.message || "Credenciais inválidas"
       };
     }
-},
+  },
 
   // Função para registrar novo funcionário
-  register: async (userData) => {
+  register: async (dados) => {
     try {
-      // Convertemos os dados para o formato esperado pelo backend
-      const funcionarioData = new Funcionario(userData).toAPI();
-
-      // Fazemos a chamada para registrar o funcionário
-      const response = await api.post(
-        API_CONFIG.ENDPOINTS.AUTH.REGISTER_STAFF,
-        funcionarioData
-      );
-
-      // No caso do backend Spring Boot atual, não retorna token após registro
-      // Precisamos implementar esse comportamento no backend ou fazer login após registro
-      const funcionarioRegistrado = response.data;
-
-      // Como não temos token automático após registro, apenas retornamos a mensagem de sucesso
-      // Funcionários precisam ser aprovados antes de fazer login
-      if (funcionarioRegistrado) {
-        return {
-          success: true,
-          // Não salvamos o usuário no localStorage neste caso
-          message:
-            "Solicitação enviada com sucesso! Aguarde a aprovação da administração para acessar o sistema.",
-        };
-      }
+      const response = await api.post("/usuarios", {
+        nomeCompleto: dados.nomeCompleto,
+        email: dados.email,
+        senha: dados.senha,
+        cpf: dados.cpf,
+        telefone: dados.telefone,
+        servicosPrestados: dados.servicosPrestados,
+        bio: dados.bio,
+        role: dados.role
+      });
 
       return {
         success: true,
-        message: "Solicitação enviada com sucesso! Aguarde aprovação.",
+        message: "Usuário cadastrado com sucesso!"
       };
     } catch (error) {
-      console.error("Erro no registro:", error);
-      const errorMessage =
-        error.response?.data?.message || "Erro ao registrar usuário";
-      return { success: false, error: errorMessage };
+      return {
+        success: false,
+        error: error.response?.data?.message || "Erro ao cadastrar usuário"
+      };
+    }
+  },
+
+  // Buscar todos os funcionários
+  getUsuarios: async () => {
+    try {
+      const response = await api.get("/usuarios");
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Erro ao buscar funcionários"
+      };
+    }
+  },
+
+  // Atualizar funcionário
+  updateUsuario: async (usuarioId, dados) => {
+    try {
+      const response = await api.put(`/usuarios/${usuarioId}`, dados);
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Erro ao atualizar funcionário"
+      };
+    }
+  },
+
+  // Deletar funcionário
+  deleteUsuario: async (usuarioId) => {
+    try {
+      await api.delete(`/usuarios/${usuarioId}`);
+      return {
+        success: true,
+        message: "Funcionário deletado com sucesso"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Erro ao deletar funcionário"
+      };
     }
   },
 
@@ -144,16 +172,6 @@ export const AuthService = {
       const errorMessage =
         error.response?.data?.message || "Erro ao atualizar dados";
       return { success: false, error: errorMessage };
-    }
-  },
-
-  // Função para verificar se o token é válido
-  validateToken: async () => {
-    try {
-      await api.get(API_CONFIG.ENDPOINTS.AUTH.VALIDATE);
-      return true;
-    } catch (error) {
-      return false;
     }
   },
 

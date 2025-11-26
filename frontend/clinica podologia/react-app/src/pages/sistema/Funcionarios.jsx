@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { success, error, promise } from "../../services/toastService";
 import "./Funcionarios.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
+import { AuthService } from "../../services/authService";
+import { useRoleProtection } from "../../hooks/useRoleProtection";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Componente Modal para Visualização de Funcionário
 const ModalVisualizarFuncionario = ({ estaAberto, aoFechar, funcionario }) => {
@@ -46,7 +49,7 @@ const ModalVisualizarFuncionario = ({ estaAberto, aoFechar, funcionario }) => {
             <h3>Serviços Prestados</h3>
             <div className="servicos-visualizacao">
               {funcionario.servicosPrestados &&
-              funcionario.servicosPrestados.length > 0 ? (
+                funcionario.servicosPrestados.length > 0 ? (
                 funcionario.servicosPrestados.map((servico, index) => (
                   <div key={index} className="servico-badge">
                     {servico}
@@ -88,15 +91,20 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
     email: "",
     senha: "",
     bio: "",
+    role: "USER",
   };
 
   const [dadosFormulario, setDadosFormulario] = useState(formInicial);
 
-  // Atualiza o formulário quando o funcionário em edição muda
   React.useEffect(() => {
     if (estaAberto) {
       if (funcionario && Object.keys(funcionario).length > 0) {
-        setDadosFormulario({ ...funcionario });
+        // Garantir que servicosPrestados seja um array
+        setDadosFormulario({
+          ...funcionario,
+          servicosPrestados: funcionario.servicosPrestados || [], // ← ADICIONAR ISTO
+          role: funcionario.role || "USER", // ← ADICIONAR ISTO também
+        });
       } else {
         setDadosFormulario({
           nomeCompleto: "",
@@ -106,6 +114,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
           email: "",
           senha: "",
           bio: "",
+          role: "USER",
         });
       }
     }
@@ -121,19 +130,16 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
     });
   };
 
-  // Função para manipular serviços selecionados (checkbox)
   const alterarServicos = (servico) => {
     const servicosAtuais = [...dadosFormulario.servicosPrestados];
 
     if (servicosAtuais.includes(servico)) {
-      // Remove o serviço se já estiver selecionado
       const novosServicos = servicosAtuais.filter((item) => item !== servico);
       setDadosFormulario({
         ...dadosFormulario,
         servicosPrestados: novosServicos,
       });
     } else {
-      // Adiciona o serviço se não estiver selecionado
       setDadosFormulario({
         ...dadosFormulario,
         servicosPrestados: [...servicosAtuais, servico],
@@ -151,10 +157,8 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
     aoFechar();
   };
 
-  // Se o modal não estiver aberto, não renderiza nada
   if (!estaAberto) return null;
 
-  // Log para depuração (você pode remover após resolver o problema)
   console.log("Modal aberto", { estaAberto, dadosFormulario });
 
   return (
@@ -225,9 +229,11 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                     <label className="checkbox-container">
                       <input
                         type="checkbox"
-                        checked={dadosFormulario.servicosPrestados.includes(
-                          servico
-                        )}
+                        checked={
+                          dadosFormulario.servicosPrestados &&
+                          Array.isArray(dadosFormulario.servicosPrestados) &&
+                          dadosFormulario.servicosPrestados.includes(servico)
+                        }
                         onChange={() => alterarServicos(servico)}
                       />
                       <span className="checkbox-label">{servico}</span>
@@ -274,6 +280,23 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
+              <label htmlFor="role">Cargo</label>
+              <select
+                id="role"
+                name="role"
+                value={dadosFormulario.role}
+                onChange={alterarCampo}
+                required
+              >
+                <option value="">Selecione um cargo</option>
+                <option value="ADMIN">Administrador</option>
+                <option value="USER">Usuário Comum</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="linha-formulario">
+            <div className="grupo-formulario">
               <label htmlFor="bio">Bio</label>
               <textarea
                 id="bio"
@@ -300,17 +323,18 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
 };
 
 const Funcionarios = () => {
+  // ADICIONADO: Proteger rota - apenas ADMIN
+  const userRole = useRoleProtection(["ADMIN"]);
+  const { user } = useAuth();
+
+  if (!userRole) {
+    return <div>Carregando...</div>;
+  }
+
   // Estado para armazenar a lista de funcionários
-  const [listaFuncionarios, setListaFuncionarios] = useState([
-    {
-      id: 1,
-      nomeCompleto: "Fulano da Silva",
-      cpf: "123.456.789-00",
-      telefone: "(00) 90000-0000",
-      servicosPrestados: ["Podologia"],
-      // ...outros campos se necessário
-    },
-  ]);
+  const [listaFuncionarios, setListaFuncionarios] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] =
     useState(false);
@@ -322,7 +346,22 @@ const Funcionarios = () => {
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
-  // Função para adicionar um novo funcionário
+  useEffect(() => {
+    carregarFuncionarios();
+  }, []);
+
+  const carregarFuncionarios = async () => {
+    setCarregando(true);
+    const resposta = await AuthService.getUsuarios();
+    if (resposta.success) {
+      setListaFuncionarios(resposta.data);
+      console.log("Funcionários carregados:", resposta.data);
+    } else {
+      error("Erro ao carregar funcionários");
+    }
+    setCarregando(false);
+  };
+
   const adicionarFuncionario = () => {
     setFuncionarioEmEdicao({
       nomeCompleto: "",
@@ -332,78 +371,121 @@ const Funcionarios = () => {
       email: "",
       senha: "",
       bio: "",
+      role: "USER",
     });
     setModalEditarAberto(true);
   };
 
-  // Função para visualizar um funcionário
   const visualizarFuncionario = (funcionario) => {
     setFuncionarioParaVisualizar({ ...funcionario });
     setModalVisualizarAberto(true);
   };
 
-  // Função para editar um funcionário existente
   const editarFuncionario = (funcionario) => {
     setFuncionarioEmEdicao({ ...funcionario });
     setModalEditarAberto(true);
   };
 
-  // Função para preparar a exclusão de um funcionário (abre o modal)
   const prepararExclusao = (funcionarioId) => {
     setFuncionarioParaExcluir(funcionarioId);
     setModalConfirmacaoExclusaoAberto(true);
   };
 
-  // Função para confirmar a exclusão do funcionário
-  const confirmarExclusao = () => {
+  const confirmarExclusao = async () => { // ALTERAR: adicionar async
     if (funcionarioParaExcluir) {
-      setListaFuncionarios(
-        listaFuncionarios.filter(
-          (funcionario) => funcionario.id !== funcionarioParaExcluir
-        )
-      );
-      success("Funcionário excluído com sucesso!");
+      const resposta = await AuthService.deleteUsuario(funcionarioParaExcluir); // ADICIONAR
+
+      if (resposta.success) {
+        setListaFuncionarios(
+          listaFuncionarios.filter(
+            (funcionario) => funcionario.id !== funcionarioParaExcluir
+          )
+        );
+        success("Funcionário excluído com sucesso!");
+      } else {
+        error(resposta.error);
+      }
+
       setModalConfirmacaoExclusaoAberto(false);
       setFuncionarioParaExcluir(null);
     }
   };
 
-  // Notificações agora via react-hot-toast (toastService)
+  const salvarFuncionario = async (dadosFuncionario) => {
+    try {
+      let resposta;
 
-  // Função para salvar um funcionário (novo ou editado)
-  const salvarFuncionario = (dadosFuncionario) => {
-    if (dadosFuncionario.id) {
-      // Atualizar funcionário existente
-      const funcionariosAtualizados = listaFuncionarios.map((funcionario) =>
-        funcionario.id === dadosFuncionario.id
-          ? { ...funcionario, ...dadosFuncionario }
-          : funcionario
-      );
-      setListaFuncionarios(funcionariosAtualizados);
-      // Exibe notificação ao editar
-      success("Funcionário editado com sucesso!");
-    } else {
-      // Adicionar novo funcionário
-      const novoFuncionario = {
-        id: Date.now(), // ID temporário
-        ...dadosFuncionario,
-      };
-      setListaFuncionarios([...listaFuncionarios, novoFuncionario]);
-      success("Funcionário adicionado com sucesso!");
+      // Se tem ID, é edição; senão, é criação
+      if (dadosFuncionario.id) {
+        // EDITAR
+        resposta = await AuthService.updateUsuario(dadosFuncionario.id, {
+          nomeCompleto: dadosFuncionario.nomeCompleto,
+          cpf: dadosFuncionario.cpf,
+          telefone: dadosFuncionario.telefone,
+          servicosPrestados: dadosFuncionario.servicosPrestados,
+          email: dadosFuncionario.email,
+          bio: dadosFuncionario.bio,
+          role: dadosFuncionario.role,
+          // Nota: senha não é enviada na edição por segurança
+        });
+
+        if (resposta.success) {
+          // Atualizar lista local
+          setListaFuncionarios(
+            listaFuncionarios.map((func) =>
+              func.id === dadosFuncionario.id ? dadosFuncionario : func
+            )
+          );
+          success("Funcionário atualizado com sucesso!");
+        } else {
+          error(resposta.error);
+        }
+      } else {
+        // CRIAR
+        resposta = await AuthService.register({
+          nomeCompleto: dadosFuncionario.nomeCompleto,
+          cpf: dadosFuncionario.cpf,
+          telefone: dadosFuncionario.telefone,
+          servicosPrestados: dadosFuncionario.servicosPrestados,
+          email: dadosFuncionario.email,
+          senha: dadosFuncionario.senha,
+          bio: dadosFuncionario.bio,
+          role: dadosFuncionario.role,
+        });
+
+        if (resposta.success) {
+          // Recarregar lista
+          await carregarFuncionarios();
+          success("Funcionário registrado com sucesso!");
+        } else {
+          error(resposta.error);
+        }
+      }
+
+      setModalEditarAberto(false);
+    } catch (err) {
+      console.error("Erro ao salvar funcionário:", err);
+      error("Erro ao salvar funcionário");
     }
   };
 
-  // Filtrar funcionários com base no termo de pesquisa
   const funcionariosFiltrados = listaFuncionarios.filter(
     (funcionario) =>
-      funcionario.nomeCompleto
-        .toLowerCase()
-        .includes(termoPesquisa.toLowerCase()) ||
-      funcionario.email.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
-      funcionario.cpf.includes(termoPesquisa) ||
-      funcionario.servicosPrestados.some((servico) =>
-        servico.toLowerCase().includes(termoPesquisa.toLowerCase())
-      )
+      // Validar se campos existem antes de chamar toLowerCase()
+      (funcionario.nomeCompleto &&
+        funcionario.nomeCompleto
+          .toLowerCase()
+          .includes(termoPesquisa.toLowerCase())) ||
+      (funcionario.email &&
+        funcionario.email.toLowerCase().includes(termoPesquisa.toLowerCase())) ||
+      (funcionario.cpf && funcionario.cpf.includes(termoPesquisa)) ||
+      (funcionario.servicosPrestados &&
+        Array.isArray(funcionario.servicosPrestados) &&
+        funcionario.servicosPrestados.some(
+          (servico) =>
+            servico &&
+            servico.toLowerCase().includes(termoPesquisa.toLowerCase())
+        ))
   );
 
   return (
@@ -429,7 +511,6 @@ const Funcionarios = () => {
         </button>
       </div>
 
-      {/* Lista de funcionários em formato de tabela */}
       <div className="tabela-funcionarios">
         <table>
           <thead>
@@ -482,7 +563,6 @@ const Funcionarios = () => {
         </div>
       )}
 
-      {/* Modal para adicionar/editar funcionário */}
       <ModalFuncionario
         estaAberto={modalEditarAberto}
         aoFechar={() => setModalEditarAberto(false)}
@@ -490,14 +570,12 @@ const Funcionarios = () => {
         aoSalvar={salvarFuncionario}
       />
 
-      {/* Modal para visualizar detalhes do funcionário */}
       <ModalVisualizarFuncionario
         estaAberto={modalVisualizarAberto}
         aoFechar={() => setModalVisualizarAberto(false)}
         funcionario={funcionarioParaVisualizar}
       />
 
-      {/* Modal de confirmação de exclusão */}
       <ModalConfirmacao
         estaAberto={modalConfirmacaoExclusaoAberto}
         aoFechar={() => setModalConfirmacaoExclusaoAberto(false)}
@@ -508,7 +586,6 @@ const Funcionarios = () => {
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
       />
-      {/* notifications handled by react-hot-toast (Toaster is global) */}
     </div>
   );
 };

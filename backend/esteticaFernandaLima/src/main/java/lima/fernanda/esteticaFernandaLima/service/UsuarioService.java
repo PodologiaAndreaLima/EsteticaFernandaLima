@@ -1,9 +1,11 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.config.GerenciadorTokenJwt;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioListarDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioMapper;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
+import lima.fernanda.esteticaFernandaLima.enums.Role;
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import lima.fernanda.esteticaFernandaLima.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +76,56 @@ public class UsuarioService {
         List<Usuario> usuariosEncontrados = usuarioRepository.findAll();
         return usuariosEncontrados.stream().map(UsuarioMapper::of).toList();
     }
+
+    public Usuario atualizar(Long id, UsuarioCriacaoDto usuarioCriacaoDto) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    
+    // Atualizar campos
+    if (usuarioCriacaoDto.getNomeCompleto() != null) {
+        usuario.setNomeCompleto(usuarioCriacaoDto.getNomeCompleto());
+    }
+    if (usuarioCriacaoDto.getCpf() != null) {
+        usuario.setCpf(usuarioCriacaoDto.getCpf());
+    }
+    if (usuarioCriacaoDto.getTelefone() != null) {
+        usuario.setTelefone(usuarioCriacaoDto.getTelefone());
+    }
+    if (usuarioCriacaoDto.getBio() != null) {
+        usuario.setBio(usuarioCriacaoDto.getBio());
+    }
+    if (usuarioCriacaoDto.getServicosPrestados() != null) {
+        usuario.setServicosPrestados(usuarioCriacaoDto.getServicosPrestados());
+    }
+    if (usuarioCriacaoDto.getEmail() != null) {
+        usuario.setEmail(usuarioCriacaoDto.getEmail());
+    }
+    
+    // Atualizar role
+    String roleStr = usuarioCriacaoDto.getRole();
+    if (roleStr != null && !roleStr.isEmpty()) {
+        try {
+            usuario.setRole(Role.valueOf(roleStr.toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            usuario.setRole(Role.USER);
+        }
+    }
+    
+    // Só atualiza senha se foi informada (não é obrigatória na edição)
+    if (usuarioCriacaoDto.getSenha() != null && !usuarioCriacaoDto.getSenha().isEmpty()) {
+        String senhaCriptografada = passwordEncoder.encode(usuarioCriacaoDto.getSenha());
+        usuario.setSenha(senhaCriptografada);
+    }
+    
+    return usuarioRepository.save(usuario);
+}
+
+public void deletar(Long id) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    
+    usuarioRepository.delete(usuario);
+    logger.info("Usuário deletado: {}", id);
+}
 
 }

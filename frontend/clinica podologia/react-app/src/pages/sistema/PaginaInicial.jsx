@@ -1,10 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import "./PaginaInicial.css";
 
 const PaginaInicial = () => {
+  const { user, userRole } = useAuth();
+
   // Definir nome padrão para saudação para visualização sem autenticação
-  const firstName = "Seja Bem-vindo";
+  const firstName = user?.nome || "Seja Bem-vindo";
 
   // Cards de acesso rápido com ícones
   const quickAccessCards = [
@@ -14,6 +17,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeOrdemServico-sistema.png",
       path: "/sistema/ordem-servico",
       color: "#654576",
+      requiredRole: null, 
     },
     {
       id: 2,
@@ -21,6 +25,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeDashboard-sistema.png",
       path: "/sistema/dashboard",
       color: "#654576",
+      requiredRole: null,
     },
     {
       id: 3,
@@ -28,6 +33,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeClientes-sistema.png",
       path: "/sistema/clientes",
       color: "#654576",
+      requiredRole: null,
     },
     {
       id: 4,
@@ -35,6 +41,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeServico-sistema.png",
       path: "/sistema/servicos",
       color: "#654576",
+      requiredRole: null,
     },
     {
       id: 5,
@@ -42,6 +49,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeProduto-sistema.png",
       path: "/sistema/produtos",
       color: "#654576",
+      requiredRole: null,
     },
     {
       id: 6,
@@ -49,6 +57,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeCombo-sistema.png",
       path: "/sistema/combos",
       color: "#654576",
+      requiredRole: null,
     },
     {
       id: 7,
@@ -56,6 +65,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeFuncionario-sistema.png",
       path: "/sistema/funcionarios",
       color: "#654576",
+      requiredRole: "ADMIN",
     },
     {
       id: 8,
@@ -63,6 +73,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeCustos-sistema.png",
       path: "/sistema/custos",
       color: "#654576",
+      requiredRole: null,
     },
   ];
 
@@ -73,23 +84,28 @@ const PaginaInicial = () => {
       </div>
 
       <div className="quick-access-grid">
-        {quickAccessCards.map((card) => (
-          <Link
-            to={card.path}
-            className="quick-access-card"
-            key={card.id}
-            style={{ backgroundColor: card.color }}
-          >
-            <div className="card-icon">
-              <img
-                src={card.iconSrc}
-                alt={card.title}
-                className="card-icon-image"
-              />
-            </div>
-            <div className="card-title">{card.title}</div>
-          </Link>
-        ))}
+        {quickAccessCards
+          .filter(
+            (card) =>
+              !card.requiredRole || card.requiredRole === userRole
+          )
+          .map((card) => (
+            <Link
+              to={card.path}
+              className="quick-access-card"
+              key={card.id}
+              style={{ backgroundColor: card.color }}
+            >
+              <div className="card-icon">
+                <img
+                  src={card.iconSrc}
+                  alt={card.title}
+                  className="card-icon-image"
+                />
+              </div>
+              <div className="card-title">{card.title}</div>
+            </Link>
+          ))}
       </div>
     </div>
   );

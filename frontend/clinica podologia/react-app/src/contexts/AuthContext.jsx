@@ -16,50 +16,19 @@ export const AuthProvider = ({ children }) => {
       try {
         // Verifica se há um token armazenado
         const token = localStorage.getItem("token");
-        if (token) {
-          // Verifica se é o admin simulado
-          if (
-            token === "admin-token-simulated" ||
-            token === "funcionario-token-simulated"
-          ) {
-            // Para o admin simulado, pegamos os dados diretamente do localStorage
-            const userData = JSON.parse(localStorage.getItem("user"));
-            if (userData) {
-              setUser(userData);
-            }
-          } else {
-            // Para tokens normais, tenta validar no servidor
-            try {
-              const isValid = await AuthService.validateToken();
+        const storedUser = localStorage.getItem("user");
 
-              if (isValid) {
-                // Se o token for válido, busca os dados do usuário
-                const userResponse = await AuthService.getCurrentUser();
-                if (userResponse.success) {
-                  setUser(userResponse.user);
-                  localStorage.setItem(
-                    "user",
-                    JSON.stringify(userResponse.user)
-                  );
-                } else {
-                  // Se não conseguir buscar os dados, faz logout
-                  AuthService.logout();
-                }
-              } else {
-                // Se o token não for válido, faz logout
-                AuthService.logout();
-              }
-            } catch (error) {
-              console.log("Erro ao validar token:", error);
-              // Em caso de erro, tentamos usar os dados do localStorage
-              const userData = JSON.parse(localStorage.getItem("user"));
-              if (userData) {
-                setUser(userData);
-              } else {
-                AuthService.logout();
-              }
-            }
-          }
+        if (token && storedUser) {
+          // Se tem token e dados do usuário no localStorage, apenas usa
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          setLoading(false);
+          return;
+        }
+
+        // Se não tem dados, faz logout
+        if (!token || !storedUser) {
+          AuthService.logout();
         }
       } catch (error) {
         console.error("Erro ao verificar autenticação:", error);
@@ -77,10 +46,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await AuthService.login(identifier, password);
 
-      if (result.success) {
-        setUser(result.user);
+      if (result.success && result.user) {
+        setUser({
+          id: result.user.userId,
+          nome: result.user.nomeCompleto,
+          email: result.user.email,
+          role: result.user.role
+        });
         console.log("Usuário setado no contexto:", result.user);
-        return result; // Retorna { success: true, user: {...}, token: "..." }
+        return result;
       }
 
       return result;
@@ -124,6 +98,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     isAuthenticated: !!user,
+    userRole: user?.role,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
