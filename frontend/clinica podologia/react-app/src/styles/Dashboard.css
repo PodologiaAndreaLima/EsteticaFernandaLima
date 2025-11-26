@@ -146,10 +146,24 @@
 }
 
 .metrics-list {
-  width: 340px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* left column grouping KPIs + variation caption/values */
+.metrics-left-col {
+  flex: 1 1 680px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.variation-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 /* Quando estiver na versão vertical (KPIs acima dos gráficos) usamos grid para duas colunas */
@@ -459,33 +473,68 @@
   line-height: 1.1;
 }
 
-.metric-variation.small {
-  margin-top: 12px;
+/* layout for the top metrics area: left column (KPIs + variation) and right column (gross margin) */
+.metrics-top {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   align-items: flex-start;
 }
 
-.metric-variation.small .variation-left {
+.variation-left {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
-.metric-variation.small .variation-receita {
+/* Caption placed above the receita/custo numbers to serve as legend */
+.variation-caption {
+  font-size: 0.85rem;
+  color: #7a6a8a;
+  margin-bottom: 6px;
+}
+
+.variation-receita {
   color: #2e7d32;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 1.12rem; /* slightly larger to match prototype */
+  line-height: 1.1;
 }
 
-.metric-variation.small .variation-custo {
+.variation-custo {
   color: #c62828;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 1.12rem;
+  line-height: 1.1;
 }
 
-.metric-variation.small .variation-right .gross-margin {
+/* right column containing the gross margin box */
+.variation-right {
+  width: 220px;
+  display: flex;
+  align-items: flex-start; /* align to top so heading lines up with other KPI titles */
+  justify-content: flex-start;
+}
+
+.variation-right .gross-margin {
   color: #5b3e6a;
   font-size: 0.95rem;
+  text-align: left;
+  padding: 14px 16px; /* match spacing of .metric-item */
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
+.variation-right .gross-margin strong {
+  font-size: 1.18rem;
+  color: #2f2f2f;
+  margin-top: 6px;
+  line-height: 1.1;
+}
+
+/* duplicate gross-margin rule removed (handled by .variation-right .gross-margin) */
 
 .metrics-bottom .metrics-charts {
   gap: 24px;
@@ -1102,4 +1151,41 @@
 .construction-icon {
   font-size: 3rem;
   margin-top: 20px;
+}
+
+/* Fixes: allow chart containers and small chart boxes to shrink so content isn't clipped
+   when the sidebar is open. These rules give inner elements `min-width: 0` and
+   allow `.small-chart-box` to shrink instead of forcing overflow. */
+.dashboard-content *,
+.dashboard-content *:before,
+.dashboard-content *:after {
+  box-sizing: border-box;
+}
+
+.small-charts-row {
+  min-width: 0;
+}
+
+.small-chart-box {
+  flex: 1 1 420px; /* prefer 420px but allow shrinking */
+  min-width: 0;
+}
+
+.simple-inner-grid > * {
+  min-width: 0;
+}
+
+.simple-chart-right,
+.simple-chart-right .chart-canvas,
+.line-chart,
+.metrics-bottom .metrics-charts {
+  min-width: 0;
+}
+
+/* ensure canvas fills parent without causing overflow */
+.simple-chart-right .chart-canvas canvas,
+.line-chart canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }

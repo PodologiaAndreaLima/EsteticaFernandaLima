@@ -514,27 +514,30 @@ const Dashboard = () => {
             <section className="dashboard-section metrics-card">
               <div className="metrics-row vertical">
                 <div className="metrics-top">
-                  <div className="metrics-list">
-                    <div className="metric-item">
-                      <span>Receita Bruta mensal</span>
-                      <strong>R$100,00</strong>
+                  <div className="metrics-left-col">
+                    <div className="metrics-list">
+                      <div className="metric-item">
+                        <span>Receita Bruta mensal</span>
+                        <strong>R$100,00</strong>
+                      </div>
+                      <div className="metric-item">
+                        <span>Receita Líquida mensal</span>
+                        <strong>R$100,00</strong>
+                      </div>
+                      <div className="metric-item">
+                        <span>Custo Fixo mensal</span>
+                        <strong>R$100,00</strong>
+                      </div>
+                      <div className="metric-item">
+                        <span>Custo Extra total do mês</span>
+                        <strong>R$100,00</strong>
+                      </div>
                     </div>
-                    <div className="metric-item">
-                      <span>Receita Líquida mensal</span>
-                      <strong>R$100,00</strong>
-                    </div>
-                    <div className="metric-item">
-                      <span>Custo Fixo mensal</span>
-                      <strong>R$100,00</strong>
-                    </div>
-                    <div className="metric-item">
-                      <span>Custo Extra total do mês</span>
-                      <strong>R$100,00</strong>
-                    </div>
-                  </div>
 
-                  <div className="metric-variation small">
                     <div className="variation-left">
+                      <div className="variation-caption">
+                        Variação em relação ao mês anterior
+                      </div>
                       <div className="variation-receita">
                         +12% <span>Receita</span>
                       </div>
@@ -542,12 +545,13 @@ const Dashboard = () => {
                         -5% <span>Custos</span>
                       </div>
                     </div>
-                    <div className="variation-right">
-                      <div className="gross-margin">
-                        Margem de Lucro Bruto
-                        <br />
-                        <strong>40%</strong>
-                      </div>
+                  </div>
+
+                  <div className="variation-right">
+                    <div className="gross-margin">
+                      Margem de Lucro Bruto
+                      <br />
+                      <strong>40%</strong>
                     </div>
                   </div>
                 </div>
