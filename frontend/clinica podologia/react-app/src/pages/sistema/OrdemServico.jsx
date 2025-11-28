@@ -388,8 +388,15 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
 
             <h3>Serviços</h3>
             {(ordem.servicos || []).length === 0 && (
-              <div className="campo-visualizacao">
-                <div className="valor">Nenhum serviço</div>
+              <div className="linha-visualizacao">
+                <div className="campo-visualizacao">
+                  <span className="rotulo">Serviço</span>
+                  <div className="valor">—</div>
+                </div>
+                <div className="campo-visualizacao">
+                  <span className="rotulo">Desconto</span>
+                  <div className="valor">0%</div>
+                </div>
               </div>
             )}
             {(ordem.servicos || []).map((s, i) => (
@@ -407,8 +414,15 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
 
             <h3>Produtos</h3>
             {(ordem.produtos || []).length === 0 && (
-              <div className="campo-visualizacao">
-                <div className="valor">Nenhum produto</div>
+              <div className="linha-visualizacao">
+                <div className="campo-visualizacao">
+                  <span className="rotulo">Produto</span>
+                  <div className="valor">Nenhum produto</div>
+                </div>
+                <div className="campo-visualizacao">
+                  <span className="rotulo">Desconto</span>
+                  <div className="valor">0%</div>
+                </div>
               </div>
             )}
             {(ordem.produtos || []).map((p, i) => (
@@ -428,20 +442,20 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
               </div>
             ))}
 
+            <h3>Observações</h3>
+            <div className="campo-visualizacao">
+              <div className="valor">{ordem.observacoes || "—"}</div>
+            </div>
+
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
                 <span className="rotulo">Valor de venda (R$)</span>
                 <div className="valor">{ordem.valorVenda || "0,00"}</div>
               </div>
               <div className="campo-visualizacao">
-                <span className="rotulo">Desconto total (%)</span>
+                <span className="rotulo">Desconto (%)</span>
                 <div className="valor">{ordem.desconto ?? 0}%</div>
               </div>
-            </div>
-
-            <h3>Observações</h3>
-            <div className="campo-visualizacao">
-              <div className="valor">{ordem.observacoes || "—"}</div>
             </div>
           </div>
         </div>
