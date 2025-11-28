@@ -162,6 +162,21 @@
   margin-bottom: 12px;
   align-items: center;
 }
+
+/* Ensure in the ordem modal the observations textarea always sits
+   below the other inputs: allow wrapping and make the full-group
+   occupy 100% width and appear after the smaller inputs. */
+.modal-container.ordem-modal .linha-formulario {
+  flex-wrap: wrap;
+}
+.modal-container.ordem-modal .linha-formulario .grupo-formulario {
+  order: 1;
+}
+.modal-container.ordem-modal .linha-formulario .grupo-formulario.full {
+  order: 2;
+  flex: 1 1 100%;
+  width: 100%;
+}
 .grupo-formulario {
   flex: 1;
   display: flex;

@@ -18,7 +18,7 @@ const ModalOrdem = ({
     servicos: [],
     produtos: [],
     valorVenda: "0,00",
-    descontoFinal: 0,
+    desconto: 0,
     observacoes: "",
   });
 
@@ -31,7 +31,7 @@ const ModalOrdem = ({
           servicos: [],
           produtos: [],
           valorVenda: "0,00",
-          descontoFinal: 0,
+          desconto: 0,
           observacoes: "",
         }
       );
@@ -312,6 +312,18 @@ const ModalOrdem = ({
           ))}
 
           <div className="linha-formulario">
+            <div className="grupo-formulario full">
+              <label>Observações</label>
+              <textarea
+                value={ordem.observacoes}
+                name="observacoes"
+                onChange={alterarCampo}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <div className="linha-formulario">
             <div className="grupo-formulario">
               <label>Valor de venda (R$)</label>
               <input
@@ -321,25 +333,13 @@ const ModalOrdem = ({
               />
             </div>
             <div className="grupo-formulario">
-              <label>Desconto total (%)</label>
+              <label>Desconto (%)</label>
               <input
                 type="number"
                 min="0"
-                name="descontoFinal"
-                value={ordem.descontoFinal}
+                name="desconto"
+                value={ordem.desconto}
                 onChange={alterarCampo}
-              />
-            </div>
-          </div>
-
-          <div className="linha-formulario">
-            <div className="grupo-formulario full">
-              <label>Observações</label>
-              <textarea
-                value={ordem.observacoes}
-                name="observacoes"
-                onChange={alterarCampo}
-                rows={4}
               />
             </div>
           </div>
@@ -435,7 +435,7 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
               </div>
               <div className="campo-visualizacao">
                 <span className="rotulo">Desconto total (%)</span>
-                <div className="valor">{ordem.descontoFinal ?? 0}%</div>
+                <div className="valor">{ordem.desconto ?? 0}%</div>
               </div>
             </div>
 
