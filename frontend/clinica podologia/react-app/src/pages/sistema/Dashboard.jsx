@@ -515,43 +515,50 @@ const Dashboard = () => {
               <div className="metrics-row vertical">
                 <div className="metrics-top">
                   <div className="metrics-left-col">
-                    <div className="metrics-list">
+                    <div className="metrics-grid-2x3">
                       <div className="metric-item">
                         <span>Receita Bruta mensal</span>
                         <strong>R$100,00</strong>
                       </div>
+
                       <div className="metric-item">
                         <span>Receita Líquida mensal</span>
                         <strong>R$100,00</strong>
                       </div>
+
                       <div className="metric-item">
                         <span>Custo Fixo mensal</span>
                         <strong>R$100,00</strong>
                       </div>
+
                       <div className="metric-item">
                         <span>Custo Extra total do mês</span>
                         <strong>R$100,00</strong>
                       </div>
-                    </div>
 
-                    <div className="variation-left">
-                      <div className="variation-caption">
-                        Variação em relação ao mês anterior
+                      <div className="metric-item variation-box">
+                        <div className="variation-caption">
+                          Variação em relação ao
+                          <br />
+                          mês anterior
+                        </div>
+                        <div className="variation-values">
+                          <div className="variation-receita">
+                            +12% <span>Receita</span>
+                          </div>
+                          <div className="variation-custo">
+                            -5% <span>Custos</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="variation-receita">
-                        +12% <span>Receita</span>
-                      </div>
-                      <div className="variation-custo">
-                        -5% <span>Custos</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="variation-right">
-                    <div className="gross-margin">
-                      Margem de Lucro Bruto
-                      <br />
-                      <strong>40%</strong>
+                      <div className="metric-item gross-margin-box">
+                        <div className="gross-margin">
+                          Margem de Lucro Bruto
+                          <br />
+                          <strong>40%</strong>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -613,7 +620,7 @@ const Dashboard = () => {
 
                     <div className="detail-chart-box">
                       <div className="detail-chart-title">
-                        5 Produtos mais realizados no mês
+                        5 Produtos mais vendidos no mês
                       </div>
                       <div className="detail-chart-canvas">
                         <canvas ref={detailProductsRef} />
@@ -796,7 +803,7 @@ const Dashboard = () => {
 
                   <div className="small-chart-box">
                     <div className="small-chart-title">
-                      5 Produtos mais realizados no mês
+                      5 Produtos mais vendidos no mês
                     </div>
                     <div className="small-chart">
                       <canvas ref={productsRef} />

@@ -145,10 +145,23 @@
   align-items: stretch;
 }
 
-.metrics-list {
+.metrics-list,
+.metrics-grid-2x3 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-auto-rows: auto;
+  gap: 12px 24px;
+  width: 100%;
+}
+
+.variation-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gross-margin-box {
+  /* uses same visual rules as .metric-item (padding, alignment) */
 }
 
 /* left column grouping KPIs + variation caption/values */
@@ -480,6 +493,45 @@
   align-items: flex-start;
 }
 
+.metrics-grid-2x3 {
+  align-items: start;
+}
+
+.metrics-grid-2x3 .metric-item {
+  padding: 14px 16px;
+  min-height: 68px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+}
+
+.gross-margin-box {
+  display: flex;
+  align-items: center; /* vertically center gross margin inside its grid cell */
+}
+
+.variation-caption {
+  margin-bottom: 6px;
+}
+
+.variation-values .variation-receita span,
+.variation-values .variation-custo span {
+  display: block;
+  color: #8b6e9a;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 2px;
+}
+
+.variation-receita,
+.variation-custo {
+  font-size: 1.18rem;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
 .variation-left {
   display: flex;
   flex-direction: column;
@@ -489,22 +541,44 @@
 
 /* Caption placed above the receita/custo numbers to serve as legend */
 .variation-caption {
-  font-size: 0.85rem;
-  color: #7a6a8a;
-  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: #8b6e9a;
+  margin-bottom: 4px;
+  max-width: 220px;
+  line-height: 1.35;
+}
+
+/* row that places caption and gross-margin side-by-side */
+.variation-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.variation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.variation-values {
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* very tight spacing between the two variation lines */
+  margin-top: 0px; /* remove extra space between caption and values */
 }
 
 .variation-receita {
   color: #2e7d32;
   font-weight: 800;
-  font-size: 1.12rem; /* slightly larger to match prototype */
+  font-size: 1.18rem; /* match KPI value size */
   line-height: 1.1;
 }
 
 .variation-custo {
   color: #c62828;
   font-weight: 800;
-  font-size: 1.12rem;
+  font-size: 1.18rem; /* match KPI value size */
   line-height: 1.1;
 }
 
@@ -512,7 +586,7 @@
 .variation-right {
   width: 220px;
   display: flex;
-  align-items: flex-start; /* align to top so heading lines up with other KPI titles */
+  align-items: flex-start;
   justify-content: flex-start;
 }
 
@@ -520,7 +594,7 @@
   color: #5b3e6a;
   font-size: 0.95rem;
   text-align: left;
-  padding: 14px 16px; /* match spacing of .metric-item */
+  padding: 14px 16px; /* match .metric-item spacing */
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -828,6 +902,24 @@
   align-items: stretch;
 }
 
+/* Center KPIs + charts block within the detailed-extra-card */
+.detail-extra-inner {
+  justify-content: center;
+}
+
+.detail-charts-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center; /* center the grid inside the wrapper */
+}
+
+.detail-charts-grid {
+  justify-content: center; /* center grid columns within available space */
+  justify-items: center; /* center contents of each grid cell */
+  max-width: 980px; /* prevent grid from stretching too far on wide screens */
+  margin: 0 auto;
+}
+
 .detail-kpis-left {
   width: 320px;
   display: flex;
@@ -902,11 +994,50 @@
   height: 100% !important;
 }
 
+/* Place doughnut legend beside the chart on wide screens; stack on small screens */
 .doughnut-side {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center; /* center the whole chart+legend group in the grid cell */
+  gap: 28px;
+  flex-wrap: wrap; /* allow the title to wrap to its own line */
+}
+
+.doughnut-side .detail-dough-canvas {
+  width: 160px;
+  height: 160px;
+  flex: 0 0 160px;
+}
+
+.doughnut-side .doughnut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
   justify-content: center;
+  margin-left: 6px; /* small offset so legend doesn't touch the doughnut */
+}
+
+/* Make the chart title span full width above the doughnut and legend */
+.doughnut-side .detail-chart-title {
+  order: -1; /* ensure title sits above chart and legend */
+  width: 100% !important;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 1000px) {
+  .doughnut-side {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .doughnut-side .detail-dough-canvas {
+    width: 140px;
+    height: 140px;
+    flex: 0 0 140px;
+  }
 }
 
 .detail-chart-legend {
@@ -1188,4 +1319,61 @@
   display: block;
   width: 100% !important;
   height: 100% !important;
+}
+
+/* Strong override: center the two charts in the first metrics card
+   and make them occupy the previously empty area. These rules are
+   placed at the end to ensure they override earlier declarations. */
+
+.metrics-bottom .metrics-charts {
+  display: flex;
+  gap: 28px;
+  justify-content: center; /* center both charts horizontally */
+  max-width: 1100px; /* limit width so centering is visible */
+  margin: 0 auto;
+  flex-wrap: wrap; /* allow charts to wrap instead of causing overflow */
+}
+
+.metrics-bottom .line-chart {
+  flex: 2 1 480px; /* allow shrinking when space is limited */
+  min-width: 0; /* allow the flex child to shrink below its content width */
+  max-width: 720px;
+  height: 220px;
+}
+
+.metrics-bottom .doughnut-chart {
+  flex: 1 1 240px; /* flexible doughnut that can shrink/wrap */
+  min-width: 0;
+  max-width: 360px;
+  height: 220px;
+}
+
+@media (max-width: 1200px) {
+  .metrics-bottom .line-chart {
+    flex: 1 1 60%;
+    width: 60%;
+  }
+  .metrics-bottom .doughnut-chart {
+    flex: 0 0 240px;
+    width: 240px;
+  }
+}
+
+@media (max-width: 900px) {
+  .metrics-bottom .metrics-charts {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .metrics-bottom .line-chart,
+  .metrics-bottom .doughnut-chart {
+    width: 100% !important;
+    flex: 1 1 auto;
+    height: 200px;
+  }
+}
+
+/* Reduce padding of the top metrics card to make it visually smaller */
+.dashboard-section.metrics-card {
+  padding: 12px 14px;
 }

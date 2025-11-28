@@ -17,8 +17,8 @@ const ModalOrdem = ({
     funcionario: "",
     servicos: [],
     produtos: [],
-    quantidade: 1,
-    valorTotal: "0,00",
+    valorVenda: "0,00",
+    descontoFinal: 0,
     observacoes: "",
   });
 
@@ -30,8 +30,8 @@ const ModalOrdem = ({
           funcionario: "",
           servicos: [],
           produtos: [],
-          quantidade: 1,
-          valorTotal: "0,00",
+          valorVenda: "0,00",
+          descontoFinal: 0,
           observacoes: "",
         }
       );
@@ -313,18 +313,20 @@ const ModalOrdem = ({
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
-              <label>Quantidade</label>
+              <label>Valor de venda (R$)</label>
               <input
-                value={ordem.quantidade}
-                name="quantidade"
+                name="valorVenda"
+                value={ordem.valorVenda}
                 onChange={alterarCampo}
               />
             </div>
             <div className="grupo-formulario">
-              <label>Valor total (R$)</label>
+              <label>Desconto total (%)</label>
               <input
-                value={ordem.valorTotal}
-                name="valorTotal"
+                type="number"
+                min="0"
+                name="descontoFinal"
+                value={ordem.descontoFinal}
                 onChange={alterarCampo}
               />
             </div>
@@ -428,12 +430,12 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
 
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
-                <span className="rotulo">Quantidade total</span>
-                <div className="valor">{ordem.quantidade || "—"}</div>
+                <span className="rotulo">Valor de venda (R$)</span>
+                <div className="valor">{ordem.valorVenda || "0,00"}</div>
               </div>
               <div className="campo-visualizacao">
-                <span className="rotulo">Valor total (R$)</span>
-                <div className="valor">{ordem.valorTotal || "0,00"}</div>
+                <span className="rotulo">Desconto total (%)</span>
+                <div className="valor">{ordem.descontoFinal ?? 0}%</div>
               </div>
             </div>
 
@@ -576,7 +578,9 @@ const OrdemServico = () => {
                       .join(", ")}
                   </div>
                 </div>
-                <div className="valor">R$ {o.valorTotal || "0,00"}</div>
+                <div className="valor">
+                  R$ {o.valorVenda || o.valorTotal || "0,00"}
+                </div>
               </div>
             </div>
             <div className="ordem-actions">
