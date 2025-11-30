@@ -16,6 +16,9 @@ import SistemaLayout from "./pages/sistema/SistemaLayout";
 import Servicos from "./pages/sistema/Servicos";
 import Produtos from "./pages/sistema/Produtos";
 import Perfil from "./pages/sistema/Perfil";
+import OrdemServico from "./pages/sistema/OrdemServico";
+import Custos from "./pages/sistema/Custos";
+import Combos from "./pages/sistema/Combos";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./styles/LoadingSpinner.css";
 import "./styles/fix-system-overflow.css";
@@ -50,6 +53,20 @@ const PublicRoute = ({ children }) => {
   }
 
   return !isAuthenticated ? children : <Navigate to="/sistema" />;
+};
+
+const ProtectedRoute = ({ children, requiredRoles = [] }) => {
+  const { userRole, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!userRole || !requiredRoles.includes(userRole)) {
+    return <Navigate to="/sistema" />;
+  }
+
+  return children;
 };
 
 function App() {
@@ -139,27 +156,33 @@ function App() {
           />
 
           {/* Rotas do sistema interno - temporariamente sem proteção para visualização */}
-          <Route path="/sistema" element={
-            <PrivateRoute>
-            <SistemaLayout />
-            </PrivateRoute>
-          }
+          <Route
+            path="/sistema"
+            element={
+              <PrivateRoute>
+                <SistemaLayout />
+              </PrivateRoute>
+            }
           >
             {/* Página inicial do sistema */}
             <Route index element={<PaginaInicial />} />
 
             {/* Páginas do sistema */}
             <Route path="dashboard" element={<Dashboard />} />
-            <Route
-              path="ordem-servico"
-              element={<div>Ordem de Serviço em construção</div>}
-            />
+            <Route path="ordem-servico" element={<OrdemServico />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="servicos" element={<Servicos />} />
             <Route path="produtos" element={<Produtos />} />
-            <Route path="combos" element={<div>Combos em construção</div>} />
-            <Route path="funcionarios" element={<Funcionarios />} />
-            <Route path="custos" element={<div>Custos em construção</div>} />
+            <Route path="combos" element={<Combos />} />
+            <Route
+              path="funcionarios"
+              element={
+                <ProtectedRoute requiredRoles={["ADMIN", "GERENTE"]}>
+                  <Funcionarios />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="custos" element={<Custos />} />
             <Route path="perfil" element={<Perfil />} />
           </Route>
 

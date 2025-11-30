@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { success, error, promise } from "../../services/toastService";
+import CatalogService from "../../services/catalogService";
 import "./Servicos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 import ServiceCard from "../../components/sistema/ServiceCard";
@@ -178,57 +179,40 @@ const ModalServico = ({ estaAberto, aoFechar, servico, aoSalvar }) => {
 };
 
 const Servicos = () => {
-  // Estado para armazenar a lista de serviços
-  const [listaServicos, setListaServicos] = useState([
-    {
-      id: 1,
-      nome: "Micropigmentação",
-      descricao:
-        "Micropigmentação de sobrancelhas é uma técnica estética que deposita pigmentos na pele para preencher falhas, definir e realçar a sobrancelha, resultando em um visual mais denso e harmonioso. Ao contrário de tatuagens, ela é semipermanente, sendo aplicada em uma camada superficial da pele e exigindo retoques periódicos para manter o resultado.",
-      valorCusto: "",
-      valorVenda: "599,00",
-    },
-    {
-      id: 5,
-      nome: "Design de Sobrancelhas com Tintura",
-      descricao:
-        "Inclui o procedimento de design tradicional com aplicação de tintura para realçar ainda mais o formato e a cor das sobrancelhas.",
-      valorCusto: "",
-      valorVenda: "65,00",
-    },
-    {
-      id: 6,
-      nome: "Brow Lamination",
-      descricao:
-        "Brow Lamination é uma técnica de design de sobrancelhas que alinha os fios, criando um efeito volumoso e preenchido.",
-      valorCusto: "",
-      valorVenda: "150,00",
-    },
-    // {
-    //   id: 2,
-    //   nome: "Peeling Facial",
-    //   descricao:
-    //     "Tratamento estético que promove a renovação celular da pele através da aplicação de substâncias esfoliantes. Remove células mortas, melhora textura e luminosidade, minimiza linhas finas e ajuda a controlar a oleosidade.",
-    //   valorCusto: "70,00",
-    //   valorVenda: "220,00",
-    // },
-    // {
-    //   id: 3,
-    //   nome: "Lash Lifting",
-    //   descricao:
-    //     "Lash lifting é um procedimento estético que curva e alonga os cílios naturais, criando um efeito similar ao uso de curvex e máscara mas com durabilidade prolongada. A técnica não utiliza fio sintéticos, mas sim aplica produtos específicos para moldar os cílios.",
-    //   valorCusto: "",
-    //   valorVenda: "160,00",
-    // },
-    // {
-    //   id: 4,
-    //   nome: "Limpeza de Pele",
-    //   descricao:
-    //     "Limpeza de pele é um procedimento estético que remove profundamente impurezas, células mortas e excesso de oleosidade da pele, como cravos e espinhas.",
-    //   valorCusto: "",
-    //   valorVenda: "150,00",
-    // },
-  ]);
+  // Estado para armazenar a lista de serviços (fonte: CatalogService)
+  const [listaServicos, setListaServicos] = useState(
+    CatalogService.getServicos()
+  );
+
+  useEffect(() => {
+    const unsub = CatalogService.subscribeServicos((next) =>
+      setListaServicos(next)
+    );
+    return () => unsub();
+  }, []);
+  //   id: 2,
+  //   nome: "Peeling Facial",
+  //   descricao:
+  //     "Tratamento estético que promove a renovação celular da pele através da aplicação de substâncias esfoliantes. Remove células mortas, melhora textura e luminosidade, minimiza linhas finas e ajuda a controlar a oleosidade.",
+  //   valorCusto: "70,00",
+  //   valorVenda: "220,00",
+  // },
+  // {
+  //   id: 3,
+  //   nome: "Lash Lifting",
+  //   descricao:
+  //     "Lash lifting é um procedimento estético que curva e alonga os cílios naturais, criando um efeito similar ao uso de curvex e máscara mas com durabilidade prolongada. A técnica não utiliza fio sintéticos, mas sim aplica produtos específicos para moldar os cílios.",
+  //   valorCusto: "",
+  //   valorVenda: "160,00",
+  // },
+  // {
+  //   id: 4,
+  //   nome: "Limpeza de Pele",
+  //   descricao:
+  //     "Limpeza de pele é um procedimento estético que remove profundamente impurezas, células mortas e excesso de oleosidade da pele, como cravos e espinhas.",
+  //   valorCusto: "",
+  //   valorVenda: "150,00",
+  // },
 
   // Estados para os modais
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
@@ -272,9 +256,11 @@ const Servicos = () => {
   // Função para confirmar a exclusão do serviço
   const confirmarExclusao = () => {
     if (servicoParaExcluir) {
-      setListaServicos(
-        listaServicos.filter((servico) => servico.id !== servicoParaExcluir)
+      const updated = listaServicos.filter(
+        (servico) => servico.id !== servicoParaExcluir
       );
+      setListaServicos(updated);
+      CatalogService.setServicos(updated);
       success("Serviço excluído com sucesso!");
       setModalConfirmacaoExclusaoAberto(false);
       setServicoParaExcluir(null);
@@ -293,6 +279,7 @@ const Servicos = () => {
           : servico
       );
       setListaServicos(servicosAtualizados);
+      CatalogService.setServicos(servicosAtualizados);
       // Exibe notificação ao editar
       success("Serviço editado com sucesso!");
     } else {
@@ -301,7 +288,9 @@ const Servicos = () => {
         id: Date.now(), // ID temporário
         ...dadosServico,
       };
-      setListaServicos([...listaServicos, novoServico]);
+      const updated = [...listaServicos, novoServico];
+      setListaServicos(updated);
+      CatalogService.setServicos(updated);
       success("Serviço adicionado com sucesso!");
     }
     // toast shown via success()
