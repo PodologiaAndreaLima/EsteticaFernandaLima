@@ -57,7 +57,7 @@ public class ClienteService {
         clienteExistente.setCpf(clienteAtualizado.getCpf());
         clienteExistente.setTelefone(clienteAtualizado.getTelefone());
         clienteExistente.setEmail(clienteAtualizado.getEmail());
-        clienteExistente.setSenha(clienteAtualizado.getSenha());
+        clienteExistente.setDataNascimento(clienteAtualizado.getDataNascimento());
 
         return repository.save(clienteExistente);
     }

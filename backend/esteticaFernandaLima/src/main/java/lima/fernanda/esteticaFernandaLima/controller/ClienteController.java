@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lima.fernanda.esteticaFernandaLima.dto.ClienteMapper;
 import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.service.ClienteService;
@@ -20,29 +21,32 @@ import java.util.List;
 public class ClienteController {
 
     private final ClienteService service;
+    private final ClienteMapper mapper; // ✅ ADICIONAR
 
-    public ClienteController(ClienteService service) {
+    public ClienteController(ClienteService service, ClienteMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping
-    @Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
-    @ApiResponse(responseCode = "200", description = "Clientes encontrados")
-    @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
-    public ResponseEntity<List<ClienteResponse>> getCliente(@RequestParam(required = false) String busca) {
-        List<ClienteResponse> clientes = service.buscarTodos(busca);
-        return clientes.isEmpty() ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.ok(clientes);
-    }
+@Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
+@ApiResponse(responseCode = "200", description = "Clientes encontrados")
+@ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
+public ResponseEntity<List<ClienteResponse>> getCliente(@RequestParam(required = false) String busca) {
+    List<ClienteResponse> clientesResponse = service.buscarTodos(busca);
+    return clientesResponse.isEmpty() ?
+            ResponseEntity.noContent().build() :
+            ResponseEntity.ok(clientesResponse);
+}
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar cliente por ID", description = "Retorna um cliente específico pelo ID")
     @ApiResponse(responseCode = "200", description = "Cliente encontrado")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    public ResponseEntity<Cliente> getClientePorId(@PathVariable Integer id) {
+    public ResponseEntity<ClienteResponse> getClientePorId(@PathVariable Integer id) { 
         try {
-            return ResponseEntity.ok(service.buscarPorId(id));
+            Cliente cliente = service.buscarPorId(id);
+            return ResponseEntity.ok(mapper.toResponse(cliente));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -51,8 +55,9 @@ public class ClienteController {
     @PostMapping
     @Operation(summary = "Cadastrar cliente", description = "Cadastra um novo cliente")
     @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso")
-    public ResponseEntity<Cliente> postCliente(@RequestBody @Valid Cliente cliente) {
-        return ResponseEntity.status(201).body(service.salvar(cliente));
+    public ResponseEntity<ClienteResponse> postCliente(@RequestBody @Valid Cliente cliente) { // ✅ MUDAR para ClienteResponse
+        Cliente clienteSalvo = service.salvar(cliente);
+        return ResponseEntity.status(201).body(mapper.toResponse(clienteSalvo)); // ✅ MAPEAR
     }
 
     @DeleteMapping("/{id}")
@@ -72,10 +77,11 @@ public class ClienteController {
     @Operation(summary = "Atualizar cliente", description = "Atualiza os dados de um cliente existente")
     @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    public ResponseEntity<Cliente> putCliente(@PathVariable Integer id,
-                                              @RequestBody @Valid Cliente cliente) {
+    public ResponseEntity<ClienteResponse> putCliente(@PathVariable Integer id, // ✅ MUDAR para ClienteResponse
+                                                      @RequestBody @Valid Cliente cliente) {
         try {
-            return ResponseEntity.ok(service.atualizar(id, cliente));
+            Cliente clienteAtualizado = service.atualizar(id, cliente);
+            return ResponseEntity.ok(mapper.toResponse(clienteAtualizado)); // ✅ MAPEAR
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

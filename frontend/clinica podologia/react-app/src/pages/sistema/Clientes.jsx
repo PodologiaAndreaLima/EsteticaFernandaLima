@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import { success, error, promise } from "../../services/toastService";
+import React, { useState, useEffect } from "react";
+import { success, error } from "../../services/toastService";
 import "./Clientes.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
+import { ClienteService } from "../../services/clienteService";
 
-// Componente Modal para Visualização de Cliente
+// ✅ ADICIONAR: Componente Modal para Visualizar Cliente
 const ModalVisualizarCliente = ({ estaAberto, aoFechar, cliente }) => {
   if (!estaAberto) return null;
 
   return (
     <div className="modal-overlay">
-      <div className="modal-container modal-visualizar">
+      <div className="modal-container">
         <div className="modal-header">
           <h2>Detalhes do Cliente</h2>
           <button className="botao-fechar" onClick={aoFechar}>
@@ -17,42 +18,31 @@ const ModalVisualizarCliente = ({ estaAberto, aoFechar, cliente }) => {
           </button>
         </div>
 
-        <div className="conteudo-visualizacao">
-          <div className="grupo-visualizacao">
-            <h3>Informações Pessoais</h3>
-            <div className="linha-visualizacao">
-              <div className="campo-visualizacao">
-                <span className="rotulo">Nome completo:</span>
-                <span className="valor">{cliente.nomeCompleto}</span>
-              </div>
-              <div className="campo-visualizacao">
-                <span className="rotulo">CPF:</span>
-                <span className="valor">{cliente.cpf}</span>
-              </div>
-            </div>
-            <div className="linha-visualizacao">
-              <div className="campo-visualizacao">
-                <span className="rotulo">Email:</span>
-                <span className="valor">{cliente.email}</span>
-              </div>
-              <div className="campo-visualizacao">
-                <span className="rotulo">Telefone:</span>
-                <span className="valor">{cliente.telefone}</span>
-              </div>
-            </div>
-            <div className="linha-visualizacao">
-              <div className="campo-visualizacao">
-                <span className="rotulo">Data de Nascimento:</span>
-                <span className="valor">{cliente.dataNascimento}</span>
-              </div>
-            </div>
+        <div className="modal-body">
+          <div className="campo-visualizacao">
+            <strong>Nome:</strong>
+            <p>{cliente.nomeCompleto}</p>
           </div>
-
-          {/* Aqui podem ser adicionados outros grupos de informações no futuro, como histórico de atendimentos */}
+          <div className="campo-visualizacao">
+            <strong>CPF:</strong>
+            <p>{cliente.cpf}</p>
+          </div>
+          <div className="campo-visualizacao">
+            <strong>Email:</strong>
+            <p>{cliente.email}</p>
+          </div>
+          <div className="campo-visualizacao">
+            <strong>Telefone:</strong>
+            <p>{cliente.telefone}</p>
+          </div>
+          <div className="campo-visualizacao">
+            <strong>Data de Nascimento:</strong>
+            <p>{cliente.dataNascimento}</p>
+          </div>
         </div>
 
         <div className="rodape-modal">
-          <button className="botao-fechar-visualizacao" onClick={aoFechar}>
+          <button className="botao-cancelar" onClick={aoFechar}>
             Fechar
           </button>
         </div>
@@ -61,51 +51,38 @@ const ModalVisualizarCliente = ({ estaAberto, aoFechar, cliente }) => {
   );
 };
 
-// Componente Modal para Edição/Adição de Cliente
+// ✅ ADICIONAR: Componente Modal para Editar/Adicionar Cliente
 const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
-  // Inicializa o estado vazio; será sincronizado abaixo quando o modal abrir
-  const [dadosFormulario, setDadosFormulario] = useState({
+  const formInicial = {
     nomeCompleto: "",
     cpf: "",
     email: "",
     telefone: "",
     dataNascimento: "",
-  });
+  };
 
-  // Sincroniza os dados do formulário sempre que o cliente ou a abertura do
-  // modal mudar. Isso corrige o problema em que o componente é montado
-  // quando o modal está fechado e o estado inicial não refletia o cliente
-  // selecionado para edição — resultando em criação de novo registro ao
-  // salvar em vez de atualizar o existente.
-  React.useEffect(() => {
-    if (estaAberto) {
-      if (cliente && cliente.id !== undefined) {
-        setDadosFormulario({ ...cliente });
-      } else {
-        setDadosFormulario({
-          nomeCompleto: "",
-          cpf: "",
-          email: "",
-          telefone: "",
-          dataNascimento: "",
-        });
-      }
+  const [dadosFormulario, setDadosFormulario] = useState(formInicial);
+
+  useEffect(() => {
+    if (cliente && cliente.id) {
+      setDadosFormulario(cliente);
+    } else {
+      setDadosFormulario(formInicial);
     }
   }, [cliente, estaAberto]);
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
-    setDadosFormulario({
-      ...dadosFormulario,
+    setDadosFormulario((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const enviarFormulario = (e) => {
     e.preventDefault();
-    // Garante que o id será enviado se estiver editando
     aoSalvar(dadosFormulario);
-    aoFechar();
+    setDadosFormulario(formInicial);
   };
 
   if (!estaAberto) return null;
@@ -114,7 +91,9 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h2>{cliente.id ? "Editar Cliente" : "Adicionar Cliente"}</h2>
+          <h2>
+            {dadosFormulario.id ? "Editar Cliente" : "Adicionar Cliente"}
+          </h2>
           <button className="botao-fechar" onClick={aoFechar}>
             &times;
           </button>
@@ -123,7 +102,7 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
         <form onSubmit={enviarFormulario}>
           <div className="linha-formulario">
             <div className="grupo-formulario">
-              <label htmlFor="nomeCompleto">Nome completo</label>
+              <label htmlFor="nomeCompleto">Nome Completo</label>
               <input
                 type="text"
                 id="nomeCompleto"
@@ -133,6 +112,9 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
                 required
               />
             </div>
+          </div>
+
+          <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="cpf">CPF</label>
               <input
@@ -144,9 +126,6 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
                 required
               />
             </div>
-          </div>
-
-          <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="email">Email</label>
               <input
@@ -158,6 +137,9 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
                 required
               />
             </div>
+          </div>
+
+          <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="telefone">Telefone</label>
               <input
@@ -169,19 +151,14 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
                 required
               />
             </div>
-          </div>
-
-          <div className="linha-formulario">
             <div className="grupo-formulario">
-              <label htmlFor="dataNascimento">Data de nascimento</label>
+              <label htmlFor="dataNascimento">Data de Nascimento</label>
               <input
-                type="text"
+                type="date"
                 id="dataNascimento"
                 name="dataNascimento"
-                placeholder="DD/MM/AAAA"
                 value={dadosFormulario.dataNascimento}
                 onChange={alterarCampo}
-                required
               />
             </div>
           </div>
@@ -200,18 +177,10 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
   );
 };
 
+// ✅ Componente Clientes (resto do código permanece igual)
 const Clientes = () => {
-  // Estado para armazenar a lista de clientes
-  const [listaClientes, setListaClientes] = useState([
-    {
-      id: 1,
-      nomeCompleto: "Fulano da Silva",
-      cpf: "Fulano da Silva", // Mantido conforme a imagem
-      email: "fulano@gmail.com",
-      telefone: "(00) 90000-0000",
-      dataNascimento: "01/01/2000",
-    },
-  ]);
+  const [listaClientes, setListaClientes] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
   // Estados para os modais
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
@@ -223,7 +192,24 @@ const Clientes = () => {
   const [clienteParaExcluir, setClienteParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
-  // Função para adicionar um novo cliente
+  useEffect(() => {
+    carregarClientes();
+  }, []);
+
+  const carregarClientes = async () => {
+    setCarregando(true);
+    const resposta = await ClienteService.getClientes();
+    if (resposta.success) {
+      const dados = Array.isArray(resposta.data) ? resposta.data : [];
+      setListaClientes(dados);
+      console.log("Clientes carregados:", dados);
+    } else {
+      error("Erro ao carregar clientes");
+      setListaClientes([]);
+    }
+    setCarregando(false);
+  };
+
   const adicionarCliente = () => {
     setClienteEmEdicao({
       nomeCompleto: "",
@@ -235,70 +221,106 @@ const Clientes = () => {
     setModalEditarAberto(true);
   };
 
-  // Função para visualizar um cliente
   const visualizarCliente = (cliente) => {
     setClienteParaVisualizar({ ...cliente });
     setModalVisualizarAberto(true);
   };
 
-  // Função para editar um cliente existente
   const editarCliente = (cliente) => {
     setClienteEmEdicao({ ...cliente });
     setModalEditarAberto(true);
   };
 
-  // Função para preparar a exclusão de um cliente (abre o modal)
   const prepararExclusao = (clienteId) => {
     setClienteParaExcluir(clienteId);
     setModalConfirmacaoExclusaoAberto(true);
   };
 
-  // Função para confirmar a exclusão do cliente
-  const confirmarExclusao = () => {
+  const confirmarExclusao = async () => {
     if (clienteParaExcluir) {
-      setListaClientes(
-        listaClientes.filter((cliente) => cliente.id !== clienteParaExcluir)
-      );
-      success("Cliente excluído com sucesso!");
+      const resposta = await ClienteService.deleteCliente(clienteParaExcluir);
+
+      if (resposta.success) {
+        setListaClientes(
+          listaClientes.filter((cliente) => cliente.id !== clienteParaExcluir)
+        );
+        success("Cliente excluído com sucesso!");
+      } else {
+        error(resposta.error);
+      }
+
       setModalConfirmacaoExclusaoAberto(false);
       setClienteParaExcluir(null);
     }
   };
 
-  // Notificações agora via react-hot-toast (toastService)
+  const salvarCliente = async (dadosCliente) => {
+    try {
+      let resposta;
 
-  // Função para salvar um cliente (novo ou editado)
-  const salvarCliente = (dadosCliente) => {
-    if (dadosCliente.id) {
-      // Atualizar cliente existente
-      const clientesAtualizados = listaClientes.map((cliente) =>
-        cliente.id === dadosCliente.id
-          ? { ...cliente, ...dadosCliente }
-          : cliente
-      );
-      setListaClientes(clientesAtualizados);
-      // Exibe notificação ao editar
-      success("Cliente editado com sucesso!");
-    } else {
-      // Adicionar novo cliente
-      const novoCliente = {
-        id: Date.now(), // ID temporário
-        ...dadosCliente,
-      };
-      setListaClientes([...listaClientes, novoCliente]);
-      success("Cliente adicionado com sucesso!");
+      if (dadosCliente.id) {
+        resposta = await ClienteService.updateCliente(dadosCliente.id, {
+          nomeCompleto: dadosCliente.nomeCompleto,
+          cpf: dadosCliente.cpf,
+          email: dadosCliente.email,
+          telefone: dadosCliente.telefone,
+          dataNascimento: dadosCliente.dataNascimento,
+        });
+
+        if (resposta.success) {
+          setListaClientes(
+            listaClientes.map((cliente) =>
+              cliente.id === dadosCliente.id ? dadosCliente : cliente
+            )
+          );
+          success("Cliente atualizado com sucesso!");
+        } else {
+          error(resposta.error);
+        }
+      } else {
+        resposta = await ClienteService.criarCliente({
+          nomeCompleto: dadosCliente.nomeCompleto,
+          cpf: dadosCliente.cpf,
+          email: dadosCliente.email,
+          telefone: dadosCliente.telefone,
+          dataNascimento: dadosCliente.dataNascimento,
+        });
+
+        if (resposta.success) {
+          await carregarClientes();
+          success("Cliente adicionado com sucesso!");
+        } else {
+          error(resposta.error);
+        }
+      }
+
+      setModalEditarAberto(false);
+    } catch (err) {
+      console.error("Erro ao salvar cliente:", err);
+      error("Erro ao salvar cliente");
     }
   };
 
-  // Filtrar clientes com base no termo de pesquisa
-  const clientesFiltrados = listaClientes.filter(
-    (cliente) =>
-      cliente.nomeCompleto
-        .toLowerCase()
-        .includes(termoPesquisa.toLowerCase()) ||
-      cliente.email.toLowerCase().includes(termoPesquisa.toLowerCase()) ||
-      cliente.cpf.includes(termoPesquisa)
-  );
+  const clientesFiltrados = Array.isArray(listaClientes)
+    ? listaClientes.filter(
+        (cliente) =>
+          (cliente.nomeCompleto &&
+            cliente.nomeCompleto
+              .toLowerCase()
+              .includes(termoPesquisa.toLowerCase())) ||
+          (cliente.email &&
+            cliente.email.toLowerCase().includes(termoPesquisa.toLowerCase())) ||
+          (cliente.cpf && cliente.cpf.includes(termoPesquisa))
+      )
+    : [];
+
+  if (carregando) {
+    return (
+      <div className="container-clientes">
+        <p>Carregando clientes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container-clientes">
@@ -317,7 +339,6 @@ const Clientes = () => {
         </button>
       </div>
 
-      {/* Lista de clientes em formato de tabela */}
       <div className="tabela-clientes">
         <table>
           <thead>
@@ -372,7 +393,6 @@ const Clientes = () => {
         </div>
       )}
 
-      {/* Modal para adicionar/editar cliente */}
       <ModalCliente
         estaAberto={modalEditarAberto}
         aoFechar={() => setModalEditarAberto(false)}
@@ -380,14 +400,12 @@ const Clientes = () => {
         aoSalvar={salvarCliente}
       />
 
-      {/* Modal para visualizar detalhes do cliente */}
       <ModalVisualizarCliente
         estaAberto={modalVisualizarAberto}
         aoFechar={() => setModalVisualizarAberto(false)}
         cliente={clienteParaVisualizar}
       />
 
-      {/* Modal de confirmação de exclusão */}
       <ModalConfirmacao
         estaAberto={modalConfirmacaoExclusaoAberto}
         aoFechar={() => setModalConfirmacaoExclusaoAberto(false)}
@@ -398,7 +416,6 @@ const Clientes = () => {
         textoBotaoCancelar="Cancelar"
         tipo="exclusao"
       />
-      {/* notifications handled by react-hot-toast (Toaster is global) */}
     </div>
   );
 };

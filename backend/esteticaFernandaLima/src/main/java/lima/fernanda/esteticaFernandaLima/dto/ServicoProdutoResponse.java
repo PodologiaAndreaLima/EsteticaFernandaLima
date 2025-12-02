@@ -6,7 +6,9 @@ public record ServicoProdutoResponse(
         String nome,
         Float despesa,
         Float valorVenda,
-        String descricao
+        String descricao,
+        String marca,
+        String categoria
 
 ) {
     public static ServicoProdutoResponse fromServicoProduto(lima.fernanda.esteticaFernandaLima.model.ServicoProduto servicoProduto) {
@@ -16,7 +18,9 @@ public record ServicoProdutoResponse(
                 servicoProduto.getNome(),
                 servicoProduto.getDespesa(),
                 servicoProduto.getValorVenda(),
-                servicoProduto.getDescricao()
+                servicoProduto.getDescricao(),
+                servicoProduto.getMarca(),
+                servicoProduto.getCategoria()
         );
     }
 }

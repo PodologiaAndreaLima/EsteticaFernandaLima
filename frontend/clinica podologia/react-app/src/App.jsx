@@ -58,6 +58,7 @@ const PublicRoute = ({ children }) => {
 const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   const { userRole, loading } = useAuth();
 
+
   if (loading) {
     return <LoadingSpinner />;
   }

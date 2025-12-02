@@ -45,6 +45,8 @@ public class ServicoProdutoService {
         servicoProdutoExistente.setDescricao(servicoProdutoAtualizado.getDescricao());
         servicoProdutoExistente.setDespesa(servicoProdutoAtualizado.getDespesa());
         servicoProdutoExistente.setValorVenda(servicoProdutoAtualizado.getValorVenda());
+        servicoProdutoExistente.setMarca(servicoProdutoAtualizado.getMarca());
+        servicoProdutoExistente.setCategoria(servicoProdutoAtualizado.getCategoria());
 
         return repository.save(servicoProdutoExistente);
     }

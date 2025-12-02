@@ -1,5 +1,6 @@
 package lima.fernanda.esteticaFernandaLima.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,11 +11,15 @@ public class ServicoProduto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idProdutoServico;
 
-    private Boolean isProduto;
+    @JsonProperty("isProduto")
+    private Boolean produto;
+
     private String nome;
     private Float despesa;
     private Float valorVenda;
     private String descricao;
+    private String marca;
+    private String categoria;
 
     public Integer getIdProdutoServico() {
         return idProdutoServico;
@@ -25,11 +30,11 @@ public class ServicoProduto {
     }
 
     public Boolean getProduto() {
-        return isProduto;
+        return produto;
     }
 
     public void setProduto(Boolean produto) {
-        isProduto = produto;
+        this.produto = produto;
     }
 
     public String getNome() {
@@ -62,5 +67,21 @@ public class ServicoProduto {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }
