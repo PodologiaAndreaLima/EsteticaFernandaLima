@@ -46,7 +46,7 @@ class UsuarioControllerTest {
         }
 
         usuarioCriacaoDto = new UsuarioCriacaoDto();
-        usuarioCriacaoDto.setNome("João Silva");
+        usuarioCriacaoDto.setNomeCompleto("João Silva");
         usuarioCriacaoDto.setEmail("joao@email.com");
         usuarioCriacaoDto.setSenha("senha123");
 
