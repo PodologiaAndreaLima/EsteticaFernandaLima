@@ -19,6 +19,7 @@ public class DashSimplesService {
     @Autowired
     CustoExtraRepository extraRepository;
 
+    @Autowired
     private CustoFixoService custoFixoService;
 
     public Float pegarRendaBrutaDoMesAtual() {
@@ -42,6 +43,7 @@ public class DashSimplesService {
         List<Float> custosFixos = custoFixoService.listarTodos().stream()
                 .map(custoFixo -> custoFixo.getValorMensal())
                 .toList();
+
         Float totalCustosFixos = 0.00F;
         for (Float i : custosFixos) {
             totalCustosFixos += i;

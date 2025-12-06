@@ -29,21 +29,21 @@ public class ClienteController {
     }
 
     @GetMapping
-@Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
-@ApiResponse(responseCode = "200", description = "Clientes encontrados")
-@ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
-public ResponseEntity<List<ClienteResponse>> getCliente(@RequestParam(required = false) String busca) {
-    List<ClienteResponse> clientesResponse = service.buscarTodos(busca);
-    return clientesResponse.isEmpty() ?
-            ResponseEntity.noContent().build() :
-            ResponseEntity.ok(clientesResponse);
-}
+    @Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
+    @ApiResponse(responseCode = "200", description = "Clientes encontrados")
+    @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
+    public ResponseEntity<List<ClienteResponse>> getCliente(@RequestParam(required = false) String busca) {
+        List<ClienteResponse> clientesResponse = service.buscarTodos(busca);
+        return clientesResponse.isEmpty() ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.ok(clientesResponse);
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar cliente por ID", description = "Retorna um cliente específico pelo ID")
     @ApiResponse(responseCode = "200", description = "Cliente encontrado")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    public ResponseEntity<ClienteResponse> getClientePorId(@PathVariable Integer id) { 
+    public ResponseEntity<ClienteResponse> getClientePorId(@PathVariable Integer id) {
         try {
             Cliente cliente = service.buscarPorId(id);
             return ResponseEntity.ok(mapper.toResponse(cliente));

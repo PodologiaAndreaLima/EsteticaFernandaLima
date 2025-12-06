@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../../styles/Dashboard.css";
 import Chart from "chart.js/auto";
+import { dashboardService } from "../../services/dashboardService";
+import { use } from "react";
 
 const Dashboard = () => {
   const lineRef = useRef(null);
@@ -15,14 +17,62 @@ const Dashboard = () => {
   const finalTopLeftRef = useRef(null);
   const finalTopRightRef = useRef(null);
   const finalBottomRef = useRef(null);
-  const [view, setView] = useState("detalhada");
+  const [view, setView] = useState("simples");
+  const [rendaBruta, setRendaBruta] = useState(0.00);
+  const [rendaLiquida, setRendaLiquida] = useState(0.00);
+  const [rendaBrutaMeses, setRendaBrutaMeses] = useState({});
+  const [rendaLiquidaMeses, setRendaLiquidaMeses] = useState({});
+  const [totalOrdemServico, setTotalOrdemServico] = useState(0);
+
+  // Primeiro useEffect: buscar dados
+  useEffect(() => {
+    const fetchReceitaData = async () => {
+      try {
+        const resultadoBruta = await dashboardService.getRendaBrutaMesAtual();
+        if (resultadoBruta.sucess) {
+          setRendaBruta(resultadoBruta.data);
+        }
+
+        const resultadoLiquida = await dashboardService.getRendaLiquidaMesAtual();
+        if (resultadoLiquida.sucess) {
+          setRendaLiquida(resultadoLiquida.data);
+        }
+
+        const resultadoBrutaMeses = await dashboardService.getRendaBrutaTodosMeses();
+        if (resultadoBrutaMeses.sucess) {
+          setRendaBrutaMeses(resultadoBrutaMeses.data);
+        }
+
+        const resultadoLiquidaMeses = await dashboardService.getRendaLiquidaTodosMeses();
+        if (resultadoLiquidaMeses.sucess) {
+          setRendaLiquidaMeses(resultadoLiquidaMeses.data);
+        }
+
+        const totalOrdemServico = await dashboardService.getTotalOrdensServicos();
+        if (totalOrdemServico.sucess) {
+          setTotalOrdemServico(totalOrdemServico.data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados de receita:", error);
+      }
+    };
+    fetchReceitaData();
+  }, []);
 
   useEffect(() => {
     console.log("Dashboard mounted");
     const charts = [];
 
+    if (Object.keys(rendaBrutaMeses).length === 0 || Object.keys(rendaLiquidaMeses).length === 0) {
+      return; // Aguarda dados
+    }
+
     if (lineRef.current) {
       try {
+        const meses = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const dataBruta = meses.map((_, i) => rendaBrutaMeses[i + 1] || 0);
+        const dataLiquida = meses.map((_, i) => rendaLiquidaMeses[i + 1] || 0);
+
         charts.push(
           new Chart(lineRef.current, {
             type: "line",
@@ -44,7 +94,7 @@ const Dashboard = () => {
               datasets: [
                 {
                   label: "Receita Bruta",
-                  data: [50, 60, 55, 70, 65, 80, 90, 85, 88, 95, 92, 100],
+                  data: dataBruta,
                   borderColor: "#6c63ff",
                   backgroundColor: "rgba(108,99,255,0.08)",
                   tension: 0.3,
@@ -52,7 +102,7 @@ const Dashboard = () => {
                 },
                 {
                   label: "Receita Líquida",
-                  data: [40, 48, 50, 60, 58, 70, 75, 72, 76, 82, 80, 90],
+                  data: dataLiquida,
                   borderColor: "#ff7ab6",
                   backgroundColor: "rgba(255,122,182,0.06)",
                   tension: 0.3,
@@ -471,7 +521,7 @@ const Dashboard = () => {
       clearTimeout(resizeTimer);
       charts.forEach((c) => c.destroy());
     };
-  }, [view]);
+  }, [view, rendaBrutaMeses, rendaLiquidaMeses]);
 
   return (
     <div className="dashboard-container">
@@ -484,17 +534,15 @@ const Dashboard = () => {
           <div className="header-controls">
             <div className="view-toggle pill">
               <button
-                className={`btn-secondary ${
-                  view === "simples" ? "active" : ""
-                }`}
+                className={`btn-secondary ${view === "simples" ? "active" : ""
+                  }`}
                 onClick={() => setView("simples")}
               >
                 Simples
               </button>
               <button
-                className={`btn-primary ${
-                  view === "detalhada" ? "active" : ""
-                }`}
+                className={`btn-primary ${view === "detalhada" ? "active" : ""
+                  }`}
                 onClick={() => setView("detalhada")}
               >
                 Detalhada
@@ -757,11 +805,11 @@ const Dashboard = () => {
                 <div className="simple-kpis-left">
                   <div className="simple-kpi-large">
                     <span>Receita Bruta mensal</span>
-                    <strong>R$100,00</strong>
+                    <strong>R$ {rendaBruta}</strong>
                   </div>
                   <div className="simple-kpi-large">
                     <span>Receita Líquida mensal</span>
-                    <strong>R$100,00</strong>
+                    <strong>R$ {rendaLiquida}</strong>
                   </div>
                 </div>
 
@@ -781,7 +829,7 @@ const Dashboard = () => {
                   <div className="orders-label">
                     Número de ordens de serviço realizadas no mês
                   </div>
-                  <div className="orders-value">20</div>
+                  <div className="orders-value">{totalOrdemServico}</div>
                 </div>
 
                 <div className="small-charts-row">
