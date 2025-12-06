@@ -118,14 +118,34 @@ public class UsuarioService {
     }
     
     return usuarioRepository.save(usuario);
-}
+    }
 
-public void deletar(Long id) {
-    Usuario usuario = usuarioRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-    
-    usuarioRepository.delete(usuario);
-    logger.info("Usuário deletado: {}", id);
-}
+    public void deletar(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        usuarioRepository.delete(usuario);
+        logger.info("Usuário deletado: {}", id);
+    }
+
+    public Usuario buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
+
+    public void alterarSenha(Long id, String senhaAtual, String novaSenha) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        // valida senha atual
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual incorreta");
+        }
+
+        // atualiza para a nova senha (criptografada)
+        String novaCriptografada = passwordEncoder.encode(novaSenha);
+        usuario.setSenha(novaCriptografada);
+        usuarioRepository.save(usuario);
+    }
 
 }

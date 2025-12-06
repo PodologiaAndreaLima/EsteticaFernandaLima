@@ -2,6 +2,7 @@
   /* Remover overflow para evitar scroll duplo */
   overflow: hidden;
 }
+
 /**************************************
  * Estilos para a página de Funcionários
  **************************************/
@@ -26,6 +27,40 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+/* ============================
+   Abas de Custos (Fixos / Variáveis)
+   ============================ */
+.abas-custos {
+  display: inline-flex;
+  gap: 8px;
+  margin-right: 16px;
+  align-items: center;
+}
+
+.aba {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #af8509;
+  background: #f6f6f6;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #573c6c;
+  transition: all 0.18s ease;
+}
+
+.aba:hover {
+  background: #efe7f6;
+}
+
+.aba.ativa {
+  background: #ffffff;
+  border-color: #573c6c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: #573c6c;
+  font-weight: 600;
 }
 
 .campo-pesquisa {

@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(schema = "custo_extra")
@@ -14,6 +15,8 @@ public class CustoExtra {
     private String nome;
     private String descricao;
     private Float valor;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate data;
 
     public Integer getIdCustoExtra() {

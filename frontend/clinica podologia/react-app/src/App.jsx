@@ -178,12 +178,19 @@ function App() {
             <Route
               path="funcionarios"
               element={
-                <ProtectedRoute requiredRoles={["ADMIN", "GERENTE"]}>
+                <ProtectedRoute requiredRoles={["ADMIN"]}>
                   <Funcionarios />
                 </ProtectedRoute>
               }
             />
-            <Route path="custos" element={<Custos />} />
+            <Route
+              path="custos"
+              element={
+                <ProtectedRoute requiredRoles={["ADMIN"]}>
+                  <Custos />
+                </ProtectedRoute>
+              }
+            />
             <Route path="perfil" element={<Perfil />} />
           </Route>
 

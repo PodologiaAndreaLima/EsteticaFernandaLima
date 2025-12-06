@@ -391,9 +391,9 @@ const Funcionarios = () => {
     setModalConfirmacaoExclusaoAberto(true);
   };
 
-  const confirmarExclusao = async () => { // ALTERAR: adicionar async
+  const confirmarExclusao = async () => {
     if (funcionarioParaExcluir) {
-      const resposta = await AuthService.deleteUsuario(funcionarioParaExcluir); // ADICIONAR
+      const resposta = await AuthService.deleteUsuario(funcionarioParaExcluir);
 
       if (resposta.success) {
         setListaFuncionarios(

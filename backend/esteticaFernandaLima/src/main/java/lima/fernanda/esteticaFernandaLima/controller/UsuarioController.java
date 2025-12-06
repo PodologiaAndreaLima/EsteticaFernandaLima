@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
 
 
 @RestController
@@ -85,4 +86,26 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
         return ResponseEntity.status(400).build();
     }
 }
+
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<UsuarioListarDto> buscarPorId(@PathVariable Long id) {
+        try {
+            Usuario usuario = usuarioService.buscarPorId(id);
+            return ResponseEntity.ok(UsuarioMapper.of(usuario));
+        } catch (RuntimeException e) {
+            logger.warn("Usuário não encontrado: {}", id);
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{id}/alterar-senha")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> alterarSenha(
+            @PathVariable Long id,
+            @RequestBody @Valid TrocaSenhaDto dto
+    ) {
+        usuarioService.alterarSenha(id, dto.getSenhaAtual(), dto.getNovaSenha());
+        return ResponseEntity.noContent().build();
+    }
 }

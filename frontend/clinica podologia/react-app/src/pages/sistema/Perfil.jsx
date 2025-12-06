@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Perfil.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
+import { useAuth } from "../../contexts/AuthContext";
+import perfilService from "../../services/perfilService";
+import { success, error as toastError } from "../../services/toastService";
+import { useNavigate } from "react-router-dom";
 
-// Componente Modal para Edição de Perfil
 const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
-  const [dadosFormulario, setDadosFormulario] = useState(perfil);
+  const [dadosFormulario, setDadosFormulario] = useState({
+    nomeCompleto: "",
+    cpf: "",
+    email: "",
+    telefone: "",
+    bio: "",
+    servicosPrestados: [],
+  });
 
-  // Lista de serviços disponíveis
+  // quando abrir, inicializa com o perfil atual
+  useEffect(() => {
+    if (estaAberto) {
+      setDadosFormulario({
+        nomeCompleto: perfil?.nomeCompleto ?? "",
+        cpf: perfil?.cpf ?? "",
+        email: perfil?.email ?? "",
+        telefone: perfil?.telefone ?? "",
+        bio: perfil?.bio ?? "",
+        servicosPrestados: Array.isArray(perfil?.servicosPrestados) ? perfil.servicosPrestados : [],
+      });
+    }
+  }, [estaAberto, perfil]);
+
   const servicosDisponiveis = [
     "Micropigmentação",
     "Peeling Facial",
@@ -18,27 +41,16 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
-    setDadosFormulario({
-      ...dadosFormulario,
-      [name]: value,
-    });
+    setDadosFormulario((prev) => ({ ...prev, [name]: value }));
   };
 
   const alterarServicos = (servico) => {
-    const servicosAtuais = [...dadosFormulario.servicosPrestados];
-    const index = servicosAtuais.indexOf(servico);
-
-    if (index > -1) {
-      // Remove se já estiver selecionado
-      servicosAtuais.splice(index, 1);
-    } else {
-      // Adiciona se não estiver selecionado
-      servicosAtuais.push(servico);
-    }
-
-    setDadosFormulario({
-      ...dadosFormulario,
-      servicosPrestados: servicosAtuais,
+    setDadosFormulario((prev) => {
+      const copia = [...(prev.servicosPrestados || [])];
+      const idx = copia.indexOf(servico);
+      if (idx > -1) copia.splice(idx, 1);
+      else copia.push(servico);
+      return { ...prev, servicosPrestados: copia };
     });
   };
 
@@ -81,7 +93,6 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
                 name="cpf"
                 value={dadosFormulario.cpf}
                 onChange={alterarCampo}
-                required
               />
             </div>
           </div>
@@ -106,7 +117,6 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
                 name="telefone"
                 value={dadosFormulario.telefone}
                 onChange={alterarCampo}
-                required
               />
             </div>
           </div>
@@ -133,9 +143,7 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
                     <input
                       type="checkbox"
                       value={servico}
-                      checked={dadosFormulario.servicosPrestados.includes(
-                        servico
-                      )}
+                      checked={dadosFormulario.servicosPrestados?.includes(servico)}
                       onChange={() => alterarServicos(servico)}
                     />
                     <span>{servico}</span>
@@ -159,7 +167,6 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
   );
 };
 
-// Componente Modal para Alterar Senha
 const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
   const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
@@ -175,6 +182,7 @@ const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
       return;
     }
     aoSalvar({ senhaAtual, novaSenha });
+    // reseta campos
     setSenhaAtual("");
     setNovaSenha("");
     setConfirmarSenha("");
@@ -255,9 +263,7 @@ const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
                 <button
                   type="button"
                   className="botao-ver-senha"
-                  onClick={() =>
-                    setMostrarConfirmarSenha(!mostrarConfirmarSenha)
-                  }
+                  onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
                 >
                   {mostrarConfirmarSenha ? "👁️" : "👁️‍🗨️"}
                 </button>
@@ -280,46 +286,142 @@ const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
 };
 
 const Perfil = () => {
-  // Estado para armazenar os dados do perfil
-  const [dadosPerfil, setDadosPerfil] = useState({
-    nomeCompleto: "Fulano da Silva",
-    cpf: "123.456.789-00",
-    email: "fulano@gmail.com",
-    telefone: "(00) 90000-0000",
-    bio: "Gosto de estética, comecei em 2016...",
-    servicosPrestados: ["Micropigmentação", "Peeling Facial"],
-  });
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
 
-  // Estados para os modais
+  const [dadosPerfil, setDadosPerfil] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalSenhaAberto, setModalSenhaAberto] = useState(false);
   const [modalExcluirAberto, setModalExcluirAberto] = useState(false);
 
-  const salvarPerfil = (novosDados) => {
-    setDadosPerfil(novosDados);
-    console.log("Perfil salvo:", novosDados);
+  useEffect(() => {
+    const id = user?.id ?? localStorage.getItem("userId");
+    if (!id) {
+      // Sem id — redireciona para login ou mostra aviso
+      console.warn("ID do usuário não disponível no contexto/localStorage.");
+      setCarregando(false);
+      return;
+    }
+    fetchPerfil(Number(id));
+  }, [user]);
+
+  const fetchPerfil = async (id) => {
+    setCarregando(true);
+    try {
+      const res = await perfilService.getById(id);
+      // se o service retornar o DTO compatível com UsuarioListarDto
+      setDadosPerfil({
+        id: res.id,
+        nomeCompleto: res.nomeCompleto ?? res.nome ?? "",
+        cpf: res.cpf ?? "",
+        email: res.email ?? "",
+        telefone: res.telefone ?? "",
+        bio: res.bio ?? "",
+        servicosPrestados: Array.isArray(res.servicosPrestados) ? res.servicosPrestados : [],
+        role: res.role ?? user?.role ?? null,
+      });
+    } catch (err) {
+      console.error("Erro ao buscar perfil:", err);
+      toastError("Erro ao carregar perfil");
+    } finally {
+      setCarregando(false);
+    }
   };
 
-  const alterarSenha = (dadosSenha) => {
-    console.log("Senha alterada");
+  const salvarPerfil = async (novosDados) => {
+    const id = user?.id ?? localStorage.getItem("userId");
+    if (!id) {
+      alert("ID do usuário não disponível para salvar o perfil.");
+      return;
+    }
+    try {
+      // payload deve seguir UsuarioCriacaoDto (back usa esse DTO no PUT)
+      const payload = {
+        nomeCompleto: novosDados.nomeCompleto,
+        cpf: novosDados.cpf,
+        telefone: novosDados.telefone,
+        bio: novosDados.bio,
+        servicosPrestados: novosDados.servicosPrestados,
+        email: novosDados.email,
+      };
+      const atualizado = await perfilService.update(Number(id), payload);
+      success("Perfil atualizado com sucesso!");
+      // atualizar estado local e localStorage
+      setDadosPerfil((prev) => ({ ...prev, ...novosDados }));
+      try {
+        // atualiza user no localStorage (se existir)
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          parsed.nomeCompleto = atualizado.nomeCompleto ?? atualizado.nome ?? parsed.nomeCompleto;
+          parsed.email = atualizado.email ?? parsed.email;
+          localStorage.setItem("user", JSON.stringify(parsed));
+        }
+        // atualiza também campos separados (userName)
+        if (atualizado.nomeCompleto) localStorage.setItem("userName", atualizado.nomeCompleto);
+        if (atualizado.email) localStorage.setItem("userEmail", atualizado.email);
+      } catch (e) {
+      }
+      if (setUser) {
+        setUser((u) => ({ ...(u || {}), nome: atualizado.nomeCompleto ?? atualizado.nome ?? u?.nome, email: atualizado.email ?? u?.email }));
+      }
+    } catch (err) {
+      console.error("Erro ao salvar perfil:", err);
+      toastError("Erro ao salvar perfil");
+    }
+  };
+
+  const alterarSenha = async ({ senhaAtual, novaSenha }) => {
+    const id = user?.id ?? localStorage.getItem("userId");
+    if (!id) {
+      alert("ID do usuário não disponível para alterar senha.");
+      return;
+    }
+    try {
+      // payload conforme seu DTO TrocaSenhaDto
+      const payload = { senhaAtual, novaSenha };
+      
+      await perfilService.changePassword(Number(id), payload);
+      success("Senha alterada com sucesso!");
+    } catch (err) {
+      console.error("Erro ao alterar senha:", err);
+      const msg = err?.response?.data?.message || err?.response?.data || "Erro ao alterar senha";
+      toastError(String(msg));
+    }
   };
 
   const excluirConta = () => {
-    console.log("Conta excluída");
+    console.log("Conta excluída (ainda só mock).");
     setModalExcluirAberto(false);
-    window.location.href = "/";
+    // logout / redirecionar
+    localStorage.clear();
+    navigate("/", { replace: true });
   };
+
+  if (carregando) {
+    return <div className="container-perfil"><p>Carregando perfil...</p></div>;
+  }
+
+  if (!dadosPerfil) {
+    return (
+      <div className="container-perfil">
+        <h1>Perfil</h1>
+        <p>Não foi possível carregar os dados do perfil.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container-perfil">
       <h1>Perfil</h1>
 
-      {/* Card com informações do perfil */}
       <div className="card-perfil">
         <div className="card-header-perfil">
           <div className="info-usuario">
             <div className="avatar-perfil">
-              <span>{dadosPerfil.nomeCompleto.charAt(0)}</span>
+              <span>{(dadosPerfil.nomeCompleto || "U").charAt(0)}</span>
             </div>
             <div className="dados-usuario">
               <h2>{dadosPerfil.nomeCompleto}</h2>
@@ -332,48 +434,35 @@ const Perfil = () => {
           <div className="info-grid">
             <div className="info-item">
               <span className="info-label">CPF:</span>
-              <span className="info-valor">{dadosPerfil.cpf}</span>
+              <span className="info-valor">{dadosPerfil.cpf || "-"}</span>
             </div>
             <div className="info-item">
               <span className="info-label">Telefone:</span>
-              <span className="info-valor">{dadosPerfil.telefone}</span>
+              <span className="info-valor">{dadosPerfil.telefone || "-"}</span>
             </div>
             <div className="info-item info-item-full">
               <span className="info-label">Bio:</span>
-              <span className="info-valor">{dadosPerfil.bio}</span>
+              <span className="info-valor">{dadosPerfil.bio || "-"}</span>
             </div>
             <div className="info-item info-item-full">
               <span className="info-label">Serviços Prestados:</span>
               <span className="info-valor">
-                {dadosPerfil.servicosPrestados.join(", ")}
+                {Array.isArray(dadosPerfil.servicosPrestados) && dadosPerfil.servicosPrestados.length > 0
+                  ? dadosPerfil.servicosPrestados.join(", ")
+                  : "-"}
               </span>
             </div>
           </div>
         </div>
 
         <div className="card-actions-perfil">
-          <button
-            className="botao-acao botao-editar"
-            onClick={() => setModalEditarAberto(true)}
-          >
-            Editar Perfil
-          </button>
-          <button
-            className="botao-acao botao-senha"
-            onClick={() => setModalSenhaAberto(true)}
-          >
-            Alterar Senha
-          </button>
-          <button
-            className="botao-acao botao-excluir"
-            onClick={() => setModalExcluirAberto(true)}
-          >
-            Excluir Conta
-          </button>
+          <button className="botao-acao botao-editar" onClick={() => setModalEditarAberto(true)}>Editar Perfil</button>
+          <button className="botao-acao botao-senha" onClick={() => setModalSenhaAberto(true)}>Alterar Senha</button>
+          <button className="botao-acao botao-excluir" onClick={() => setModalExcluirAberto(true)}>Excluir Conta</button>
         </div>
       </div>
 
-      {/* Modal para editar perfil */}
+      {/* Modais */}
       <ModalEditarPerfil
         estaAberto={modalEditarAberto}
         aoFechar={() => setModalEditarAberto(false)}
@@ -381,14 +470,12 @@ const Perfil = () => {
         aoSalvar={salvarPerfil}
       />
 
-      {/* Modal para alterar senha */}
       <ModalAlterarSenha
         estaAberto={modalSenhaAberto}
         aoFechar={() => setModalSenhaAberto(false)}
         aoSalvar={alterarSenha}
       />
 
-      {/* Modal de confirmação de exclusão */}
       <ModalConfirmacao
         estaAberto={modalExcluirAberto}
         aoFechar={() => setModalExcluirAberto(false)}

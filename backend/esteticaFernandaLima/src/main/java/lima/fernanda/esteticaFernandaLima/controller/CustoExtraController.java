@@ -36,11 +36,10 @@ public class CustoExtraController {
     @PostMapping
     @Operation(summary = "Cadastrar custo extra", description = "Cadastra um novo custo extra")
     @ApiResponse(responseCode = "201", description = "Custo extra cadastrado com sucesso")
-    public ResponseEntity<CustoExtra> criarCustoExtra(CustoExtra custoExtra) {
+    public ResponseEntity<CustoExtra> criarCustoExtra(@RequestBody @Valid CustoExtra custoExtra) {
         CustoExtra novoCustoExtra = service.salvar(custoExtra);
         return ResponseEntity.status(201).body(novoCustoExtra);
     }
-
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir custo extra", description = "Remove um custo extra pelo ID")
     @ApiResponse(responseCode = "204", description = "Custo extra removido com sucesso")

@@ -110,12 +110,14 @@ const Sidebar = ({ userRole }) => {
             </li>
           )}
 
-          <li className={isActive("/sistema/custos") ? "active" : ""}>
+          {userRole === "ADMIN" && (
+            <li className={isActive("/sistema/custos") ? "active" : ""}>
             <Link to="/sistema/custos">
               <img src="/assets/Custos-Sidebar.png" alt="Custos" />
               <span>Custos</span>
             </Link>
-          </li>
+          </li>  
+          )}
 
           <li className={isActive("/sistema/perfil") ? "active" : ""}>
             <Link to="/sistema/perfil">

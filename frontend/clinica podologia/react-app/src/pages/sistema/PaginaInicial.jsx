@@ -73,7 +73,7 @@ const PaginaInicial = () => {
       iconSrc: "/assets/iconeCustos-sistema.png",
       path: "/sistema/custos",
       color: "#654576",
-      requiredRole: null,
+      requiredRole: "ADMIN",
     },
   ];
 
