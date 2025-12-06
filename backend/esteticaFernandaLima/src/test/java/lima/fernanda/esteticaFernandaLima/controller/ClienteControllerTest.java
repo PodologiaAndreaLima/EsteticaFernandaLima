@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -45,9 +46,9 @@ class ClienteControllerTest {
         cliente.setCpf("88535514023");
         cliente.setTelefone("11999999999");
         cliente.setEmail("teste@email.com");
-        cliente.setSenha("123");
+        cliente.setDataNascimento(LocalDate.of(2000, 1, 1));
 
-        clienteResponse = new ClienteResponse(1, "Fernanda Lima", "teste@email.com");
+        clienteResponse = new ClienteResponse(1, "Fernanda Lima", "88535514023", "teste@email.com", "11999999999", LocalDate.of(2000, 1, 1));
     }
 
     @Test

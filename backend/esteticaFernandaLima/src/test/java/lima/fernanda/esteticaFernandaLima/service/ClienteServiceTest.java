@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +42,9 @@ class ClienteServiceTest {
         cliente.setCpf("88535514023");
         cliente.setTelefone("11999999999");
         cliente.setEmail("teste@email.com");
-        cliente.setSenha("123");
+        cliente.setDataNascimento(LocalDate.of(2000, 1, 1));
 
-        response = new ClienteResponse(1, "Fernanda Lima", "teste@email.com");
+        response = new ClienteResponse(1, "Fernanda Lima", "88535514023", "teste@email.com", "11999999999", LocalDate.of(2000, 1, 1));
     }
 
     @Test
@@ -136,7 +137,6 @@ class ClienteServiceTest {
         clienteAtualizado.setCpf("11122233344");
         clienteAtualizado.setTelefone("11888888888");
         clienteAtualizado.setEmail("novo@email.com");
-        clienteAtualizado.setSenha("novaSenha");
 
         when(repository.findById(1)).thenReturn(Optional.of(cliente));
         when(repository.save(cliente)).thenReturn(cliente);

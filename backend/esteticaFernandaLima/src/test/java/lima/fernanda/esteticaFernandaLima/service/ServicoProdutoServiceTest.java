@@ -35,8 +35,11 @@ class ServicoProdutoServiceTest {
         servicoProduto.setDespesa(100.0f);
         servicoProduto.setValorVenda(120.0f);
         servicoProduto.setDescricao("Limpeza profunda");
+        servicoProduto.setMarca("");
+        servicoProduto.setCategoria("");
 
-        response = new ServicoProdutoResponse(1, false, "Limpeza de pele", 100.0f, 120.0f,  "Limpeza profunda");
+        response = new ServicoProdutoResponse(1, false, "Limpeza de pele", 100.0f, 120.0f, "Limpeza profunda", "", "");
+
     }
 
     @Test
