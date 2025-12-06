@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(schema = "ordem_servico")
 public class OrdemServico {
 
     @Id

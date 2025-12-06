@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(schema = "usuario")
 public class Usuario {
 
     @Id

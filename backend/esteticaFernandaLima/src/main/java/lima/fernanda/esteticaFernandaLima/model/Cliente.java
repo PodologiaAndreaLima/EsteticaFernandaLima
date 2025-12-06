@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(schema = "cliente")
 public class Cliente {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)

@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(schema = "combo_servico_produto")
 public class ComboServicoProduto {
 
     @Id

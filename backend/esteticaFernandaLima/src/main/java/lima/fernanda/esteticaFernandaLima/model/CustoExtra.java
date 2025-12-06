@@ -1,12 +1,11 @@
 package lima.fernanda.esteticaFernandaLima.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 @Entity
+@Table(schema = "custo_extra")
 public class CustoExtra {
 
     @Id

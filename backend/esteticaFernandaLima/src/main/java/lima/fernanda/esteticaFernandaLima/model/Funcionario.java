@@ -4,8 +4,9 @@ package lima.fernanda.esteticaFernandaLima.model;
 import jakarta.persistence.*;
 import org.hibernate.validator.constraints.br.CPF;
 
+// vai pro lixo
+
 @Entity
-@Table
 public class Funcionario {
 
     @Id
