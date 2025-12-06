@@ -33,7 +33,7 @@ public class Cliente {
     private LocalDate dataNascimento;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("cliente-ordem")
     private List<OrdemServico> ordensServico = new ArrayList<>();
 
     // getters e setters (incluindo ordensServico)

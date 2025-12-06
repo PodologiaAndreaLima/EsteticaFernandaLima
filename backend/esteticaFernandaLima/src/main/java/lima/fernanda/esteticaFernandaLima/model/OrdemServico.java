@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class OrdemServico {
@@ -17,9 +18,17 @@ public class OrdemServico {
     private String observacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id")
-    @JsonBackReference
+    @JoinColumn(name = "fk_cliente", nullable = false)
+    @JsonBackReference("cliente-ordem")
     private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_usuario", nullable = false)
+    @JsonBackReference("usuario-ordem")
+    private Usuario usuario;
+
+    @OneToMany(mappedBy = "ordemServico")
+    private List<VendaProdutoServico> itens;
 
     public Integer getIdOrdemServico() { return idOrdemServico; }
     public void setIdOrdemServico(Integer idOrdemServico) { this.idOrdemServico = idOrdemServico; }
@@ -31,4 +40,8 @@ public class OrdemServico {
     public void setObservacao(String observacao) { this.observacao = observacao; }
     public Cliente getCliente() { return cliente; }
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public List<VendaProdutoServico> getItens() { return itens; }
+    public void setItens(List<VendaProdutoServico> itens) { this.itens = itens; }
 }

@@ -1,9 +1,8 @@
 package lima.fernanda.esteticaFernandaLima.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Combo {
@@ -13,6 +12,12 @@ public class Combo {
     private String nome;
     private String descricao;
     private Float valorFinal;
+
+    @OneToMany(mappedBy = "combo")
+    private List<VendaProdutoServico> vendas;
+
+    @OneToMany(mappedBy = "combo")
+    private List<ComboServicoProduto> itensCombo;
 
     public Integer getIdCombo() {
         return idCombo;
@@ -44,5 +49,13 @@ public class Combo {
 
     public void setValorFinal(Float valorFinal) {
         this.valorFinal = valorFinal;
+    }
+
+    public List<VendaProdutoServico> getVendas() {
+        return vendas;
+    }
+
+    public List<ComboServicoProduto> getItensCombo() {
+        return itensCombo;
     }
 }

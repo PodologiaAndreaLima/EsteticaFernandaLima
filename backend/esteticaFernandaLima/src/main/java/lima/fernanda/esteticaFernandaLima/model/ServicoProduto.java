@@ -3,6 +3,8 @@ package lima.fernanda.esteticaFernandaLima.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table
 public class ServicoProduto {
@@ -20,6 +22,17 @@ public class ServicoProduto {
     private String descricao;
     private String marca;
     private String categoria;
+
+
+    @ManyToOne
+    @JoinColumn(name = "fk_usuario")
+    private Usuario usuario;
+
+    @OneToMany(mappedBy = "servicoProduto")
+    private List<VendaProdutoServico> vendas;
+
+    @OneToMany(mappedBy = "servicoProduto")
+    private List<ComboServicoProduto> combos;
 
     public Integer getIdProdutoServico() {
         return idProdutoServico;
@@ -83,5 +96,21 @@ public class ServicoProduto {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public List<VendaProdutoServico> getVendas() {
+        return vendas;
+    }
+
+    public List<ComboServicoProduto> getCombos() {
+        return combos;
     }
 }
