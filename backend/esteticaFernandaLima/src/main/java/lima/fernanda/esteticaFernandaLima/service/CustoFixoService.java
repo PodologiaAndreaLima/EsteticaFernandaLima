@@ -39,6 +39,7 @@ public class CustoFixoService {
         custoFixoExistente.setValorMensal(custoFixoAtualizado.getValorMensal());
         custoFixoExistente.setDescricao(custoFixoAtualizado.getDescricao());
         custoFixoExistente.setNome(custoFixoAtualizado.getNome());
+        custoFixoExistente.setData(custoFixoAtualizado.getData());
 
         return repository.save(custoFixoExistente);
     }

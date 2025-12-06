@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
 
 @Entity
 public class CustoFixo {
@@ -14,6 +15,7 @@ public class CustoFixo {
     private String nome;
     private String descricao;
     private Float valorMensal;
+    private LocalDate data;
 
     public Integer getIdCustoFixo() {
         return idCustoFixo;
@@ -45,5 +47,13 @@ public class CustoFixo {
 
     public void setValorMensal(Float valorMensal) {
         this.valorMensal = valorMensal;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 }
