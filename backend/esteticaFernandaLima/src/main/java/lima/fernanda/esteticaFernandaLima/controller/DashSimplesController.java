@@ -1,12 +1,13 @@
 package lima.fernanda.esteticaFernandaLima.controller;
 
+import lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.service.DashSimplesService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,11 +27,6 @@ public class DashSimplesController {
 
     @GetMapping("/renda-liquida-mes-atual")
     public ResponseEntity<Float> getRendaLiquidaMesAtual() {
-//        try {
-//            return ResponseEntity.ok(dashSimplesService.pegarRendaLiquidaDoMesAtual());
-//        } catch (Exception e) {
-//            throw new RuntimeException("Erro ao obter a renda líquida do mês atual.");
-//        }
         return ResponseEntity.ok(dashSimplesService.pegarRendaLiquidaDoMesAtual());
 
     }
@@ -48,5 +44,13 @@ public class DashSimplesController {
     @GetMapping("/total-ordens-servico")
     public ResponseEntity<Long> getTotalDeOrdensDeServico() {
         return ResponseEntity.ok(dashSimplesService.pegarTotalDeOrdensDeServicoDoMesAtual());
+    }
+    // nao ta funcionando nao retorna nada
+    @GetMapping("/produtos-combos-mais-vendidos-mes")
+    public ResponseEntity<List<ProdutoQuantidadeDTO>> pegarProdutosMaisVendidos() {
+        List<ProdutoQuantidadeDTO> produtos = dashSimplesService.pegarProdutosOuComboMaisVendidosDoMesAtual();
+        if (produtos == null || produtos.isEmpty()) {
+            return ResponseEntity.status(204).build();        }
+        return ResponseEntity.ok(produtos);
     }
 }

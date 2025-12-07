@@ -74,5 +74,20 @@ export const dashboardService = {
                 error: error.response?.data?.message || 'Erro ao buscar total de ordens de serviços'
             };
         }
+    },
+
+    getProdutosCombosMaisVendidosMes: async () => {
+        try {
+            const response = await api.get('/dash-simples/produtos-combos-mais-vendidos-mes');
+            return {
+                sucess: true,
+                data: response.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Erro ao buscar produtos e combos mais vendidos do mês'
+            };
+        }
     }
 }
