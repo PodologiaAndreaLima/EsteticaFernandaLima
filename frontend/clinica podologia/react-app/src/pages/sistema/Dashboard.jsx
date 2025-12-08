@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [rendaBrutaMeses, setRendaBrutaMeses] = useState({});
   const [rendaLiquidaMeses, setRendaLiquidaMeses] = useState({});
   const [totalOrdemServico, setTotalOrdemServico] = useState(0);
+  const [produtosCombosMaisVendidosMes, setProdutosCombosMaisVendidosMes] = useState([]);
 
   // Primeiro useEffect: buscar dados
   useEffect(() => {
@@ -52,6 +53,11 @@ const Dashboard = () => {
         if (totalOrdemServico.sucess) {
           setTotalOrdemServico(totalOrdemServico.data);
         }
+
+        const produtosCombosMaisVendidosMes = await dashboardService.getProdutosCombosMaisVendidosMes();
+        if (produtosCombosMaisVendidosMes.sucess) {
+          setProdutosCombosMaisVendidosMes(produtosCombosMaisVendidosMes.data);
+        }
       } catch (error) {
         console.error("Erro ao buscar dados de receita:", error);
       }
@@ -60,11 +66,23 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Dashboard mounted");
+    console.log("useEffect acionado");
+    console.log("rendaBrutaMeses:", rendaBrutaMeses);
+    console.log("rendaLiquidaMeses:", rendaLiquidaMeses);
+    console.log("produtosCombosMaisVendidosMes:", produtosCombosMaisVendidosMes);
+
     const charts = [];
 
-    if (Object.keys(rendaBrutaMeses).length === 0 || Object.keys(rendaLiquidaMeses).length === 0) {
-      return; // Aguarda dados
+    // Validação melhorada: verifica se tem pelo menos alguns dados
+    const temDadosMeses = Object.keys(rendaBrutaMeses).length > 0 && Object.keys(rendaLiquidaMeses).length > 0;
+    const temDadosProdutos = Array.isArray(produtosCombosMaisVendidosMes) && produtosCombosMaisVendidosMes.length > 0;
+
+    console.log("temDadosMeses:", temDadosMeses);
+    console.log("temDadosProdutos:", temDadosProdutos);
+
+    if (!temDadosMeses) {
+      console.log("Aguardando dados de meses...");
+      return;
     }
 
     if (lineRef.current) {
@@ -153,15 +171,17 @@ const Dashboard = () => {
 
     if (servicesRef.current) {
       try {
+        const produtoServicoLabels = produtosCombosMaisVendidosMes.map(item => item.nome);
+        const produtoServicoData = produtosCombosMaisVendidosMes.map(item => item.quantidade);
         charts.push(
           new Chart(servicesRef.current, {
             type: "bar",
             data: {
-              labels: ["A", "B", "C", "D", "E"],
+              labels: produtoServicoLabels,
               datasets: [
                 {
                   label: "Serviços/combos",
-                  data: [60, 20, 30, 40, 55],
+                  data: produtoServicoData,
                   backgroundColor: "rgba(108,99,255,0.95)",
                   barThickness: 10,
                   maxBarThickness: 14,
@@ -521,7 +541,7 @@ const Dashboard = () => {
       clearTimeout(resizeTimer);
       charts.forEach((c) => c.destroy());
     };
-  }, [view, rendaBrutaMeses, rendaLiquidaMeses]);
+  }, [view, rendaBrutaMeses, rendaLiquidaMeses, produtosCombosMaisVendidosMes]);
 
   return (
     <div className="dashboard-container">

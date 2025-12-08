@@ -1,11 +1,15 @@
 package lima.fernanda.esteticaFernandaLima.repository;
 
+import lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.model.OrdemServico;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Integer> {
@@ -18,4 +22,21 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
 
     @Query("SELECT COUNT(o) FROM OrdemServico o WHERE MONTH(o.dtHora) = MONTH(:dataAtual) AND YEAR(o.dtHora) = YEAR(:dataAtual)")
     Long countOrdensServicoByMesAtual(@Param("dataAtual") LocalDate dataAtual);
+
+    @Query("""
+        SELECT new lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO(
+            sp.nome,
+            SUM(vps.quantidade)
+        )
+        FROM OrdemServico os
+        JOIN os.itens vps
+        JOIN vps.servicoProduto sp
+        WHERE os.dtHora BETWEEN :inicio AND :fim
+        GROUP BY sp.id, sp.nome
+        ORDER BY SUM(vps.quantidade) DESC
+        """)
+    List<ProdutoQuantidadeDTO> buscarMaisVendidos(
+            @Param("inicio") LocalDate inicio,
+            @Param("fim") LocalDate fim,
+            Pageable pageable);
 }

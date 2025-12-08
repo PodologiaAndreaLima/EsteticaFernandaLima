@@ -194,3 +194,18 @@ INSERT INTO ordem_servico (cliente_id, dt_hora, observacao, valor_final) VALUES
 (1, '2025-12-21 13:30:00', 'Peeling', 245.00),
 (2, '2025-12-28 17:20:00', 'Depilação', 120.00);
 
+select * from ordem_servico;
+
+SELECT 
+    s.nome AS nome_produto,
+    SUM(vps.quantidade) AS total_quantidade
+FROM venda_produto_servico AS vps
+JOIN servico_produto s 
+       ON s.id_produto_servico = vps.fk_produto_servico
+JOIN ordem_servico os
+       ON os.id_ordem_servico = vps.fk_ordem_servico
+WHERE MONTH(os.dt_hora) = 12        -- coloque o mês desejado
+  AND YEAR(os.dt_hora) = 2025       -- coloque o ano desejado
+GROUP BY s.id_produto_servico, s.nome
+ORDER BY total_quantidade DESC
+LIMIT 5;

@@ -1,11 +1,15 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
+import lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.repository.CustoExtraRepository;
 import lima.fernanda.esteticaFernandaLima.repository.OrdemServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +18,7 @@ import java.util.Map;
 public class DashSimplesService {
 
     @Autowired
-    private OrdemServicoRepository ordemServicoRepositoryrepository;
+    private OrdemServicoRepository ordemServicoRepository;
 
     @Autowired
     CustoExtraRepository extraRepository;
@@ -23,7 +27,7 @@ public class DashSimplesService {
     private CustoFixoService custoFixoService;
 
     public Float pegarRendaBrutaDoMesAtual() {
-        List<Float> valoresFinais = ordemServicoRepositoryrepository.findValoresFinaisByMesAtual(LocalDate.now());
+        List<Float> valoresFinais = ordemServicoRepository.findValoresFinaisByMesAtual(LocalDate.now());
         Float rendaBruta = 0.00F;
         for (Float i : valoresFinais) {
             rendaBruta += i;
@@ -52,14 +56,12 @@ public class DashSimplesService {
         return rendaBruta - totalCustosFixos - totalCustosExtras;
     }
 
-    // {1=24.0, 2=34.0, 3=45.0, ...}
-
     public Map<Integer, Float> pegarRendaBrutaDeTodosOsMesesDoAnoAtual() {
         Map<Integer, Float> rendaBrutaPorMes = new HashMap<>();
         int anoAtual = LocalDate.now().getYear();
 
         for (int mes = 1; mes <= 12; mes++) {
-            Float rendaBruta = ordemServicoRepositoryrepository.findValoresFinaisByAnoEMes(anoAtual, mes)
+            Float rendaBruta = ordemServicoRepository.findValoresFinaisByAnoEMes(anoAtual, mes)
                     .stream()
                     .reduce(0.00F, Float::sum); // Soma apenas os valores do mês atual
             rendaBrutaPorMes.put(mes, rendaBruta);
@@ -73,7 +75,7 @@ public class DashSimplesService {
         int anoAtual = LocalDate.now().getYear();
 
         for (int mes = 1; mes <= 12; mes++) {
-            Float rendaBruta = ordemServicoRepositoryrepository.findValoresFinaisByAnoEMes(anoAtual, mes)
+            Float rendaBruta = ordemServicoRepository.findValoresFinaisByAnoEMes(anoAtual, mes)
                     .stream()
                     .reduce(0.00F, Float::sum);
 
@@ -93,6 +95,18 @@ public class DashSimplesService {
     }
 
     public Long pegarTotalDeOrdensDeServicoDoMesAtual() {
-        return ordemServicoRepositoryrepository.countOrdensServicoByMesAtual(LocalDate.now());
+        return ordemServicoRepository.countOrdensServicoByMesAtual(LocalDate.now());
+    }
+
+    public List<ProdutoQuantidadeDTO> pegarProdutosOuComboMaisVendidosDoMesAtual() {
+        int anoAtual = LocalDate.now().getYear();
+        int mesAtual = LocalDate.now().getMonthValue();
+
+        LocalDate inicio = LocalDate.of(anoAtual, mesAtual, 1);
+        LocalDate fim = inicio.plusMonths(1).minusDays(1);
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        return ordemServicoRepository.buscarMaisVendidos(inicio, fim, pageable);
     }
 }

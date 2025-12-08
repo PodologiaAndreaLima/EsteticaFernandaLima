@@ -1,0 +1,135 @@
+.card-combo {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #f0f0f0;
+}
+
+.card-combo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 16px 20px;
+  background-color: #f9f4ff;
+  border-bottom: 1px solid rgba(175, 133, 9, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #573c6c;
+}
+
+.card-categoria {
+  background: #fff2d9;
+  color: #7a5b2a;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.card-content {
+  padding: 16px 20px;
+  flex: 1;
+}
+
+.card-marca {
+  font-size: 14px;
+  color: #444;
+  margin: 0 0 10px 0;
+}
+
+.card-valores {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.valor-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.valor-item span {
+  color: #573c6c;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.valor-item strong {
+  color: #333;
+}
+
+.card-descricao-truncada {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+  margin-top: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-actions {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.card-button-visualizar,
+.card-button-editar,
+.card-button-excluir {
+  padding: 6px 0;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+.card-button-visualizar {
+  background-color: #f1e6fb;
+  color: #573c6c;
+  border: 1px solid #e0d0f5;
+}
+
+.card-button-visualizar:hover {
+  background-color: #e5d4f7;
+}
+
+.card-button-editar {
+  background-color: #573c6c;
+  color: white;
+}
+
+.card-button-editar:hover {
+  background-color: #4a2f5d;
+}
+
+.card-button-excluir {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.card-button-excluir:hover {
+  background-color: #c0392b;
+}
