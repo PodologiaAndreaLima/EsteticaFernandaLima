@@ -201,11 +201,19 @@ SELECT
     SUM(vps.quantidade) AS total_quantidade
 FROM venda_produto_servico AS vps
 JOIN servico_produto s 
-       ON s.id_produto_servico = vps.fk_produto_servico
+       ON s.id_produto_servico = vps.fk_servico_produto
 JOIN ordem_servico os
        ON os.id_ordem_servico = vps.fk_ordem_servico
-WHERE MONTH(os.dt_hora) = 12        -- coloque o mês desejado
-  AND YEAR(os.dt_hora) = 2025       -- coloque o ano desejado
+WHERE MONTH(os.dt_hora) = MONTH(CURDATE())
+  AND YEAR(os.dt_hora) = YEAR(CURDATE())
 GROUP BY s.id_produto_servico, s.nome
 ORDER BY total_quantidade DESC
 LIMIT 5;
+
+
+SHOW COLUMNS FROM servico_produto;
+show tables;
+select * from combo;
+select * from ordem_servico;
+select * from cliente;
+select * from servico_produto;

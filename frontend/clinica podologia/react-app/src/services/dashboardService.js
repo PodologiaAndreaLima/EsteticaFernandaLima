@@ -76,9 +76,9 @@ export const dashboardService = {
         }
     },
 
-    getProdutosCombosMaisVendidosMes: async () => {
+    getServicosCombosMaisVendidosMes: async () => {
         try {
-            const response = await api.get('/dash-simples/produtos-combos-mais-vendidos-mes');
+            const response = await api.get('/dash-simples/servicos-combos-mais-vendidos-mes');
             return {
                 sucess: true,
                 data: response.data
@@ -86,8 +86,53 @@ export const dashboardService = {
         } catch (error) {
             return {
                 success: false,
-                error: error.response?.data?.message || 'Erro ao buscar produtos e combos mais vendidos do mês'
+                error: error.response?.data?.message || 'Erro ao buscar servicos e combos mais vendidos do mês'
             };
         }
-    }
-}
+    },  
+
+    getProdutosMaisVendidosMes: async () => {
+        try {
+            const response = await api.get('/dash-simples/produtos-mais-vendidos-mes');
+            return {
+                sucess: true,
+                data: response.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Erro ao buscar produtos mais vendidos do mês'
+            };
+        }
+    },
+
+    getReceitaFuncionarioMesAtual: async () => {
+        try {
+            const response = await api.get('/dash-simples/receita-funcionario-mes-atual');
+            return {
+                sucess: true,
+                data: response.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Erro ao buscar receita dos funcionários do mês atual'
+            };
+        }
+    },
+
+    getTotalOrdensServicosFuncionarioMesAtual: async () => {
+        try {
+            const response = await api.get('/dash-simples/quantidade-ordens-servico-mes-atual-funcionario');
+            return {
+                sucess: true,
+                data: response.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Erro ao buscar total de ordens de serviços dos funcionários do mês atual'
+            };
+        }
+    },
+};

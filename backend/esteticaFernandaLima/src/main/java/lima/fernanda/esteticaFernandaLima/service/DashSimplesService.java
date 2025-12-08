@@ -1,6 +1,7 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO;
+import lima.fernanda.esteticaFernandaLima.dto.ServicoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.repository.CustoExtraRepository;
 import lima.fernanda.esteticaFernandaLima.repository.OrdemServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +98,7 @@ public class DashSimplesService {
         return ordemServicoRepository.countOrdensServicoByMesAtual(LocalDate.now());
     }
 
-    public List<ProdutoQuantidadeDTO> pegarProdutosOuComboMaisVendidosDoMesAtual() {
+    public List<ServicoQuantidadeDTO> pegarServicosOuComboMaisVendidosDoMesAtual() {
         int anoAtual = LocalDate.now().getYear();
         int mesAtual = LocalDate.now().getMonthValue();
 
@@ -109,4 +109,25 @@ public class DashSimplesService {
 
         return ordemServicoRepository.buscarMaisVendidos(inicio, fim, pageable);
     }
+
+    public List<ProdutoQuantidadeDTO> pegarProdutosMaisVendidosDoMesAtual() {
+        int anoAtual = LocalDate.now().getYear();
+        int mesAtual = LocalDate.now().getMonthValue();
+
+        LocalDate inicio = LocalDate.of(anoAtual, mesAtual, 1);
+        LocalDate fim = inicio.plusMonths(1).minusDays(1);
+
+        Pageable pageable = PageRequest.of(0, 5);
+        return ordemServicoRepository.buscarProdutosMaisVendidos(inicio, fim, pageable);
+    }
+
+
+    public Float pegarReceitaTotalFuncionarioMesAtual(){
+        return ordemServicoRepository.getReceitaTotalFuncionarioMesAtual(LocalDate.now());
+    }
+
+    public Long pegarQuantidadeOrdensFuncionarioMesAtual(){
+        return ordemServicoRepository.getQuantidadeOrdensFuncionarioMesAtual(LocalDate.now());
+    }
+
 }

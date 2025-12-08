@@ -23,7 +23,12 @@ const Dashboard = () => {
   const [rendaBrutaMeses, setRendaBrutaMeses] = useState({});
   const [rendaLiquidaMeses, setRendaLiquidaMeses] = useState({});
   const [totalOrdemServico, setTotalOrdemServico] = useState(0);
-  const [produtosCombosMaisVendidosMes, setProdutosCombosMaisVendidosMes] = useState([]);
+  const [servicosCombosMaisVendidosMes, setServicosCombosMaisVendidosMes] = useState([]);
+  const [produtosMaisVendidosMes, setProdutosMaisVendidosMes] = useState([]);
+  const [receitaFuncionarioMesAtual, setReceitaFuncionarioMesAtual] = useState(0.00);
+  const [proprietorCommission, setProprietorCommission] = useState(0.00);
+  const [quantidadeOrdensServicoFuncionario, setQuantidadeOrdensServicoFuncionario] = useState(0);
+  const commissionRate = 0.3; // 30% commission rate
 
   // Primeiro useEffect: buscar dados
   useEffect(() => {
@@ -54,9 +59,25 @@ const Dashboard = () => {
           setTotalOrdemServico(totalOrdemServico.data);
         }
 
-        const produtosCombosMaisVendidosMes = await dashboardService.getProdutosCombosMaisVendidosMes();
-        if (produtosCombosMaisVendidosMes.sucess) {
-          setProdutosCombosMaisVendidosMes(produtosCombosMaisVendidosMes.data);
+        const servicosCombosMaisVendidosMes = await dashboardService.getServicosCombosMaisVendidosMes();
+        if (servicosCombosMaisVendidosMes.sucess) {
+          setServicosCombosMaisVendidosMes(servicosCombosMaisVendidosMes.data);
+        }
+
+        const produtosMaisVendidosMes =  await dashboardService.getProdutosMaisVendidosMes();
+        if (produtosMaisVendidosMes.sucess) {
+          setProdutosMaisVendidosMes(produtosMaisVendidosMes.data);
+        }
+
+        const receitaFuncionario = await dashboardService.getReceitaFuncionarioMesAtual();
+        if (receitaFuncionario.sucess) {
+          setReceitaFuncionarioMesAtual(receitaFuncionario.data);
+          setProprietorCommission(receitaFuncionario.data * commissionRate);
+        }
+
+        const quantidadeOrdensServicoFuncionario = await dashboardService.getTotalOrdensServicosFuncionarioMesAtual();
+        if (quantidadeOrdensServicoFuncionario.sucess) {
+          setQuantidadeOrdensServicoFuncionario(quantidadeOrdensServicoFuncionario.data);
         }
       } catch (error) {
         console.error("Erro ao buscar dados de receita:", error);
@@ -69,22 +90,29 @@ const Dashboard = () => {
     console.log("useEffect acionado");
     console.log("rendaBrutaMeses:", rendaBrutaMeses);
     console.log("rendaLiquidaMeses:", rendaLiquidaMeses);
-    console.log("produtosCombosMaisVendidosMes:", produtosCombosMaisVendidosMes);
-
+    console.log("servicosCombosMaisVendidosMes:", servicosCombosMaisVendidosMes);
+    console.log("produtosMaisVendidosMes:", produtosMaisVendidosMes);
+    console.log("receitaFuncionarioMesAtual:", receitaFuncionarioMesAtual);
     const charts = [];
 
     // Validação melhorada: verifica se tem pelo menos alguns dados
     const temDadosMeses = Object.keys(rendaBrutaMeses).length > 0 && Object.keys(rendaLiquidaMeses).length > 0;
-    const temDadosProdutos = Array.isArray(produtosCombosMaisVendidosMes) && produtosCombosMaisVendidosMes.length > 0;
+    const temDadosProdutos = Array.isArray(servicosCombosMaisVendidosMes) && servicosCombosMaisVendidosMes.length > 0;
+    const temDadosProdutosMaisVendidos = Array.isArray(produtosMaisVendidosMes) && produtosMaisVendidosMes.length > 0;
 
     console.log("temDadosMeses:", temDadosMeses);
     console.log("temDadosProdutos:", temDadosProdutos);
+    console.log("temDadosProdutosMaisVendidos:", temDadosProdutosMaisVendidos);
 
     if (!temDadosMeses) {
       console.log("Aguardando dados de meses...");
       return;
     }
-
+    
+    //==========================================
+    //      DASHBOARD SIMPLES CHARTS
+    //==========================================
+    
     if (lineRef.current) {
       try {
         const meses = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -171,8 +199,8 @@ const Dashboard = () => {
 
     if (servicesRef.current) {
       try {
-        const produtoServicoLabels = produtosCombosMaisVendidosMes.map(item => item.nome);
-        const produtoServicoData = produtosCombosMaisVendidosMes.map(item => item.quantidade);
+        const produtoServicoLabels = servicosCombosMaisVendidosMes.map(item => item.nome);
+        const produtoServicoData = servicosCombosMaisVendidosMes.map(item => item.quantidade);
         charts.push(
           new Chart(servicesRef.current, {
             type: "bar",
@@ -222,11 +250,11 @@ const Dashboard = () => {
           new Chart(productsRef.current, {
             type: "bar",
             data: {
-              labels: ["A", "B", "C", "D", "E"],
+              labels: produtosMaisVendidosMes.map(item => item.nome),
               datasets: [
                 {
                   label: "Produtos",
-                  data: [30, 45, 25, 35, 40],
+                  data: produtosMaisVendidosMes.map(item => item.quantidade),
                   backgroundColor: "rgba(179,136,255,0.95)",
                   barThickness: 10,
                   maxBarThickness: 14,
@@ -258,6 +286,9 @@ const Dashboard = () => {
       }
     }
 
+    //==========================================
+    //      DASHBOARD DETALHADO CHARTS
+    //==========================================
     // additional charts used on the detailed extra card: services & products (top row)
     if (detailServicesRef.current) {
       try {
@@ -541,7 +572,9 @@ const Dashboard = () => {
       clearTimeout(resizeTimer);
       charts.forEach((c) => c.destroy());
     };
-  }, [view, rendaBrutaMeses, rendaLiquidaMeses, produtosCombosMaisVendidosMes]);
+  }, [view, rendaBrutaMeses, rendaLiquidaMeses, servicosCombosMaisVendidosMes, produtosMaisVendidosMes,
+    receitaFuncionarioMesAtual, proprietorCommission, quantidadeOrdensServicoFuncionario
+  ]);
 
   return (
     <div className="dashboard-container">
@@ -895,12 +928,12 @@ const Dashboard = () => {
                   <div className="footer-label">
                     Receita mensal total gerada por funcionário
                   </div>
-                  <div className="footer-value">R$100,00</div>
+                  <div className="footer-value">R${parseFloat(receitaFuncionarioMesAtual || 0).toFixed(2)}</div>
                 </div>
 
                 <div className="footer-item">
                   <div className="footer-label">Comissão da proprietária</div>
-                  <div className="footer-value">R$100,00</div>
+                  <div className="footer-value">R${parseFloat(proprietorCommission || 0).toFixed(2)}</div>
                 </div>
 
                 <div className="footer-item">
@@ -908,7 +941,7 @@ const Dashboard = () => {
                     Número de ordens de serviço realizadas no mês pelos
                     funcionários
                   </div>
-                  <div className="footer-value">20</div>
+                  <div className="footer-value">{quantidadeOrdensServicoFuncionario}</div>
                 </div>
               </div>
             </section>
