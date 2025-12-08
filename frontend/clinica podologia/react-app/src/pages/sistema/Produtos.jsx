@@ -4,6 +4,7 @@ import "./Produtos.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 import ProductCard from "../../components/sistema/ProductCard";
 import servicoProdutoService from "../../services/servicoProdutoService";
+import produtoService from "../../services/produtoService";
 
 /**
  * Modal de visualização
@@ -247,11 +248,11 @@ const Produtos = () => {
 
   const fetchProdutos = async () => {
     try {
-      // usa o serviço backend
-      const data = await servicoProdutoService.list();
+      // Usar produtoService que já filtra apenas produtos
+      const data = await produtoService.list();
+      console.log("DEBUG Produtos.jsx - Produtos recebidos:", data);
       // mapeia resposta do backend para o shape do frontend
       const produtosMapeados = (data || [])
-        .filter((item) => item.isProduto === true || item.isProduto === "true")
         .map((item) => ({
           id: item.idProdutoServico ?? item.id, // pega idProdutoServico do backend
           nome: item.nome,
@@ -261,6 +262,7 @@ const Produtos = () => {
           valorCompra: item.despesa != null ? Number(item.despesa) : 0,
           valorVenda: item.valorVenda != null ? Number(item.valorVenda) : 0,
         }));
+      console.log("DEBUG Produtos.jsx - Produtos mapeados:", produtosMapeados);
       setListaProdutos(produtosMapeados);
     } catch (err) {
       console.error("Erro ao buscar produtos", err);

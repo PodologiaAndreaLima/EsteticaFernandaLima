@@ -34,7 +34,7 @@ public class Cliente {
     private LocalDate dataNascimento;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("cliente-ordem")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<OrdemServico> ordensServico = new ArrayList<>();
 
     // getters e setters (incluindo ordensServico)

@@ -13,7 +13,6 @@ public class ServicoProduto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idProdutoServico;
 
-    @JsonProperty("isProduto")
     private Boolean produto;
 
     private String nome;
@@ -26,12 +25,15 @@ public class ServicoProduto {
 
     @ManyToOne
     @JoinColumn(name = "fk_usuario")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"ordensServico", "servicosProdutos", "hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
     @OneToMany(mappedBy = "servicoProduto")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<VendaProdutoServico> vendas;
 
     @OneToMany(mappedBy = "servicoProduto")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<ComboServicoProduto> combos;
 
     public Integer getIdProdutoServico() {
@@ -48,6 +50,17 @@ public class ServicoProduto {
 
     public void setProduto(Boolean produto) {
         this.produto = produto;
+    }
+
+    // Alias para compatibilidade com frontend
+    @com.fasterxml.jackson.annotation.JsonGetter("isProduto")
+    public Boolean getIsProduto() {
+        return produto;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonSetter("isProduto")
+    public void setIsProduto(Boolean isProduto) {
+        this.produto = isProduto;
     }
 
     public String getNome() {

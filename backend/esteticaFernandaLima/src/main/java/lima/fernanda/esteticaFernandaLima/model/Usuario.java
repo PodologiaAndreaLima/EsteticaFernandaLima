@@ -34,9 +34,11 @@ public class Usuario {
     private Role role = Role.USER;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<OrdemServico> ordensServico = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<ServicoProduto> servicosProdutos;
 
     public Long getId() {

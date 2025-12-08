@@ -2,6 +2,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lima.fernanda.esteticaFernandaLima.dto.OrdemServicoRequest;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.model.OrdemServico;
 import lima.fernanda.esteticaFernandaLima.service.OrdemServicoService;
@@ -83,16 +84,22 @@ class OrdemServicoControllerTest {
 
     @Test
     void postOrdemServico() throws Exception {
-        when(service.salvar(any(OrdemServico.class))).thenReturn(ordemServico);
+        OrdemServicoRequest request = new OrdemServicoRequest();
+        request.setClienteId(1);
+        request.setUsuarioId(1);
+        request.setValorFinal(150.00f);
+        request.setObservacao("Limpeza facial completa");
+        
+        when(service.salvar(any(OrdemServicoRequest.class))).thenReturn(ordemServico);
 
         mockMvc.perform(post("/ordem-servico")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ordemServico)))
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idOrdemServico").value(1))
                 .andExpect(jsonPath("$.valorFinal").value(150.00f));
 
-        verify(service).salvar(any(OrdemServico.class));
+        verify(service).salvar(any(OrdemServicoRequest.class));
     }
 
     @Test
@@ -119,29 +126,40 @@ class OrdemServicoControllerTest {
 
     @Test
     void atualizarOrdemServico() throws Exception {
+        OrdemServicoRequest request = new OrdemServicoRequest();
+        request.setClienteId(1);
+        request.setUsuarioId(1);
+        request.setValorFinal(200.00f);
+        request.setObservacao("Limpeza facial completa");
+        
         ordemServico.setValorFinal(200.00f);
-        when(service.atualizar(eq(1), any(OrdemServico.class))).thenReturn(ordemServico);
+        when(service.atualizar(eq(1), any(OrdemServicoRequest.class))).thenReturn(ordemServico);
 
         mockMvc.perform(put("/ordem-servico/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ordemServico)))
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idOrdemServico").value(1))
                 .andExpect(jsonPath("$.valorFinal").value(200.00f));
 
-        verify(service).atualizar(eq(1), any(OrdemServico.class));
+        verify(service).atualizar(eq(1), any(OrdemServicoRequest.class));
     }
 
     @Test
     void atualizarOrdemServicoNotFound() throws Exception {
-        when(service.atualizar(eq(1), any(OrdemServico.class)))
+        OrdemServicoRequest request = new OrdemServicoRequest();
+        request.setClienteId(1);
+        request.setUsuarioId(1);
+        request.setValorFinal(150.00f);
+        
+        when(service.atualizar(eq(1), any(OrdemServicoRequest.class)))
                 .thenThrow(new RuntimeException("Ordem de Serviço não encontrada"));
 
         mockMvc.perform(put("/ordem-servico/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ordemServico)))
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
 
-        verify(service).atualizar(eq(1), any(OrdemServico.class));
+        verify(service).atualizar(eq(1), any(OrdemServicoRequest.class));
     }
 }

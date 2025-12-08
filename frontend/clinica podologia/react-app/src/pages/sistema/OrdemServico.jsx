@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
-import { success } from "../../services/toastService";
-import CatalogService from "../../services/catalogService";
+import { success, error } from "../../services/toastService";
+import servicoProdutoService from "../../services/servicoProdutoService";
+import produtoService from "../../services/produtoService";
+import combosService from "../../services/combosService";
+import ordemService from "../../services/ordemService";
+import clienteService from "../../services/clienteService";
+import usuarioService from "../../services/usuarioService";
 import "./OrdemServico.css";
 
 const ModalOrdem = ({
@@ -11,76 +16,159 @@ const ModalOrdem = ({
   aoSalvar,
   listaServicos,
   listaProdutos,
+  listaCombos,
+  listaClientes,
+  listaUsuarios,
 }) => {
   const [ordem, setOrdem] = useState({
-    cliente: "",
-    funcionario: "",
-    servicos: [],
-    produtos: [],
-    valorVenda: "0,00",
+    clienteId: "",
+    usuarioId: "",
+    servicos: [], // { servico: id, desconto }
+    produtos: [], // { produto: id, quantidade, desconto }
+    valorVenda: "",
     desconto: 0,
     observacoes: "",
+    id: undefined,
   });
 
   useEffect(() => {
-    if (estaAberto) {
-      setOrdem(
-        ordemInicial || {
-          cliente: "",
-          funcionario: "",
-          servicos: [],
-          produtos: [],
-          valorVenda: "0,00",
-          desconto: 0,
-          observacoes: "",
-        }
-      );
+    if (!estaAberto) return;
+
+    if (ordemInicial && (ordemInicial.idOrdemServico || ordemInicial.id)) {
+      const servicos = (ordemInicial.itens || [])
+        .filter((it) => it.servicoProduto || it.combo)
+        .map((it) => {
+          if (it.combo) return { servico: it.combo.idCombo ?? it.combo.id, desconto: it.desconto ?? 0, isCombo: true };
+          if (it.servicoProduto) return { servico: it.servicoProduto.idServicoProduto ?? it.servicoProduto.id, desconto: it.desconto ?? 0, isCombo: false };
+          return null;
+        })
+        .filter(Boolean);
+
+      const produtos = (ordemInicial.itens || [])
+        .filter((it) => it.produto)
+        .map((it) => ({
+          produto: it.produto.id ?? it.produtoId,
+          quantidade: it.quantidade ?? 1,
+          desconto: it.desconto ?? 0,
+        }));
+
+      setOrdem({
+        clienteId: ordemInicial.cliente?.id ?? ordemInicial.clienteId ?? "",
+        usuarioId: ordemInicial.usuario?.id ?? ordemInicial.usuarioId ?? "",
+        servicos,
+        produtos,
+        valorVenda: ordemInicial.valorFinal ?? ordemInicial.valorVenda ?? "",
+        desconto: ordemInicial.desconto ?? 0,
+        observacoes: ordemInicial.observacao ?? ordemInicial.observacoes ?? "",
+        id: ordemInicial.idOrdemServico ?? ordemInicial.id ?? undefined,
+      });
+    } else {
+      setOrdem({
+        clienteId: "",
+        usuarioId: "",
+        servicos: [],
+        produtos: [],
+        valorVenda: "",
+        desconto: 0,
+        observacoes: "",
+        id: undefined,
+      });
     }
   }, [estaAberto, ordemInicial]);
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
-    setOrdem({ ...ordem, [name]: value });
+    setOrdem((o) => ({ ...o, [name]: value }));
   };
 
   const adicionarServico = () => {
-    setOrdem({
-      ...ordem,
-      servicos: [...ordem.servicos, { servico: "", desconto: 0 }],
-    });
+    setOrdem((o) => ({ ...o, servicos: [...o.servicos, { servico: "", desconto: 0 }] }));
   };
 
   const removerServico = (idx) => {
-    const servicos = ordem.servicos.filter((_, i) => i !== idx);
-    setOrdem({ ...ordem, servicos });
+    setOrdem((o) => ({ ...o, servicos: o.servicos.filter((_, i) => i !== idx) }));
   };
 
   const alterarServicoLinha = (idx, campo, valor) => {
-    const servicos = ordem.servicos.map((s, i) =>
-      i === idx ? { ...s, [campo]: valor } : s
-    );
-    setOrdem({ ...ordem, servicos });
+    setOrdem((o) => ({
+      ...o,
+      servicos: o.servicos.map((s, i) => (i === idx ? { ...s, [campo]: valor } : s)),
+    }));
   };
 
   const adicionarProduto = () => {
-    setOrdem({
-      ...ordem,
-      produtos: [
-        ...ordem.produtos,
-        { produto: "", quantidade: 1, desconto: 0 },
-      ],
-    });
+    setOrdem((o) => ({ ...o, produtos: [...o.produtos, { produto: "", quantidade: 1, desconto: 0 }] }));
   };
 
   const removerProduto = (idx) => {
-    const produtos = ordem.produtos.filter((_, i) => i !== idx);
-    setOrdem({ ...ordem, produtos });
+    setOrdem((o) => ({ ...o, produtos: o.produtos.filter((_, i) => i !== idx) }));
   };
 
-  const enviar = (e) => {
+  const alterarProdutoLinha = (idx, campo, valor) => {
+    setOrdem((o) => ({
+      ...o,
+      produtos: o.produtos.map((p, i) => (i === idx ? { ...p, [campo]: valor } : p)),
+    }));
+  };
+
+  const enviar = async (e) => {
     e.preventDefault();
-    aoSalvar(ordem);
-    aoFechar();
+
+    try {
+      console.log("DEBUG - ordem state:", ordem);
+      console.log("DEBUG - ordem.servicos:", ordem.servicos);
+      console.log("DEBUG - ordem.produtos:", ordem.produtos);
+      console.log("DEBUG - listaServicos:", listaServicos);
+      console.log("DEBUG - listaProdutos:", listaProdutos);
+      
+      const valorFinalNum = parseFloat(String(ordem.valorVenda).replace(",", ".")) || 0;
+      const itens = [];
+
+      console.log("DEBUG - ordem.servicos ANTES DO LOOP:", ordem.servicos, "length:", ordem.servicos?.length);
+
+      // Processar serviços/combos
+      for (const s of ordem.servicos) {
+        const selectedId = Number(s.servico);
+        console.log("DEBUG - processando servico:", s, "selectedId:", selectedId);
+        if (!selectedId) continue;
+        const isCombo = (listaCombos || []).some((c) => Number(c.id ?? c.idCombo) === selectedId);
+        if (isCombo) {
+          itens.push({ comboId: selectedId, quantidade: 1, desconto: parseFloat(s.desconto) || 0 });
+        } else {
+          itens.push({ servicoProdutoId: selectedId, quantidade: 1, desconto: parseFloat(s.desconto) || 0 });
+        }
+      }
+
+      // Processar produtos (produtos são ServicoProduto com isProduto=true)
+      for (const p of ordem.produtos) {
+        const produtoId = Number(p.produto);
+        console.log("DEBUG - processando produto:", p, "produtoId:", produtoId);
+        if (!produtoId) continue;
+        itens.push({
+          produtoId: produtoId, // Backend trata como servicoProdutoId
+          quantidade: Number(p.quantidade) || 1,
+          desconto: parseFloat(p.desconto) || 0
+        });
+      }
+
+      const payload = {
+        clienteId: Number(ordem.clienteId) || null,
+        usuarioId: Number(ordem.usuarioId) || null,
+        valorFinal: parseFloat(String(valorFinalNum)) || 0,
+        observacao: ordem.observacoes || "",
+        itens,
+      };
+
+      console.log("DEBUG - PAYLOAD FINAL COMPLETO:", JSON.stringify(payload, null, 2));
+      console.log("DEBUG - itens.length:", itens.length);
+
+      await aoSalvar(payload, ordem.id);
+    } catch (err) {
+      console.error("Erro ao montar payload da ordem", err);
+      error("Erro ao montar pedido");
+    } finally {
+      aoFechar();
+    }
   };
 
   if (!estaAberto) return null;
@@ -99,29 +187,31 @@ const ModalOrdem = ({
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label>Cliente</label>
-              <input
-                name="cliente"
-                value={ordem.cliente}
-                onChange={alterarCampo}
-              />
+              <select name="clienteId" value={ordem.clienteId} onChange={alterarCampo} required>
+                <option value="">-- selecione cliente --</option>
+                {(listaClientes || []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome || c.nomeCompleto || `Cliente ${c.id}`}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="grupo-formulario">
               <label>Funcionário</label>
-              <input
-                name="funcionario"
-                value={ordem.funcionario}
-                onChange={alterarCampo}
-              />
+              <select name="usuarioId" value={ordem.usuarioId} onChange={alterarCampo} required>
+                <option value="">-- selecione funcionário --</option>
+                {(listaUsuarios || []).map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nome || u.nomeCompleto || `Usuário ${u.id}`}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div className="linha-formulario">
-            <button
-              type="button"
-              className="botao-adicionar botao-adicionar-grande"
-              onClick={adicionarServico}
-            >
-              + Adicionar Serviço
+            <button type="button" className="botao-adicionar botao-adicionar-grande" onClick={adicionarServico}>
+              + Adicionar Serviço/Combo
             </button>
           </div>
 
@@ -129,86 +219,34 @@ const ModalOrdem = ({
             <div key={idx} className="linha-formulario pequena">
               <div className="grupo-formulario">
                 <label>Serviço / Combo</label>
-                <select
-                  value={s.servico}
-                  onChange={(e) =>
-                    alterarServicoLinha(idx, "servico", e.target.value)
-                  }
-                >
+                <select value={s.servico} onChange={(e) => alterarServicoLinha(idx, "servico", e.target.value)}>
                   <option value="">-- selecione --</option>
-                  {listaServicos.map((sv) => (
-                    <option key={sv.id} value={sv.nome}>
-                      {sv.nome}
+                  {(listaServicos || []).map((sv) => (
+                    <option key={sv.idProdutoServico} value={sv.idProdutoServico}>
+                      {sv.nome ?? sv.descricao}
+                    </option>
+                  ))}
+                  {(listaCombos || []).map((c) => (
+                    <option key={c.id ?? c.idCombo} value={c.id ?? c.idCombo}>
+                      {c.nome}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="grupo-formulario small">
                 <label>Desconto (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={s.desconto}
-                  onChange={(e) =>
-                    alterarServicoLinha(idx, "desconto", e.target.value)
-                  }
-                />
+                <input type="number" min="0" value={s.desconto} onChange={(e) => alterarServicoLinha(idx, "desconto", e.target.value)} />
               </div>
               <div className="grupo-formulario tiny">
-                <button
-                  type="button"
-                  className="botao-excluir-pequeno"
-                  onClick={() => removerServico(idx)}
-                  aria-label="Remover serviço"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden
-                  >
-                    <path
-                      d="M3 6h18"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M10 11v6M14 11v6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <button type="button" className="botao-excluir-pequeno" onClick={() => removerServico(idx)} aria-label="Remover serviço">
+                  ✖
                 </button>
               </div>
             </div>
           ))}
 
           <div className="linha-formulario">
-            <button
-              type="button"
-              className="botao-adicionar botao-adicionar-grande"
-              onClick={adicionarProduto}
-            >
+            <button type="button" className="botao-adicionar botao-adicionar-grande" onClick={adicionarProduto}>
               + Adicionar Produto
             </button>
           </div>
@@ -217,18 +255,10 @@ const ModalOrdem = ({
             <div key={idx} className="linha-formulario pequena">
               <div className="grupo-formulario">
                 <label>Produto</label>
-                <select
-                  value={p.produto}
-                  onChange={(e) => {
-                    const produtos = ordem.produtos.map((pr, i) =>
-                      i === idx ? { ...pr, produto: e.target.value } : pr
-                    );
-                    setOrdem({ ...ordem, produtos });
-                  }}
-                >
+                <select value={p.produto} onChange={(e) => alterarProdutoLinha(idx, "produto", e.target.value)}>
                   <option value="">-- selecione --</option>
-                  {listaProdutos.map((pd) => (
-                    <option key={pd.id} value={pd.nome}>
+                  {(listaProdutos || []).map((pd) => (
+                    <option key={pd.idProdutoServico} value={pd.idProdutoServico}>
                       {pd.nome}
                     </option>
                   ))}
@@ -236,76 +266,15 @@ const ModalOrdem = ({
               </div>
               <div className="grupo-formulario small">
                 <label>Quantidade</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={p.quantidade}
-                  onChange={(e) => {
-                    const produtos = ordem.produtos.map((pr, i) =>
-                      i === idx ? { ...pr, quantidade: e.target.value } : pr
-                    );
-                    setOrdem({ ...ordem, produtos });
-                  }}
-                />
+                <input type="number" min="1" value={p.quantidade} onChange={(e) => alterarProdutoLinha(idx, "quantidade", e.target.value)} />
               </div>
               <div className="grupo-formulario small">
                 <label>Desconto (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={p.desconto}
-                  onChange={(e) => {
-                    const produtos = ordem.produtos.map((pr, i) =>
-                      i === idx ? { ...pr, desconto: e.target.value } : pr
-                    );
-                    setOrdem({ ...ordem, produtos });
-                  }}
-                />
+                <input type="number" min="0" value={p.desconto} onChange={(e) => alterarProdutoLinha(idx, "desconto", e.target.value)} />
               </div>
               <div className="grupo-formulario tiny">
-                <button
-                  type="button"
-                  className="botao-excluir-pequeno"
-                  onClick={() => removerProduto(idx)}
-                  aria-label="Remover produto"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden
-                  >
-                    <path
-                      d="M3 6h18"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M10 11v6M14 11v6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <button type="button" className="botao-excluir-pequeno" onClick={() => removerProduto(idx)} aria-label="Remover produto">
+                  ✖
                 </button>
               </div>
             </div>
@@ -314,33 +283,18 @@ const ModalOrdem = ({
           <div className="linha-formulario">
             <div className="grupo-formulario full">
               <label>Observações</label>
-              <textarea
-                value={ordem.observacoes}
-                name="observacoes"
-                onChange={alterarCampo}
-                rows={4}
-              />
+              <textarea value={ordem.observacoes} name="observacoes" onChange={alterarCampo} rows={4} />
             </div>
           </div>
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label>Valor de venda (R$)</label>
-              <input
-                name="valorVenda"
-                value={ordem.valorVenda}
-                onChange={alterarCampo}
-              />
+              <input name="valorVenda" value={ordem.valorVenda} onChange={alterarCampo} />
             </div>
             <div className="grupo-formulario">
               <label>Desconto (%)</label>
-              <input
-                type="number"
-                min="0"
-                name="desconto"
-                value={ordem.desconto}
-                onChange={alterarCampo}
-              />
+              <input type="number" min="0" name="desconto" value={ordem.desconto} onChange={alterarCampo} />
             </div>
           </div>
 
@@ -358,9 +312,32 @@ const ModalOrdem = ({
   );
 };
 
-// Modal de visualização da Ordem
 const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
   if (!estaAberto || !ordem) return null;
+
+  console.log("DEBUG Modal - ordem completa:", ordem);
+  console.log("DEBUG Modal - ordem.itens:", ordem.itens);
+
+  // Separar serviços/combos de produtos
+  const servs = (ordem.itens || [])
+    .filter((it) => {
+      console.log("DEBUG - Filtrando item para servicos:", it, "combo?", !!it.combo, "isProduto?", it.servicoProduto?.isProduto, "produto?", it.servicoProduto?.produto);
+      if (it.combo) return true;
+      if (it.servicoProduto && !it.servicoProduto.isProduto && !it.servicoProduto.produto) return true;
+      return false;
+    })
+    .map((it) => (it.combo ? it.combo.nome : it.servicoProduto?.nome ?? it.servicoProduto?.descricao))
+    .join(", ");
+  
+  console.log("DEBUG Modal - servs final:", servs);
+
+  const prods = (ordem.itens || [])
+    .filter((it) => it.servicoProduto?.isProduto === true || it.servicoProduto?.produto === true)
+    .map((it) => `${it.servicoProduto.nome} x${it.quantidade ?? 1}`)
+    .join(", ");
+
+  console.log("DEBUG Modal - servs:", servs);
+  console.log("DEBUG Modal - prods:", prods);
 
   return (
     <div className="modal-overlay">
@@ -378,79 +355,33 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
                 <span className="rotulo">Cliente</span>
-                <div className="valor">{ordem.cliente || "—"}</div>
+                <div className="valor">{ordem.cliente?.nome ?? ordem.cliente?.nomeCompleto ?? (typeof ordem.cliente === 'string' ? ordem.cliente : "—")}</div>
               </div>
               <div className="campo-visualizacao">
                 <span className="rotulo">Funcionário</span>
-                <div className="valor">{ordem.funcionario || "—"}</div>
+                <div className="valor">{ordem.usuario?.nome ?? ordem.usuario?.nomeCompleto ?? "—"}</div>
               </div>
             </div>
 
-            <h3>Serviços</h3>
-            {(ordem.servicos || []).length === 0 && (
-              <div className="linha-visualizacao">
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Serviço</span>
-                  <div className="valor">—</div>
-                </div>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Desconto</span>
-                  <div className="valor">0%</div>
-                </div>
-              </div>
-            )}
-            {(ordem.servicos || []).map((s, i) => (
-              <div className="linha-visualizacao" key={i}>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Serviço</span>
-                  <div className="valor">{s.servico || "—"}</div>
-                </div>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Desconto</span>
-                  <div className="valor">{s.desconto ?? 0}%</div>
-                </div>
-              </div>
-            ))}
+            <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
+              <span className="rotulo">Serviços / Combos</span>
+              <div className="valor">{servs || "Nenhum serviço adicionado"}</div>
+            </div>
 
-            <h3>Produtos</h3>
-            {(ordem.produtos || []).length === 0 && (
-              <div className="linha-visualizacao">
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Produto</span>
-                  <div className="valor">Nenhum produto</div>
-                </div>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Desconto</span>
-                  <div className="valor">0%</div>
-                </div>
-              </div>
-            )}
-            {(ordem.produtos || []).map((p, i) => (
-              <div className="linha-visualizacao" key={i}>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Produto</span>
-                  <div className="valor">{p.produto || "—"}</div>
-                </div>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Quantidade</span>
-                  <div className="valor">{p.quantidade ?? 1}</div>
-                </div>
-                <div className="campo-visualizacao">
-                  <span className="rotulo">Desconto</span>
-                  <div className="valor">{p.desconto ?? 0}%</div>
-                </div>
-              </div>
-            ))}
+            <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
+              <span className="rotulo">Produtos</span>
+              <div className="valor">{prods || "Nenhum produto adicionado"}</div>
+            </div>
 
-            <h3>Observações</h3>
-            <div className="campo-visualizacao">
-              <div className="valor">{ordem.observacoes || "—"}</div>
+            <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
+              <span className="rotulo">Observações</span>
+              <div className="valor">{ordem.observacao ?? ordem.observacoes ?? "—"}</div>
             </div>
 
             <div className="linha-visualizacao">
-              <div className="campo-visualizacao">
+              <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
                 <span className="rotulo">Valor de venda (R$)</span>
-                <div className="valor">{ordem.valorVenda || "0,00"}</div>
+                <div className="valor">{ordem.valorFinal ?? "0,00"}</div>
               </div>
               <div className="campo-visualizacao">
                 <span className="rotulo">Desconto (%)</span>
@@ -480,25 +411,75 @@ const OrdemServico = () => {
   const [ordemParaExcluir, setOrdemParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
-  // listas vindas do catálogo (serão atualizadas via subscription)
-  const [listaServicos, setListaServicos] = useState(
-    CatalogService.getServicos()
-  );
-  const [listaProdutos, setListaProdutos] = useState(
-    CatalogService.getProdutos()
-  );
+  const [listaServicos, setListaServicos] = useState([]);
+  const [listaProdutos, setListaProdutos] = useState([]);
+  const [listaCombos, setListaCombos] = useState([]);
+  const [listaClientes, setListaClientes] = useState([]);
+  const [listaUsuarios, setListaUsuarios] = useState([]);
 
   useEffect(() => {
-    const unsubS = CatalogService.subscribeServicos((next) =>
-      setListaServicos(next)
-    );
-    const unsubP = CatalogService.subscribeProdutos((next) =>
-      setListaProdutos(next)
-    );
-    return () => {
-      unsubS();
-      unsubP();
+    const load = async () => {
+      try {
+        const unwrap = (r) => {
+          if (!r) return [];
+          if (Array.isArray(r)) return r;
+          if (r.data) return r.data;
+          return r;
+        };
+
+        const [
+          sRes,
+          pRes,
+          cRes,
+          ordRes,
+          clientesRes,
+        ] = await Promise.allSettled([
+          servicoProdutoService.list?.() ?? servicoProdutoService.listAll?.() ?? Promise.resolve([]),
+          produtoService.list?.() ?? produtoService.listAll?.() ?? Promise.resolve([]),
+          combosService.list?.() ?? combosService.listAll?.() ?? Promise.resolve([]),
+          ordemService.list?.() ?? ordemService.listAll?.() ?? Promise.resolve([]),
+          clienteService?.list?.() ?? Promise.resolve([]),
+        ]);
+
+        const servicos = sRes.status === "fulfilled" ? unwrap(sRes.value) : [];
+        const produtos = pRes.status === "fulfilled" ? unwrap(pRes.value) : [];
+        const combos = cRes.status === "fulfilled" ? unwrap(cRes.value) : [];
+        const ordensRaw = ordRes.status === "fulfilled" ? unwrap(ordRes.value) : [];
+        const clientes = clientesRes.status === "fulfilled" ? unwrap(clientesRes.value) : [];
+        
+        // Buscar todos os usuários do backend
+        const usuariosRes = await Promise.allSettled([usuarioService.list()]);
+        const usuariosBackend = usuariosRes[0].status === "fulfilled" ? unwrap(usuariosRes[0].value) : [];
+        
+        console.log("DEBUG - usuariosBackend:", usuariosBackend);
+        
+        // Usar todos os usuários do backend
+        const usuarios = usuariosBackend;
+
+        console.log("DEBUG - Clientes:", clientes);
+        console.log("DEBUG - Usuário Logado:", usuarios);
+        console.log("DEBUG - Servicos (sem produtos):", servicos);
+        console.log("DEBUG - Produtos (só produtos):", produtos);
+        console.log("DEBUG - Ordens:", ordensRaw);
+        if (ordensRaw.length > 0) {
+          console.log("DEBUG - Primeira ordem com itens:", ordensRaw[0]);
+          console.log("DEBUG - Itens da primeira ordem:", ordensRaw[0].itens);
+        }
+
+        setListaServicos(servicos);
+        setListaProdutos(produtos);
+        setListaCombos(combos);
+        setListaClientes(clientes);
+        setListaUsuarios(usuarios);
+
+        setOrdens(Array.isArray(ordensRaw) ? ordensRaw : []);
+      } catch (err) {
+        console.error("Erro ao carregar catálogos/ordens", err);
+        error("Erro ao carregar dados");
+      }
     };
+
+    load();
   }, []);
 
   const abrirNovaOrdem = () => {
@@ -506,13 +487,27 @@ const OrdemServico = () => {
     setModalAberto(true);
   };
 
-  const salvarOrdem = (dados) => {
-    if (dados.id) {
-      setOrdens(ordens.map((o) => (o.id === dados.id ? dados : o)));
-      success("Ordem atualizada com sucesso");
-    } else {
-      setOrdens([{ id: Date.now(), ...dados }, ...ordens]);
-      success("Ordem adicionada com sucesso");
+  const salvarOrdem = async (payload, id) => {
+    try {
+      console.log("DEBUG - Payload antes de salvar:", JSON.stringify(payload, null, 2));
+      if (id) {
+        await ordemService.update?.(id, payload) ?? ordemService.updateOrder?.(id, payload);
+        success("Ordem atualizada com sucesso");
+      } else {
+        const result = await ordemService.create?.(payload) ?? ordemService.createOrder?.(payload);
+        console.log("DEBUG - Resultado após criar:", result);
+        success("Ordem adicionada com sucesso");
+      }
+      const r = await ordemService.list?.() ?? ordemService.listAll?.();
+      const ordensArr = r?.data ?? r ?? [];
+      console.log("DEBUG - Ordens após salvar:", ordensArr);
+      if (ordensArr.length > 0) {
+        console.log("DEBUG - Última ordem salva:", ordensArr[ordensArr.length - 1]);
+      }
+      setOrdens(Array.isArray(ordensArr) ? ordensArr : []);
+    } catch (err) {
+      console.error("Erro ao salvar ordem", err);
+      error("Erro ao salvar ordem: " + (err?.response?.data?.message || err.message || ""));
     }
   };
 
@@ -531,19 +526,31 @@ const OrdemServico = () => {
     setModalConfirmAberto(true);
   };
 
-  const confirmarExclusao = () => {
-    setOrdens(ordens.filter((o) => o.id !== ordemParaExcluir));
-    setModalConfirmAberto(false);
-    setOrdemParaExcluir(null);
-    success("Ordem excluída");
+  const confirmarExclusao = async () => {
+    try {
+      await ordemService.remove?.(ordemParaExcluir) ?? ordemService.delete?.(ordemParaExcluir);
+      success("Ordem excluída");
+      const r = await ordemService.list?.() ?? ordemService.listAll?.();
+      const ordensArr = r?.data ?? r ?? [];
+      setOrdens(Array.isArray(ordensArr) ? ordensArr : []);
+    } catch (err) {
+      console.error("Erro ao excluir ordem", err);
+      error("Erro ao excluir ordem");
+    } finally {
+      setModalConfirmAberto(false);
+      setOrdemParaExcluir(null);
+    }
   };
 
-  const ordensFiltradas = ordens.filter((o) => {
+  const ordensFiltradas = (Array.isArray(ordens) ? ordens : []).filter((o) => {
     if (!termoPesquisa) return true;
     const t = termoPesquisa.toLowerCase();
+    const clienteName = o.cliente?.nome ?? o.cliente?.nomeCompleto ?? (typeof o.cliente === 'string' ? o.cliente : "");
+    const usuarioName = o.usuario?.nome ?? o.usuario?.nomeCompleto ?? (typeof o.usuario === 'string' ? o.usuario : "");
     return (
-      (o.cliente && o.cliente.toLowerCase().includes(t)) ||
-      (o.funcionario && o.funcionario.toLowerCase().includes(t))
+      (clienteName && String(clienteName).toLowerCase().includes(t)) ||
+      (usuarioName && String(usuarioName).toLowerCase().includes(t)) ||
+      (o.idOrdemServico && String(o.idOrdemServico).includes(t))
     );
   });
 
@@ -566,19 +573,24 @@ const OrdemServico = () => {
 
       <div className="lista-ordens">
         {ordensFiltradas.map((o) => (
-          <div className="ordem-card" key={o.id}>
+          <div className="ordem-card" key={o.idOrdemServico ?? o.id ?? Date.now()}>
             <div className="ordem-info">
-              <h3>{o.cliente || "—"}</h3>
+              <h3>{o.cliente?.nome ?? o.cliente?.nomeCompleto ?? (typeof o.cliente === 'string' ? o.cliente : "—")}</h3>
               <div className="linha-detalhes">
                 <div>
                   <strong>Funcionário</strong>
-                  <div className="sub">{o.funcionario || "—"}</div>
+                  <div className="sub">{o.usuario?.nome ?? o.usuario?.nomeCompleto ?? "—"}</div>
                 </div>
                 <div>
                   <strong>Serviço</strong>
                   <div className="sub">
-                    {(o.servicos || [])
-                      .map((s) => s.servico)
+                    {(o.itens || [])
+                      .filter((it) => {
+                        if (it.combo) return true;
+                        if (it.servicoProduto && !it.servicoProduto.isProduto && !it.servicoProduto.produto) return true;
+                        return false;
+                      })
+                      .map((it) => (it.combo ? it.combo.nome : it.servicoProduto?.nome ?? it.servicoProduto?.descricao))
                       .filter(Boolean)
                       .join(", ")}
                   </div>
@@ -586,31 +598,23 @@ const OrdemServico = () => {
                 <div>
                   <strong>Produto</strong>
                   <div className="sub">
-                    {(o.produtos || [])
-                      .map((p) => p.produto)
-                      .filter(Boolean)
+                    {(o.itens || [])
+                      .filter((it) => it.servicoProduto?.isProduto === true || it.servicoProduto?.produto === true)
+                      .map((it) => `${it.servicoProduto.nome} x${it.quantidade ?? 1}`)
                       .join(", ")}
                   </div>
                 </div>
-                <div className="valor">
-                  R$ {o.valorVenda || o.valorTotal || "0,00"}
-                </div>
+                <div className="valor">R$ {o.valorFinal ?? o.valorVenda ?? "0,00"}</div>
               </div>
             </div>
             <div className="ordem-actions">
-              <button
-                className="botao-visualizar"
-                onClick={() => visualizar(o)}
-              >
+              <button className="botao-visualizar" onClick={() => visualizar(o)}>
                 Visualizar
               </button>
               <button className="botao-editar" onClick={() => editar(o)}>
                 Editar
               </button>
-              <button
-                className="botao-excluir"
-                onClick={() => prepararExclusao(o.id)}
-              >
+              <button className="botao-excluir" onClick={() => prepararExclusao(o.idOrdemServico ?? o.id)}>
                 Excluir
               </button>
             </div>
@@ -631,6 +635,9 @@ const OrdemServico = () => {
         aoSalvar={salvarOrdem}
         listaServicos={listaServicos}
         listaProdutos={listaProdutos}
+        listaCombos={listaCombos}
+        listaClientes={listaClientes}
+        listaUsuarios={listaUsuarios}
       />
 
       <ModalVisualizarOrdem

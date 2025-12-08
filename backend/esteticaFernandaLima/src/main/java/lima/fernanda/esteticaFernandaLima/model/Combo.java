@@ -15,9 +15,11 @@ public class Combo {
     private Float valorFinal;
 
     @OneToMany(mappedBy = "combo")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<VendaProdutoServico> vendas;
 
     @OneToMany(mappedBy = "combo")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<ComboServicoProduto> itensCombo;
 
     public Integer getIdCombo() {
