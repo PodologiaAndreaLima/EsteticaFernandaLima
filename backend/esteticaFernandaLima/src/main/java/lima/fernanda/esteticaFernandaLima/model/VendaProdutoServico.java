@@ -1,9 +1,10 @@
 package lima.fernanda.esteticaFernandaLima.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(schema = "venda_produto_servico")
+@Table(name = "venda_produto_servico")
 public class VendaProdutoServico {
 
     @Id
@@ -12,66 +13,37 @@ public class VendaProdutoServico {
 
     @ManyToOne
     @JoinColumn(name = "fk_ordem_servico")
+    @JsonIgnoreProperties({"itens", "hibernateLazyInitializer", "handler"})
     private OrdemServico ordemServico;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_servico_produto")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ServicoProduto servicoProduto;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_combo")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Combo combo;
 
     private Float desconto;
     private Integer quantidade;
 
+    public Integer getIdVendaProdutoServico() { return idVendaProdutoServico; }
+    public void setIdVendaProdutoServico(Integer idVendaProdutoServico) { this.idVendaProdutoServico = idVendaProdutoServico; }
 
+    public OrdemServico getOrdemServico() { return ordemServico; }
+    public void setOrdemServico(OrdemServico ordemServico) { this.ordemServico = ordemServico; }
 
-    public Integer getIdVendaProdutoServico() {
-        return idVendaProdutoServico;
-    }
+    public ServicoProduto getServicoProduto() { return servicoProduto; }
+    public void setServicoProduto(ServicoProduto servicoProduto) { this.servicoProduto = servicoProduto; }
 
-    public void setIdVendaProdutoServico(Integer idVendaProdutoServico) {
-        this.idVendaProdutoServico = idVendaProdutoServico;
-    }
+    public Combo getCombo() { return combo; }
+    public void setCombo(Combo combo) { this.combo = combo; }
 
-    public Float getDesconto() {
-        return desconto;
-    }
+    public Float getDesconto() { return desconto; }
+    public void setDesconto(Float desconto) { this.desconto = desconto; }
 
-    public void setDesconto(Float desconto) {
-        this.desconto = desconto;
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public OrdemServico getOrdemServico() {
-        return ordemServico;
-    }
-
-    public void setOrdemServico(OrdemServico ordemServico) {
-        this.ordemServico = ordemServico;
-    }
-
-    public ServicoProduto getServicoProduto() {
-        return servicoProduto;
-    }
-
-    public void setServicoProduto(ServicoProduto servicoProduto) {
-        this.servicoProduto = servicoProduto;
-    }
-
-    public Combo getCombo() {
-        return combo;
-    }
-
-    public void setCombo(Combo combo) {
-        this.combo = combo;
-    }
+    public Integer getQuantidade() { return quantidade; }
+    public void setQuantidade(Integer quantidade) { this.quantidade = quantidade; }
 }

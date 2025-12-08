@@ -16,9 +16,9 @@ const API_CONFIG = {
       REFRESH: "/auth/refresh",
     },
     USERS: {
-      BASE: "/cliente", // Mantido para cliente
-      CURRENT: "/cliente/me", // Para cliente
-      PASSWORD: "/cliente/:id/senha", // Endpoint para atualização de senha
+      BASE: "/usuarios", // Endpoint para usuários/funcionários
+      CURRENT: "/usuarios/me",
+      PASSWORD: "/usuarios/:id/senha", // Endpoint para atualização de senha
     },
     STAFF: {
       BASE: "/funcionario", // Novo endpoint para funcionários

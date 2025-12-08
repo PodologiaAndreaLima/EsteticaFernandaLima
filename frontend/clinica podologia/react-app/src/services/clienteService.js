@@ -61,3 +61,67 @@ export const ClienteService = {
     }
   }
 };
+
+// Wrapper para compatibilidade com o padrão usado em outros services
+export default {
+  async list() {
+    try {
+      const result = await ClienteService.getClientes();
+      if (result.success) {
+        return { success: true, data: result.data || [] };
+      }
+      return { success: false, data: [] };
+    } catch (err) {
+      console.error("clienteService.list error", err);
+      return { success: false, data: [] };
+    }
+  },
+
+  async listAll() {
+    return this.list();
+  },
+
+  async getById(id) {
+    try {
+      const result = await api.get(`/cliente/${id}`);
+      return { success: true, data: result.data };
+    } catch (err) {
+      console.error("clienteService.getById error", err);
+      throw err;
+    }
+  },
+
+  async create(data) {
+    try {
+      const result = await ClienteService.criarCliente(data);
+      return result;
+    } catch (err) {
+      console.error("clienteService.create error", err);
+      throw err;
+    }
+  },
+
+  async update(id, data) {
+    try {
+      const result = await ClienteService.updateCliente(id, data);
+      return result;
+    } catch (err) {
+      console.error("clienteService.update error", err);
+      throw err;
+    }
+  },
+
+  async remove(id) {
+    try {
+      const result = await ClienteService.deleteCliente(id);
+      return result;
+    } catch (err) {
+      console.error("clienteService.remove error", err);
+      throw err;
+    }
+  },
+
+  async delete(id) {
+    return this.remove(id);
+  }
+};

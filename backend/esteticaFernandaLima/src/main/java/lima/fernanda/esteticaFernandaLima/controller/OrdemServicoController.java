@@ -1,10 +1,8 @@
 package lima.fernanda.esteticaFernandaLima.controller;
 
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lima.fernanda.esteticaFernandaLima.dto.OrdemServicoRequest;
 import lima.fernanda.esteticaFernandaLima.model.OrdemServico;
 import lima.fernanda.esteticaFernandaLima.service.OrdemServicoService;
 import org.springframework.http.ResponseEntity;
@@ -25,49 +23,27 @@ public class OrdemServicoController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar ordens de serviço", description = "Retorna todas as ordens de serviço")
-    @ApiResponse(responseCode = "200", description = "Ordens de serviço encontradas")
-    @ApiResponse(responseCode = "204", description = "Nenhuma ordem de serviço encontrada")
     public ResponseEntity<List<OrdemServico>> getOrdemServico() {
         List<OrdemServico> ordensServico = service.listarTodos();
-        return ordensServico.isEmpty() ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.ok(ordensServico);
+        return ordensServico.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(ordensServico);
     }
 
-
     @PostMapping
-    @Operation(summary = "Cadastrar ordem de serviço", description = "Cadastra uma nova ordem de serviço")
-    @ApiResponse(responseCode = "201", description = "Ordem de serviço cadastrada com sucesso")
-    public ResponseEntity<OrdemServico> postOrdemServico(@RequestBody OrdemServico ordemServico) {
-        return ResponseEntity.status(201).body(service.salvar(ordemServico));
+    public ResponseEntity<OrdemServico> postOrdemServico(@RequestBody OrdemServicoRequest req) {
+        OrdemServico saved = service.salvar(req);
+        return ResponseEntity.status(201).body(saved);
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<OrdemServico> atualizarOrdemServico(@PathVariable Integer id,
+                                                              @RequestBody OrdemServicoRequest req) {
+        OrdemServico updated = service.atualizar(id, req);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Excluir ordem de serviço", description = "Remove uma ordem de serviço pelo ID")
-    @ApiResponse(responseCode = "204", description = "Ordem de serviço removida com sucesso")
-    @ApiResponse(responseCode = "404", description = "Ordem de serviço não encontrada")
-    public ResponseEntity<Void> deleteOrdemServicoPorId(@PathVariable Integer id) {
-        try {
-            service.deletar(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
-    @PutMapping("/{id}")
-    @Operation(summary = "Atualizar ordem de serviço", description = "Atualiza uma ordem de serviço pelo ID")
-    @ApiResponse(responseCode = "200", description = "Ordem de serviço atualizada com sucesso")
-    @ApiResponse(responseCode = "404", description = "Ordem de serviço não encontrada")
-    public ResponseEntity<OrdemServico> atualizarOrdemServico(@PathVariable Integer id, @RequestBody OrdemServico ordemServicoAtualizada) {
-        try {
-            OrdemServico ordemServicoAtualizadaResult = service.atualizar(id, ordemServicoAtualizada);
-            return ResponseEntity.ok(ordemServicoAtualizadaResult);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-
 }

@@ -40,13 +40,21 @@ const toBackendPayload = (formData) => {
 export default {
   list: async () => {
     const res = await api.get(BASE);
-    return res.data;
+    // Filtrar apenas serviços (isProduto = false, null ou undefined)
+    const allItems = res.data || [];
+    const servicos = allItems.filter(item => {
+      // Verifica se é produto em qualquer variação do campo
+      const eProduto = item.isProduto === true || item.produto === true || item.is_produto === 1;
+      return !eProduto; // Retorna true se NÃO for produto (ou seja, é serviço)
+    });
+    console.log("DEBUG servicoProdutoService.list - Total:", allItems.length, "Serviços:", servicos.length);
+    return servicos;
   },
 
   // alias caso algum componente ainda chame listAll
   listAll: async () => {
     const res = await api.get(BASE);
-    return res.data;
+    return res.data; // Retorna tudo
   },
 
   getById: async (id) => {
