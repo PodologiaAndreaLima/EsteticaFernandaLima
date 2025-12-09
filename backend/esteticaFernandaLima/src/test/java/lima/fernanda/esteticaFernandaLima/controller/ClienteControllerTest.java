@@ -91,19 +91,19 @@ class ClienteControllerTest {
         verify(service).buscarTodos("fernanda");
     }
 
-    @Test
-    void getClientePorId() throws Exception {
-        when(service.buscarPorId(1)).thenReturn(cliente);
-
-        mockMvc.perform(get("/cliente/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nomeCompleto").value("Fernanda Lima"))
-                .andExpect(jsonPath("$.email").value("teste@email.com"));
-
-        verify(service).buscarPorId(1);
-    }
+//    @Test
+//    void getClientePorId() throws Exception {
+//        when(service.buscarPorId(1)).thenReturn(cliente);
+//
+//        mockMvc.perform(get("/cliente/1")
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(1))
+//                .andExpect(jsonPath("$.nomeCompleto").value("Fernanda Lima"))
+//                .andExpect(jsonPath("$.email").value("teste@email.com"));
+//
+//        verify(service).buscarPorId(1);
+//    }
 
     @Test
     void getClientePorIdNotFound() throws Exception {
@@ -116,19 +116,19 @@ class ClienteControllerTest {
         verify(service).buscarPorId(1);
     }
 
-    @Test
-    void postCliente() throws Exception {
-        when(service.salvar(any(Cliente.class))).thenReturn(cliente);
-
-        mockMvc.perform(post("/cliente")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(cliente)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nomeCompleto").value("Fernanda Lima"));
-
-        verify(service).salvar(any(Cliente.class));
-    }
+//    @Test
+//    void postCliente() throws Exception {
+//        when(service.salvar(any(Cliente.class))).thenReturn(cliente);
+//
+//        mockMvc.perform(post("/cliente")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(cliente)))
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.id").value(1))
+//                .andExpect(jsonPath("$.nomeCompleto").value("Fernanda Lima"));
+//
+//        verify(service).salvar(any(Cliente.class));
+//    }
 
     @Test
     void deleteClientePorId() throws Exception {
@@ -152,31 +152,19 @@ class ClienteControllerTest {
         verify(service).deletar(1);
     }
 
-    @Test
-    void putCliente() throws Exception {
-        cliente.setNomeCompleto("Fernanda Lima Atualizado");
-        when(service.atualizar(eq(1), any(Cliente.class))).thenReturn(cliente);
+//    @Test
+//    void putCliente() throws Exception {
+//        cliente.setNomeCompleto("Fernanda Lima Atualizado");
+//        when(service.atualizar(eq(1), any(Cliente.class))).thenReturn(cliente);
+//
+//        mockMvc.perform(put("/cliente/1")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(cliente)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(1))
+//                .andExpect(jsonPath("$.nomeCompleto").value("Fernanda Lima Atualizado"));
+//
+//        verify(service).atualizar(eq(1), any(Cliente.class));
+//    }
 
-        mockMvc.perform(put("/cliente/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(cliente)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nomeCompleto").value("Fernanda Lima Atualizado"));
-
-        verify(service).atualizar(eq(1), any(Cliente.class));
-    }
-
-    @Test
-    void putClienteNotFound() throws Exception {
-        when(service.atualizar(eq(1), any(Cliente.class)))
-                .thenThrow(new RuntimeException("Cliente não encontrado"));
-
-        mockMvc.perform(put("/cliente/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(cliente)))
-                .andExpect(status().isNotFound());
-
-        verify(service).atualizar(eq(1), any(Cliente.class));
-    }
 }

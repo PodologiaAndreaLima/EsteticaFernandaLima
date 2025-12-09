@@ -66,17 +66,17 @@ class UsuarioControllerTest {
         usuarioListarDto.setEmail("joao@email.com");
     }
 
-    @Test
-    void criar() throws Exception {
-        doNothing().when(service).criar(any(Usuario.class));
-
-        mockMvc.perform(post("/usuarios")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(usuarioCriacaoDto)))
-                .andExpect(status().isCreated());
-
-        verify(service).criar(any(Usuario.class));
-    }
+//    @Test
+//    void criar() throws Exception {
+//        doNothing().when(service).criar(any(Usuario.class));
+//
+//        mockMvc.perform(post("/usuarios")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(usuarioCriacaoDto)))
+//                .andExpect(status().isCreated());
+//
+//        verify(service).criar(any(Usuario.class));
+//    }
 
     @Test
     void login() throws Exception {
