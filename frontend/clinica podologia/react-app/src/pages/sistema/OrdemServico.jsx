@@ -36,18 +36,22 @@ const ModalOrdem = ({
 
     if (ordemInicial && (ordemInicial.idOrdemServico || ordemInicial.id)) {
       const servicos = (ordemInicial.itens || [])
-        .filter((it) => it.servicoProduto || it.combo)
+        .filter((it) => {
+          if (it.combo) return true;
+          if (it.servicoProduto && !it.servicoProduto.isProduto && !it.servicoProduto.produto) return true;
+          return false;
+        })
         .map((it) => {
-          if (it.combo) return { servico: it.combo.idCombo ?? it.combo.id, desconto: it.desconto ?? 0, isCombo: true };
-          if (it.servicoProduto) return { servico: it.servicoProduto.idServicoProduto ?? it.servicoProduto.id, desconto: it.desconto ?? 0, isCombo: false };
+          if (it.combo) return { servico: it.combo.idCombo ?? it.combo.id, desconto: it.desconto ?? 0 };
+          if (it.servicoProduto) return { servico: it.servicoProduto.idProdutoServico, desconto: it.desconto ?? 0 };
           return null;
         })
         .filter(Boolean);
 
       const produtos = (ordemInicial.itens || [])
-        .filter((it) => it.produto)
+        .filter((it) => it.servicoProduto?.isProduto === true || it.servicoProduto?.produto === true)
         .map((it) => ({
-          produto: it.produto.id ?? it.produtoId,
+          produto: it.servicoProduto.idProdutoServico,
           quantidade: it.quantidade ?? 1,
           desconto: it.desconto ?? 0,
         }));
@@ -368,18 +372,18 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
               <div className="valor">{servs || "Nenhum serviço adicionado"}</div>
             </div>
 
-            <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
+            <div className="campo-visualizacao" style={{ marginTop: '15px' }}>
               <span className="rotulo">Produtos</span>
               <div className="valor">{prods || "Nenhum produto adicionado"}</div>
             </div>
 
-            <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
+            <div className="campo-visualizacao" style={{ marginTop: '15px' }}>
               <span className="rotulo">Observações</span>
               <div className="valor">{ordem.observacao ?? ordem.observacoes ?? "—"}</div>
             </div>
 
             <div className="linha-visualizacao">
-              <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
+              <div className="campo-visualizacao">
                 <span className="rotulo">Valor de venda (R$)</span>
                 <div className="valor">{ordem.valorFinal ?? "0,00"}</div>
               </div>
