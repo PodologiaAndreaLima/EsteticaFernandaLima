@@ -27,9 +27,7 @@ const ModalVisualizarCombo = ({ estaAberto, aoFechar, combo }) => {
       <div className="modal-container modal-visualizar">
         <div className="modal-header">
           <h2>Detalhes do Combo</h2>
-          <button className="botao-fechar" onClick={aoFechar}>
-            &times;
-          </button>
+          <button className="botao-fechar" onClick={aoFechar}>&times;</button>
         </div>
 
         <div className="conteudo-visualizacao">
@@ -51,10 +49,7 @@ const ModalVisualizarCombo = ({ estaAberto, aoFechar, combo }) => {
               <div className="campo-visualizacao">
                 <span className="rotulo">Valor final:</span>
                 <span className="valor">
-                  {Number(combo.valorFinal).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  {Number(combo.valorFinal).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </span>
               </div>
             </div>
@@ -62,9 +57,7 @@ const ModalVisualizarCombo = ({ estaAberto, aoFechar, combo }) => {
         </div>
 
         <div className="rodape-modal">
-          <button className="botao-fechar-visualizacao" onClick={aoFechar}>
-            Fechar
-          </button>
+          <button className="botao-fechar-visualizacao" onClick={aoFechar}>Fechar</button>
         </div>
       </div>
     </div>
@@ -85,19 +78,11 @@ const ModalCombo = ({ estaAberto, aoFechar, combo, aoSalvar }) => {
         setDadosFormulario({
           nome: combo.nome ?? "",
           descricao: combo.descricao ?? "",
-          valorFinal:
-            combo.valorFinal !== undefined
-              ? String(combo.valorFinal).replace(".", ",")
-              : "",
+          valorFinal: combo.valorFinal !== undefined ? String(combo.valorFinal).replace(".", ",") : "",
           id: combo.id,
         });
       } else {
-        setDadosFormulario({
-          nome: "",
-          descricao: "",
-          valorFinal: "",
-          id: undefined,
-        });
+        setDadosFormulario({ nome: "", descricao: "", valorFinal: "", id: undefined });
       }
     }
   }, [combo, estaAberto]);
@@ -125,62 +110,34 @@ const ModalCombo = ({ estaAberto, aoFechar, combo, aoSalvar }) => {
       <div className="modal-container">
         <div className="modal-header">
           <h2>{dadosFormulario.id ? "Editar Combo" : "Adicionar Combo"}</h2>
-          <button className="botao-fechar" onClick={aoFechar}>
-            &times;
-          </button>
+          <button className="botao-fechar" onClick={aoFechar}>&times;</button>
         </div>
 
         <form onSubmit={enviarFormulario}>
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="nome">Nome do combo</label>
-              <input
-                type="text"
-                id="nome"
-                name="nome"
-                value={dadosFormulario.nome}
-                onChange={alterarCampo}
-                required
-              />
+              <input type="text" id="nome" name="nome" value={dadosFormulario.nome} onChange={alterarCampo} required />
             </div>
           </div>
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="descricao">Descrição</label>
-              <textarea
-                id="descricao"
-                name="descricao"
-                value={dadosFormulario.descricao}
-                onChange={alterarCampo}
-                rows="4"
-                required
-              />
+              <textarea id="descricao" name="descricao" value={dadosFormulario.descricao} onChange={alterarCampo} rows="4" required />
             </div>
           </div>
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="valorFinal">Valor final (R$)</label>
-              <input
-                type="text"
-                id="valorFinal"
-                name="valorFinal"
-                value={dadosFormulario.valorFinal}
-                onChange={alterarCampo}
-                required
-                placeholder="0,00"
-              />
+              <input type="text" id="valorFinal" name="valorFinal" value={dadosFormulario.valorFinal} onChange={alterarCampo} required placeholder="0,00" />
             </div>
           </div>
 
           <div className="rodape-modal">
-            <button type="button" className="botao-cancelar" onClick={aoFechar}>
-              Cancelar
-            </button>
-            <button type="submit" className="botao-salvar">
-              Salvar
-            </button>
+            <button type="button" className="botao-cancelar" onClick={aoFechar}>Cancelar</button>
+            <button type="submit" className="botao-salvar">Salvar</button>
           </div>
         </form>
       </div>
@@ -192,8 +149,7 @@ const Combos = () => {
   const [listaCombos, setListaCombos] = useState([]);
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
-  const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] =
-    useState(false);
+  const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] = useState(false);
   const [comboEmEdicao, setComboEmEdicao] = useState({});
   const [comboParaExcluir, setComboParaExcluir] = useState(null);
   const [comboParaVisualizar, setComboParaVisualizar] = useState(null);
@@ -276,10 +232,8 @@ const Combos = () => {
     }
   };
 
-  const combosFiltrados = listaCombos.filter(
-    (combo) =>
-      combo.nome &&
-      combo.nome.toLowerCase().includes(termoPesquisa.toLowerCase()),
+  const combosFiltrados = listaCombos.filter((combo) =>
+    combo.nome && combo.nome.toLowerCase().includes(termoPesquisa.toLowerCase())
   );
 
   return (
@@ -287,57 +241,21 @@ const Combos = () => {
       <h1>Combos</h1>
 
       <div className="container-pesquisa">
-        <input
-          type="text"
-          placeholder="Pesquisar..."
-          className="campo-pesquisa"
-          value={termoPesquisa}
-          onChange={(e) => setTermoPesquisa(e.target.value)}
-        />
-        <button className="botao-adicionar" onClick={adicionarCombo}>
-          Adicionar Combo
-        </button>
+        <input type="text" placeholder="Pesquisar..." className="campo-pesquisa" value={termoPesquisa} onChange={(e) => setTermoPesquisa(e.target.value)} />
+        <button className="botao-adicionar" onClick={adicionarCombo}>Adicionar Combo</button>
       </div>
 
       <div className="grid-cards">
         {combosFiltrados.map((combo) => (
-          <ComboCard
-            key={combo.id}
-            combo={combo}
-            onVisualizar={visualizarCombo}
-            onEditar={editarCombo}
-            onExcluir={prepararExclusao}
-          />
+          <ComboCard key={combo.id} combo={combo} onVisualizar={visualizarCombo} onEditar={editarCombo} onExcluir={prepararExclusao} />
         ))}
       </div>
 
-      {combosFiltrados.length === 0 && (
-        <div className="sem-resultados">
-          <p>Nenhum combo encontrado.</p>
-        </div>
-      )}
+      {combosFiltrados.length === 0 && <div className="sem-resultados"><p>Nenhum combo encontrado.</p></div>}
 
-      <ModalCombo
-        estaAberto={modalEditarAberto}
-        aoFechar={() => setModalEditarAberto(false)}
-        combo={comboEmEdicao}
-        aoSalvar={salvarCombo}
-      />
-      <ModalVisualizarCombo
-        estaAberto={modalVisualizarAberto}
-        aoFechar={() => setModalVisualizarAberto(false)}
-        combo={comboParaVisualizar}
-      />
-      <ModalConfirmacao
-        estaAberto={modalConfirmacaoExclusaoAberto}
-        aoFechar={() => setModalConfirmacaoExclusaoAberto(false)}
-        aoConfirmar={confirmarExclusao}
-        titulo="Confirmar exclusão"
-        mensagem="Tem certeza que deseja excluir este combo? Esta ação não pode ser desfeita."
-        textoBotaoConfirmar="Excluir"
-        textoBotaoCancelar="Cancelar"
-        tipo="exclusao"
-      />
+      <ModalCombo estaAberto={modalEditarAberto} aoFechar={() => setModalEditarAberto(false)} combo={comboEmEdicao} aoSalvar={salvarCombo} />
+      <ModalVisualizarCombo estaAberto={modalVisualizarAberto} aoFechar={() => setModalVisualizarAberto(false)} combo={comboParaVisualizar} />
+      <ModalConfirmacao estaAberto={modalConfirmacaoExclusaoAberto} aoFechar={() => setModalConfirmacaoExclusaoAberto(false)} aoConfirmar={confirmarExclusao} titulo="Confirmar exclusão" mensagem="Tem certeza que deseja excluir este combo? Esta ação não pode ser desfeita." textoBotaoConfirmar="Excluir" textoBotaoCancelar="Cancelar" tipo="exclusao" />
     </div>
   );
 };

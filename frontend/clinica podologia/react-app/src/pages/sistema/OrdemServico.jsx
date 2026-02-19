@@ -38,35 +38,18 @@ const ModalOrdem = ({
       const servicos = (ordemInicial.itens || [])
         .filter((it) => {
           if (it.combo) return true;
-          if (
-            it.servicoProduto &&
-            !it.servicoProduto.isProduto &&
-            !it.servicoProduto.produto
-          )
-            return true;
+          if (it.servicoProduto && !it.servicoProduto.isProduto && !it.servicoProduto.produto) return true;
           return false;
         })
         .map((it) => {
-          if (it.combo)
-            return {
-              servico: it.combo.idCombo ?? it.combo.id,
-              desconto: it.desconto ?? 0,
-            };
-          if (it.servicoProduto)
-            return {
-              servico: it.servicoProduto.idProdutoServico,
-              desconto: it.desconto ?? 0,
-            };
+          if (it.combo) return { servico: it.combo.idCombo ?? it.combo.id, desconto: it.desconto ?? 0 };
+          if (it.servicoProduto) return { servico: it.servicoProduto.idProdutoServico, desconto: it.desconto ?? 0 };
           return null;
         })
         .filter(Boolean);
 
       const produtos = (ordemInicial.itens || [])
-        .filter(
-          (it) =>
-            it.servicoProduto?.isProduto === true ||
-            it.servicoProduto?.produto === true,
-        )
+        .filter((it) => it.servicoProduto?.isProduto === true || it.servicoProduto?.produto === true)
         .map((it) => ({
           produto: it.servicoProduto.idProdutoServico,
           quantidade: it.quantidade ?? 1,
@@ -103,48 +86,32 @@ const ModalOrdem = ({
   };
 
   const adicionarServico = () => {
-    setOrdem((o) => ({
-      ...o,
-      servicos: [...o.servicos, { servico: "", desconto: 0 }],
-    }));
+    setOrdem((o) => ({ ...o, servicos: [...o.servicos, { servico: "", desconto: 0 }] }));
   };
 
   const removerServico = (idx) => {
-    setOrdem((o) => ({
-      ...o,
-      servicos: o.servicos.filter((_, i) => i !== idx),
-    }));
+    setOrdem((o) => ({ ...o, servicos: o.servicos.filter((_, i) => i !== idx) }));
   };
 
   const alterarServicoLinha = (idx, campo, valor) => {
     setOrdem((o) => ({
       ...o,
-      servicos: o.servicos.map((s, i) =>
-        i === idx ? { ...s, [campo]: valor } : s,
-      ),
+      servicos: o.servicos.map((s, i) => (i === idx ? { ...s, [campo]: valor } : s)),
     }));
   };
 
   const adicionarProduto = () => {
-    setOrdem((o) => ({
-      ...o,
-      produtos: [...o.produtos, { produto: "", quantidade: 1, desconto: 0 }],
-    }));
+    setOrdem((o) => ({ ...o, produtos: [...o.produtos, { produto: "", quantidade: 1, desconto: 0 }] }));
   };
 
   const removerProduto = (idx) => {
-    setOrdem((o) => ({
-      ...o,
-      produtos: o.produtos.filter((_, i) => i !== idx),
-    }));
+    setOrdem((o) => ({ ...o, produtos: o.produtos.filter((_, i) => i !== idx) }));
   };
 
   const alterarProdutoLinha = (idx, campo, valor) => {
     setOrdem((o) => ({
       ...o,
-      produtos: o.produtos.map((p, i) =>
-        i === idx ? { ...p, [campo]: valor } : p,
-      ),
+      produtos: o.produtos.map((p, i) => (i === idx ? { ...p, [campo]: valor } : p)),
     }));
   };
 
@@ -157,43 +124,22 @@ const ModalOrdem = ({
       console.log("DEBUG - ordem.produtos:", ordem.produtos);
       console.log("DEBUG - listaServicos:", listaServicos);
       console.log("DEBUG - listaProdutos:", listaProdutos);
-
-      const valorFinalNum =
-        parseFloat(String(ordem.valorVenda).replace(",", ".")) || 0;
+      
+      const valorFinalNum = parseFloat(String(ordem.valorVenda).replace(",", ".")) || 0;
       const itens = [];
 
-      console.log(
-        "DEBUG - ordem.servicos ANTES DO LOOP:",
-        ordem.servicos,
-        "length:",
-        ordem.servicos?.length,
-      );
+      console.log("DEBUG - ordem.servicos ANTES DO LOOP:", ordem.servicos, "length:", ordem.servicos?.length);
 
       // Processar serviços/combos
       for (const s of ordem.servicos) {
         const selectedId = Number(s.servico);
-        console.log(
-          "DEBUG - processando servico:",
-          s,
-          "selectedId:",
-          selectedId,
-        );
+        console.log("DEBUG - processando servico:", s, "selectedId:", selectedId);
         if (!selectedId) continue;
-        const isCombo = (listaCombos || []).some(
-          (c) => Number(c.id ?? c.idCombo) === selectedId,
-        );
+        const isCombo = (listaCombos || []).some((c) => Number(c.id ?? c.idCombo) === selectedId);
         if (isCombo) {
-          itens.push({
-            comboId: selectedId,
-            quantidade: 1,
-            desconto: parseFloat(s.desconto) || 0,
-          });
+          itens.push({ comboId: selectedId, quantidade: 1, desconto: parseFloat(s.desconto) || 0 });
         } else {
-          itens.push({
-            servicoProdutoId: selectedId,
-            quantidade: 1,
-            desconto: parseFloat(s.desconto) || 0,
-          });
+          itens.push({ servicoProdutoId: selectedId, quantidade: 1, desconto: parseFloat(s.desconto) || 0 });
         }
       }
 
@@ -205,7 +151,7 @@ const ModalOrdem = ({
         itens.push({
           produtoId: produtoId, // Backend trata como servicoProdutoId
           quantidade: Number(p.quantidade) || 1,
-          desconto: parseFloat(p.desconto) || 0,
+          desconto: parseFloat(p.desconto) || 0
         });
       }
 
@@ -217,10 +163,7 @@ const ModalOrdem = ({
         itens,
       };
 
-      console.log(
-        "DEBUG - PAYLOAD FINAL COMPLETO:",
-        JSON.stringify(payload, null, 2),
-      );
+      console.log("DEBUG - PAYLOAD FINAL COMPLETO:", JSON.stringify(payload, null, 2));
       console.log("DEBUG - itens.length:", itens.length);
 
       await aoSalvar(payload, ordem.id);
@@ -248,12 +191,7 @@ const ModalOrdem = ({
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label>Cliente</label>
-              <select
-                name="clienteId"
-                value={ordem.clienteId}
-                onChange={alterarCampo}
-                required
-              >
+              <select name="clienteId" value={ordem.clienteId} onChange={alterarCampo} required>
                 <option value="">-- selecione cliente --</option>
                 {(listaClientes || []).map((c) => (
                   <option key={c.id} value={c.id}>
@@ -264,12 +202,7 @@ const ModalOrdem = ({
             </div>
             <div className="grupo-formulario">
               <label>Funcionário</label>
-              <select
-                name="usuarioId"
-                value={ordem.usuarioId}
-                onChange={alterarCampo}
-                required
-              >
+              <select name="usuarioId" value={ordem.usuarioId} onChange={alterarCampo} required>
                 <option value="">-- selecione funcionário --</option>
                 {(listaUsuarios || []).map((u) => (
                   <option key={u.id} value={u.id}>
@@ -281,11 +214,7 @@ const ModalOrdem = ({
           </div>
 
           <div className="linha-formulario">
-            <button
-              type="button"
-              className="botao-adicionar botao-adicionar-grande"
-              onClick={adicionarServico}
-            >
+            <button type="button" className="botao-adicionar botao-adicionar-grande" onClick={adicionarServico}>
               + Adicionar Serviço/Combo
             </button>
           </div>
@@ -294,18 +223,10 @@ const ModalOrdem = ({
             <div key={idx} className="linha-formulario pequena">
               <div className="grupo-formulario">
                 <label>Serviço / Combo</label>
-                <select
-                  value={s.servico}
-                  onChange={(e) =>
-                    alterarServicoLinha(idx, "servico", e.target.value)
-                  }
-                >
+                <select value={s.servico} onChange={(e) => alterarServicoLinha(idx, "servico", e.target.value)}>
                   <option value="">-- selecione --</option>
                   {(listaServicos || []).map((sv) => (
-                    <option
-                      key={sv.idProdutoServico}
-                      value={sv.idProdutoServico}
-                    >
+                    <option key={sv.idProdutoServico} value={sv.idProdutoServico}>
                       {sv.nome ?? sv.descricao}
                     </option>
                   ))}
@@ -318,22 +239,10 @@ const ModalOrdem = ({
               </div>
               <div className="grupo-formulario small">
                 <label>Desconto (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={s.desconto}
-                  onChange={(e) =>
-                    alterarServicoLinha(idx, "desconto", e.target.value)
-                  }
-                />
+                <input type="number" min="0" value={s.desconto} onChange={(e) => alterarServicoLinha(idx, "desconto", e.target.value)} />
               </div>
               <div className="grupo-formulario tiny">
-                <button
-                  type="button"
-                  className="botao-excluir-pequeno"
-                  onClick={() => removerServico(idx)}
-                  aria-label="Remover serviço"
-                >
+                <button type="button" className="botao-excluir-pequeno" onClick={() => removerServico(idx)} aria-label="Remover serviço">
                   ✖
                 </button>
               </div>
@@ -341,11 +250,7 @@ const ModalOrdem = ({
           ))}
 
           <div className="linha-formulario">
-            <button
-              type="button"
-              className="botao-adicionar botao-adicionar-grande"
-              onClick={adicionarProduto}
-            >
+            <button type="button" className="botao-adicionar botao-adicionar-grande" onClick={adicionarProduto}>
               + Adicionar Produto
             </button>
           </div>
@@ -354,18 +259,10 @@ const ModalOrdem = ({
             <div key={idx} className="linha-formulario pequena">
               <div className="grupo-formulario">
                 <label>Produto</label>
-                <select
-                  value={p.produto}
-                  onChange={(e) =>
-                    alterarProdutoLinha(idx, "produto", e.target.value)
-                  }
-                >
+                <select value={p.produto} onChange={(e) => alterarProdutoLinha(idx, "produto", e.target.value)}>
                   <option value="">-- selecione --</option>
                   {(listaProdutos || []).map((pd) => (
-                    <option
-                      key={pd.idProdutoServico}
-                      value={pd.idProdutoServico}
-                    >
+                    <option key={pd.idProdutoServico} value={pd.idProdutoServico}>
                       {pd.nome}
                     </option>
                   ))}
@@ -373,33 +270,14 @@ const ModalOrdem = ({
               </div>
               <div className="grupo-formulario small">
                 <label>Quantidade</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={p.quantidade}
-                  onChange={(e) =>
-                    alterarProdutoLinha(idx, "quantidade", e.target.value)
-                  }
-                />
+                <input type="number" min="1" value={p.quantidade} onChange={(e) => alterarProdutoLinha(idx, "quantidade", e.target.value)} />
               </div>
               <div className="grupo-formulario small">
                 <label>Desconto (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={p.desconto}
-                  onChange={(e) =>
-                    alterarProdutoLinha(idx, "desconto", e.target.value)
-                  }
-                />
+                <input type="number" min="0" value={p.desconto} onChange={(e) => alterarProdutoLinha(idx, "desconto", e.target.value)} />
               </div>
               <div className="grupo-formulario tiny">
-                <button
-                  type="button"
-                  className="botao-excluir-pequeno"
-                  onClick={() => removerProduto(idx)}
-                  aria-label="Remover produto"
-                >
+                <button type="button" className="botao-excluir-pequeno" onClick={() => removerProduto(idx)} aria-label="Remover produto">
                   ✖
                 </button>
               </div>
@@ -409,33 +287,18 @@ const ModalOrdem = ({
           <div className="linha-formulario">
             <div className="grupo-formulario full">
               <label>Observações</label>
-              <textarea
-                value={ordem.observacoes}
-                name="observacoes"
-                onChange={alterarCampo}
-                rows={4}
-              />
+              <textarea value={ordem.observacoes} name="observacoes" onChange={alterarCampo} rows={4} />
             </div>
           </div>
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label>Valor de venda (R$)</label>
-              <input
-                name="valorVenda"
-                value={ordem.valorVenda}
-                onChange={alterarCampo}
-              />
+              <input name="valorVenda" value={ordem.valorVenda} onChange={alterarCampo} />
             </div>
             <div className="grupo-formulario">
               <label>Desconto (%)</label>
-              <input
-                type="number"
-                min="0"
-                name="desconto"
-                value={ordem.desconto}
-                onChange={alterarCampo}
-              />
+              <input type="number" min="0" name="desconto" value={ordem.desconto} onChange={alterarCampo} />
             </div>
           </div>
 
@@ -462,40 +325,18 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
   // Separar serviços/combos de produtos
   const servs = (ordem.itens || [])
     .filter((it) => {
-      console.log(
-        "DEBUG - Filtrando item para servicos:",
-        it,
-        "combo?",
-        !!it.combo,
-        "isProduto?",
-        it.servicoProduto?.isProduto,
-        "produto?",
-        it.servicoProduto?.produto,
-      );
+      console.log("DEBUG - Filtrando item para servicos:", it, "combo?", !!it.combo, "isProduto?", it.servicoProduto?.isProduto, "produto?", it.servicoProduto?.produto);
       if (it.combo) return true;
-      if (
-        it.servicoProduto &&
-        !it.servicoProduto.isProduto &&
-        !it.servicoProduto.produto
-      )
-        return true;
+      if (it.servicoProduto && !it.servicoProduto.isProduto && !it.servicoProduto.produto) return true;
       return false;
     })
-    .map((it) =>
-      it.combo
-        ? it.combo.nome
-        : (it.servicoProduto?.nome ?? it.servicoProduto?.descricao),
-    )
+    .map((it) => (it.combo ? it.combo.nome : it.servicoProduto?.nome ?? it.servicoProduto?.descricao))
     .join(", ");
-
+  
   console.log("DEBUG Modal - servs final:", servs);
 
   const prods = (ordem.itens || [])
-    .filter(
-      (it) =>
-        it.servicoProduto?.isProduto === true ||
-        it.servicoProduto?.produto === true,
-    )
+    .filter((it) => it.servicoProduto?.isProduto === true || it.servicoProduto?.produto === true)
     .map((it) => `${it.servicoProduto.nome} x${it.quantidade ?? 1}`)
     .join(", ");
 
@@ -518,39 +359,27 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
                 <span className="rotulo">Cliente</span>
-                <div className="valor">
-                  {ordem.cliente?.nome ??
-                    ordem.cliente?.nomeCompleto ??
-                    (typeof ordem.cliente === "string" ? ordem.cliente : "—")}
-                </div>
+                <div className="valor">{ordem.cliente?.nome ?? ordem.cliente?.nomeCompleto ?? (typeof ordem.cliente === 'string' ? ordem.cliente : "—")}</div>
               </div>
               <div className="campo-visualizacao">
                 <span className="rotulo">Funcionário</span>
-                <div className="valor">
-                  {ordem.usuario?.nome ?? ordem.usuario?.nomeCompleto ?? "—"}
-                </div>
+                <div className="valor">{ordem.usuario?.nome ?? ordem.usuario?.nomeCompleto ?? "—"}</div>
               </div>
             </div>
 
-            <div className="campo-visualizacao" style={{ marginTop: "20px" }}>
+            <div className="campo-visualizacao" style={{ marginTop: '20px' }}>
               <span className="rotulo">Serviços / Combos</span>
-              <div className="valor">
-                {servs || "Nenhum serviço adicionado"}
-              </div>
+              <div className="valor">{servs || "Nenhum serviço adicionado"}</div>
             </div>
 
-            <div className="campo-visualizacao" style={{ marginTop: "15px" }}>
+            <div className="campo-visualizacao" style={{ marginTop: '15px' }}>
               <span className="rotulo">Produtos</span>
-              <div className="valor">
-                {prods || "Nenhum produto adicionado"}
-              </div>
+              <div className="valor">{prods || "Nenhum produto adicionado"}</div>
             </div>
 
-            <div className="campo-visualizacao" style={{ marginTop: "15px" }}>
+            <div className="campo-visualizacao" style={{ marginTop: '15px' }}>
               <span className="rotulo">Observações</span>
-              <div className="valor">
-                {ordem.observacao ?? ordem.observacoes ?? "—"}
-              </div>
+              <div className="valor">{ordem.observacao ?? ordem.observacoes ?? "—"}</div>
             </div>
 
             <div className="linha-visualizacao">
@@ -602,40 +431,32 @@ const OrdemServico = () => {
           return r;
         };
 
-        const [sRes, pRes, cRes, ordRes, clientesRes] =
-          await Promise.allSettled([
-            servicoProdutoService.list?.() ??
-              servicoProdutoService.listAll?.() ??
-              Promise.resolve([]),
-            produtoService.list?.() ??
-              produtoService.listAll?.() ??
-              Promise.resolve([]),
-            combosService.list?.() ??
-              combosService.listAll?.() ??
-              Promise.resolve([]),
-            ordemService.list?.() ??
-              ordemService.listAll?.() ??
-              Promise.resolve([]),
-            clienteService?.list?.() ?? Promise.resolve([]),
-          ]);
+        const [
+          sRes,
+          pRes,
+          cRes,
+          ordRes,
+          clientesRes,
+        ] = await Promise.allSettled([
+          servicoProdutoService.list?.() ?? servicoProdutoService.listAll?.() ?? Promise.resolve([]),
+          produtoService.list?.() ?? produtoService.listAll?.() ?? Promise.resolve([]),
+          combosService.list?.() ?? combosService.listAll?.() ?? Promise.resolve([]),
+          ordemService.list?.() ?? ordemService.listAll?.() ?? Promise.resolve([]),
+          clienteService?.list?.() ?? Promise.resolve([]),
+        ]);
 
         const servicos = sRes.status === "fulfilled" ? unwrap(sRes.value) : [];
         const produtos = pRes.status === "fulfilled" ? unwrap(pRes.value) : [];
         const combos = cRes.status === "fulfilled" ? unwrap(cRes.value) : [];
-        const ordensRaw =
-          ordRes.status === "fulfilled" ? unwrap(ordRes.value) : [];
-        const clientes =
-          clientesRes.status === "fulfilled" ? unwrap(clientesRes.value) : [];
-
+        const ordensRaw = ordRes.status === "fulfilled" ? unwrap(ordRes.value) : [];
+        const clientes = clientesRes.status === "fulfilled" ? unwrap(clientesRes.value) : [];
+        
         // Buscar todos os usuários do backend
         const usuariosRes = await Promise.allSettled([usuarioService.list()]);
-        const usuariosBackend =
-          usuariosRes[0].status === "fulfilled"
-            ? unwrap(usuariosRes[0].value)
-            : [];
-
+        const usuariosBackend = usuariosRes[0].status === "fulfilled" ? unwrap(usuariosRes[0].value) : [];
+        
         console.log("DEBUG - usuariosBackend:", usuariosBackend);
-
+        
         // Usar todos os usuários do backend
         const usuarios = usuariosBackend;
 
@@ -672,37 +493,25 @@ const OrdemServico = () => {
 
   const salvarOrdem = async (payload, id) => {
     try {
-      console.log(
-        "DEBUG - Payload antes de salvar:",
-        JSON.stringify(payload, null, 2),
-      );
+      console.log("DEBUG - Payload antes de salvar:", JSON.stringify(payload, null, 2));
       if (id) {
-        (await ordemService.update?.(id, payload)) ??
-          ordemService.updateOrder?.(id, payload);
+        await ordemService.update?.(id, payload) ?? ordemService.updateOrder?.(id, payload);
         success("Ordem atualizada com sucesso");
       } else {
-        const result =
-          (await ordemService.create?.(payload)) ??
-          ordemService.createOrder?.(payload);
+        const result = await ordemService.create?.(payload) ?? ordemService.createOrder?.(payload);
         console.log("DEBUG - Resultado após criar:", result);
         success("Ordem adicionada com sucesso");
       }
-      const r = (await ordemService.list?.()) ?? ordemService.listAll?.();
+      const r = await ordemService.list?.() ?? ordemService.listAll?.();
       const ordensArr = r?.data ?? r ?? [];
       console.log("DEBUG - Ordens após salvar:", ordensArr);
       if (ordensArr.length > 0) {
-        console.log(
-          "DEBUG - Última ordem salva:",
-          ordensArr[ordensArr.length - 1],
-        );
+        console.log("DEBUG - Última ordem salva:", ordensArr[ordensArr.length - 1]);
       }
       setOrdens(Array.isArray(ordensArr) ? ordensArr : []);
     } catch (err) {
       console.error("Erro ao salvar ordem", err);
-      error(
-        "Erro ao salvar ordem: " +
-          (err?.response?.data?.message || err.message || ""),
-      );
+      error("Erro ao salvar ordem: " + (err?.response?.data?.message || err.message || ""));
     }
   };
 
@@ -723,10 +532,9 @@ const OrdemServico = () => {
 
   const confirmarExclusao = async () => {
     try {
-      (await ordemService.remove?.(ordemParaExcluir)) ??
-        ordemService.delete?.(ordemParaExcluir);
+      await ordemService.remove?.(ordemParaExcluir) ?? ordemService.delete?.(ordemParaExcluir);
       success("Ordem excluída");
-      const r = (await ordemService.list?.()) ?? ordemService.listAll?.();
+      const r = await ordemService.list?.() ?? ordemService.listAll?.();
       const ordensArr = r?.data ?? r ?? [];
       setOrdens(Array.isArray(ordensArr) ? ordensArr : []);
     } catch (err) {
@@ -741,14 +549,8 @@ const OrdemServico = () => {
   const ordensFiltradas = (Array.isArray(ordens) ? ordens : []).filter((o) => {
     if (!termoPesquisa) return true;
     const t = termoPesquisa.toLowerCase();
-    const clienteName =
-      o.cliente?.nome ??
-      o.cliente?.nomeCompleto ??
-      (typeof o.cliente === "string" ? o.cliente : "");
-    const usuarioName =
-      o.usuario?.nome ??
-      o.usuario?.nomeCompleto ??
-      (typeof o.usuario === "string" ? o.usuario : "");
+    const clienteName = o.cliente?.nome ?? o.cliente?.nomeCompleto ?? (typeof o.cliente === 'string' ? o.cliente : "");
+    const usuarioName = o.usuario?.nome ?? o.usuario?.nomeCompleto ?? (typeof o.usuario === 'string' ? o.usuario : "");
     return (
       (clienteName && String(clienteName).toLowerCase().includes(t)) ||
       (usuarioName && String(usuarioName).toLowerCase().includes(t)) ||
@@ -775,83 +577,48 @@ const OrdemServico = () => {
 
       <div className="lista-ordens">
         {ordensFiltradas.map((o) => (
-          <div
-            className="ordem-card"
-            key={o.idOrdemServico ?? o.id ?? Date.now()}
-          >
+          <div className="ordem-card" key={o.idOrdemServico ?? o.id ?? Date.now()}>
             <div className="ordem-info">
-              <h3>
-                {o.cliente?.nome ??
-                  o.cliente?.nomeCompleto ??
-                  (typeof o.cliente === "string" ? o.cliente : "—")}
-              </h3>
+              <h3>{o.cliente?.nome ?? o.cliente?.nomeCompleto ?? (typeof o.cliente === 'string' ? o.cliente : "—")}</h3>
               <div className="linha-detalhes">
-                <div className="detalhes-grade">
-                  <div className="detalhe-titulo">Funcionário</div>
-                  <div className="detalhe-titulo">Serviço</div>
-                  <div className="detalhe-titulo">Produto</div>
-                  <div className="detalhe-titulo detalhe-titulo-preco">
-                    Valor
-                  </div>
-
-                  <div className="detalhe-valor">
-                    {o.usuario?.nome ?? o.usuario?.nomeCompleto ?? "—"}
-                  </div>
-                  <div className="detalhe-valor">
+                <div>
+                  <strong>Funcionário</strong>
+                  <div className="sub">{o.usuario?.nome ?? o.usuario?.nomeCompleto ?? "—"}</div>
+                </div>
+                <div>
+                  <strong>Serviço</strong>
+                  <div className="sub">
                     {(o.itens || [])
                       .filter((it) => {
                         if (it.combo) return true;
-                        if (
-                          it.servicoProduto &&
-                          !it.servicoProduto.isProduto &&
-                          !it.servicoProduto.produto
-                        ) {
-                          return true;
-                        }
+                        if (it.servicoProduto && !it.servicoProduto.isProduto && !it.servicoProduto.produto) return true;
                         return false;
                       })
-                      .map((it) =>
-                        it.combo
-                          ? it.combo.nome
-                          : (it.servicoProduto?.nome ??
-                            it.servicoProduto?.descricao),
-                      )
+                      .map((it) => (it.combo ? it.combo.nome : it.servicoProduto?.nome ?? it.servicoProduto?.descricao))
                       .filter(Boolean)
-                      .join(", ") || "—"}
-                  </div>
-                  <div className="detalhe-valor">
-                    {(o.itens || [])
-                      .filter(
-                        (it) =>
-                          it.servicoProduto?.isProduto === true ||
-                          it.servicoProduto?.produto === true,
-                      )
-                      .map(
-                        (it) =>
-                          `${it.servicoProduto.nome} x${it.quantidade ?? 1}`,
-                      )
-                      .join(", ") || "—"}
-                  </div>
-                  <div className="detalhe-valor detalhe-valor-preco">
-                    R$ {o.valorFinal ?? o.valorVenda ?? "0,00"}
+                      .join(", ")}
                   </div>
                 </div>
+                <div>
+                  <strong>Produto</strong>
+                  <div className="sub">
+                    {(o.itens || [])
+                      .filter((it) => it.servicoProduto?.isProduto === true || it.servicoProduto?.produto === true)
+                      .map((it) => `${it.servicoProduto.nome} x${it.quantidade ?? 1}`)
+                      .join(", ")}
+                  </div>
+                </div>
+                <div className="valor">R$ {o.valorFinal ?? o.valorVenda ?? "0,00"}</div>
               </div>
             </div>
             <div className="ordem-actions">
-              <button
-                className="botao-visualizar"
-                onClick={() => visualizar(o)}
-              >
+              <button className="botao-visualizar" onClick={() => visualizar(o)}>
                 Visualizar
               </button>
               <button className="botao-editar" onClick={() => editar(o)}>
                 Editar
               </button>
-              <button
-                className="botao-excluir"
-                onClick={() => prepararExclusao(o.idOrdemServico ?? o.id)}
-              >
+              <button className="botao-excluir" onClick={() => prepararExclusao(o.idOrdemServico ?? o.id)}>
                 Excluir
               </button>
             </div>
