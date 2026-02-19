@@ -5,7 +5,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   border: 1px solid #f0f0f0;
 }
 
@@ -31,11 +33,17 @@
 }
 
 .card-categoria {
-  background: #fff2d9;
-  color: #7a5b2a;
-  padding: 6px 10px;
+  background: linear-gradient(135deg, #af8509 0%, #8e6b07 100%);
+  color: white;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(175, 133, 9, 0.25);
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .card-content {
