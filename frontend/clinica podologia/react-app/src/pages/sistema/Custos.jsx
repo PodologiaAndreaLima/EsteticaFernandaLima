@@ -76,7 +76,9 @@ const ModalVisualizarCusto = ({ estaAberto, aoFechar, custo }) => {
       <div className="modal-container modal-visualizar">
         <div className="modal-header">
           <h2>Detalhes do custo</h2>
-          <button className="botao-fechar" onClick={aoFechar}>&times;</button>
+          <button className="botao-fechar" onClick={aoFechar}>
+            &times;
+          </button>
         </div>
         <div className="conteudo-visualizacao">
           <div className="grupo-visualizacao">
@@ -112,7 +114,9 @@ const ModalVisualizarCusto = ({ estaAberto, aoFechar, custo }) => {
           </div>
         </div>
         <div className="rodape-modal">
-          <button className="botao-fechar-visualizacao" onClick={aoFechar}>Fechar</button>
+          <button className="botao-fechar-visualizacao" onClick={aoFechar}>
+            Fechar
+          </button>
         </div>
       </div>
     </div>
@@ -171,26 +175,54 @@ const ModalCustos = ({ estaAberto, aoFechar, custo, aoSalvar, abaAtiva }) => {
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h2>{dadosFormulario.id ? "Editar Custo" : `Adicionar ${abaAtiva === "fixos" ? "Custo Fixo" : "Custo Extra"}`}</h2>
-          <button className="botao-fechar" onClick={aoFechar}>&times;</button>
+          <h2>
+            {dadosFormulario.id
+              ? "Editar Custo"
+              : `Adicionar ${abaAtiva === "fixos" ? "Custo Fixo" : "Custo Extra"}`}
+          </h2>
+          <button className="botao-fechar" onClick={aoFechar}>
+            &times;
+          </button>
         </div>
 
         <form onSubmit={enviarFormulario}>
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="nome">Nome</label>
-              <input type="text" id="nome" name="nome" value={dadosFormulario.nome} onChange={alterarCampo} required />
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                value={dadosFormulario.nome}
+                onChange={alterarCampo}
+                required
+              />
             </div>
             <div className="grupo-formulario">
               <label htmlFor="descricao">Descrição</label>
-              <input type="text" id="descricao" name="descricao" value={dadosFormulario.descricao} onChange={alterarCampo} />
+              <input
+                type="text"
+                id="descricao"
+                name="descricao"
+                value={dadosFormulario.descricao}
+                onChange={alterarCampo}
+              />
             </div>
           </div>
 
           <div className="linha-formulario">
             <div className="grupo-formulario">
-              <label htmlFor="valor">{abaAtiva === "fixos" ? "Valor mensal (R$)" : "Valor (R$)"}</label>
-              <input type="number" id="valor" name="valor" value={dadosFormulario.valor} onChange={alterarCampo} required />
+              <label htmlFor="valor">
+                {abaAtiva === "fixos" ? "Valor mensal (R$)" : "Valor (R$)"}
+              </label>
+              <input
+                type="number"
+                id="valor"
+                name="valor"
+                value={dadosFormulario.valor}
+                onChange={alterarCampo}
+                required
+              />
             </div>
           </div>
 
@@ -198,14 +230,26 @@ const ModalCustos = ({ estaAberto, aoFechar, custo, aoSalvar, abaAtiva }) => {
             <div className="linha-formulario">
               <div className="grupo-formulario">
                 <label htmlFor="data">Data</label>
-                <input type="text" id="data" name="data" placeholder="DD/MM/AAAA" value={dadosFormulario.data} onChange={alterarCampo} required />
+                <input
+                  type="text"
+                  id="data"
+                  name="data"
+                  placeholder="DD/MM/AAAA"
+                  value={dadosFormulario.data}
+                  onChange={alterarCampo}
+                  required
+                />
               </div>
             </div>
           )}
 
           <div className="rodape-modal">
-            <button type="button" className="botao-cancelar" onClick={aoFechar}>Cancelar</button>
-            <button type="submit" className="botao-salvar">Salvar</button>
+            <button type="button" className="botao-cancelar" onClick={aoFechar}>
+              Cancelar
+            </button>
+            <button type="submit" className="botao-salvar">
+              Salvar
+            </button>
           </div>
         </form>
       </div>
@@ -226,7 +270,8 @@ const Custos = () => {
   const [listaCustos, setListaCustos] = useState([]);
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
-  const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] = useState(false);
+  const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] =
+    useState(false);
 
   const [custoEmEdicao, setCustoEmEdicao] = useState({});
   const [custoParaVisualizar, setCustoParaVisualizar] = useState({});
@@ -323,23 +368,35 @@ const Custos = () => {
   // salvarCusto completo
   const salvarCusto = async (dadosCusto) => {
     try {
-      const valorNum = parseFloat(String(dadosCusto.valor).replace(",", ".")) || 0;
+      const valorNum =
+        parseFloat(String(dadosCusto.valor).replace(",", ".")) || 0;
 
       // Edição
       if (dadosCusto.id) {
-        const atualLocal = listaCustos.find((c) => c.id === dadosCusto.id) || {};
+        const atualLocal =
+          listaCustos.find((c) => c.id === dadosCusto.id) || {};
         const estavaFixos = !!atualLocal.isFixo;
 
         if (abaAtiva === "fixos") {
           if (!estavaFixos) {
-            try { await custosService.remove(dadosCusto.id); } catch (e) { }
-            const payloadCreate = { nome: dadosCusto.nome, descricao: dadosCusto.descricao, valorMensal: valorNum };
+            try {
+              await custosService.remove(dadosCusto.id);
+            } catch (e) {}
+            const payloadCreate = {
+              nome: dadosCusto.nome,
+              descricao: dadosCusto.descricao,
+              valorMensal: valorNum,
+            };
             await custoFixoService.create(payloadCreate);
             success("Custo convertido para fixo e salvo!");
             await fetchCustos();
             return;
           } else {
-            const payload = { nome: dadosCusto.nome, descricao: dadosCusto.descricao, valorMensal: valorNum };
+            const payload = {
+              nome: dadosCusto.nome,
+              descricao: dadosCusto.descricao,
+              valorMensal: valorNum,
+            };
             await custoFixoService.update(dadosCusto.id, payload);
             success("Custo fixo atualizado com sucesso!");
             await fetchCustos();
@@ -347,14 +404,26 @@ const Custos = () => {
           }
         } else {
           if (estavaFixos) {
-            try { await custoFixoService.remove(dadosCusto.id); } catch (e) { }
-            const payloadCreate = { nome: dadosCusto.nome, descricao: dadosCusto.descricao, valor: valorNum, data: ddmmyyyyToIso(dadosCusto.data) };
+            try {
+              await custoFixoService.remove(dadosCusto.id);
+            } catch (e) {}
+            const payloadCreate = {
+              nome: dadosCusto.nome,
+              descricao: dadosCusto.descricao,
+              valor: valorNum,
+              data: ddmmyyyyToIso(dadosCusto.data),
+            };
             await custosService.create(payloadCreate);
             success("Custo convertido para extra e salvo!");
             await fetchCustos();
             return;
           } else {
-            const payload = { nome: dadosCusto.nome, descricao: dadosCusto.descricao, valor: valorNum, data: ddmmyyyyToIso(dadosCusto.data) };
+            const payload = {
+              nome: dadosCusto.nome,
+              descricao: dadosCusto.descricao,
+              valor: valorNum,
+              data: ddmmyyyyToIso(dadosCusto.data),
+            };
             await custosService.update(dadosCusto.id, payload);
             success("Custo extra atualizado com sucesso!");
             await fetchCustos();
@@ -364,12 +433,21 @@ const Custos = () => {
       } else {
         // Criação
         if (abaAtiva === "fixos") {
-          const payload = { nome: dadosCusto.nome, descricao: dadosCusto.descricao, valorMensal: valorNum };
+          const payload = {
+            nome: dadosCusto.nome,
+            descricao: dadosCusto.descricao,
+            valorMensal: valorNum,
+          };
           await custoFixoService.create(payload);
           success("Custo fixo adicionado com sucesso!");
           await fetchCustos();
         } else {
-          const payload = { nome: dadosCusto.nome, descricao: dadosCusto.descricao, valor: valorNum, data: ddmmyyyyToIso(dadosCusto.data) };
+          const payload = {
+            nome: dadosCusto.nome,
+            descricao: dadosCusto.descricao,
+            valor: valorNum,
+            data: ddmmyyyyToIso(dadosCusto.data),
+          };
           await custosService.create(payload);
           success("Custo extra adicionado com sucesso!");
           await fetchCustos();
@@ -382,7 +460,7 @@ const Custos = () => {
   };
 
   const custosFiltrados = listaCustos.filter((c) =>
-    c.nome.toLowerCase().includes(termoPesquisa.toLowerCase())
+    c.nome.toLowerCase().includes(termoPesquisa.toLowerCase()),
   );
 
   return (
@@ -391,12 +469,30 @@ const Custos = () => {
 
       <div className="container-pesquisa">
         <div className="abas-custos">
-          <button className={abaAtiva === "extras" ? "aba ativa" : "aba"} onClick={() => setAbaAtiva("extras")}>Extras</button>
-          <button className={abaAtiva === "fixos" ? "aba ativa" : "aba"} onClick={() => setAbaAtiva("fixos")}>Fixos</button>
+          <button
+            className={abaAtiva === "extras" ? "aba ativa" : "aba"}
+            onClick={() => setAbaAtiva("extras")}
+          >
+            Extras
+          </button>
+          <button
+            className={abaAtiva === "fixos" ? "aba ativa" : "aba"}
+            onClick={() => setAbaAtiva("fixos")}
+          >
+            Fixos
+          </button>
         </div>
 
-        <input type="text" placeholder="Pesquisar..." className="campo-pesquisa" value={termoPesquisa} onChange={(e) => setTermoPesquisa(e.target.value)} />
-        <button className="botao-adicionar" onClick={adicionarCusto}>Adicionar custo</button>
+        <input
+          type="text"
+          placeholder="Pesquisar..."
+          className="campo-pesquisa"
+          value={termoPesquisa}
+          onChange={(e) => setTermoPesquisa(e.target.value)}
+        />
+        <button className="botao-adicionar" onClick={adicionarCusto}>
+          Adicionar custo
+        </button>
       </div>
 
       <div className="tabela-custos">
@@ -421,9 +517,24 @@ const Custos = () => {
                 {abaAtiva === "extras" && <td>{custo.data}</td>}
                 <td>
                   <div className="acoes-tabela">
-                    <button className="botao-tabela-visualizar" onClick={() => visualizarCusto(custo)}>Visualizar</button>
-                    <button className="botao-tabela-editar" onClick={() => editarCusto(custo)}>Editar</button>
-                    <button className="botao-tabela-excluir" onClick={() => prepararExclusao(custo.id)}>Excluir</button>
+                    <button
+                      className="botao-tabela-visualizar"
+                      onClick={() => visualizarCusto(custo)}
+                    >
+                      Visualizar
+                    </button>
+                    <button
+                      className="botao-tabela-editar"
+                      onClick={() => editarCusto(custo)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="botao-tabela-excluir"
+                      onClick={() => prepararExclusao(custo.id)}
+                    >
+                      Excluir
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -432,11 +543,34 @@ const Custos = () => {
         </table>
       </div>
 
-      {custosFiltrados.length === 0 && (<div className="sem-resultados"><p>Nenhum custo encontrado.</p></div>)}
+      {custosFiltrados.length === 0 && (
+        <div className="sem-resultados">
+          <p>Nenhum custo encontrado.</p>
+        </div>
+      )}
 
-      <ModalCustos estaAberto={modalEditarAberto} aoFechar={() => setModalEditarAberto(false)} custo={custoEmEdicao} aoSalvar={salvarCusto} abaAtiva={abaAtiva} />
-      <ModalVisualizarCusto estaAberto={modalVisualizarAberto} aoFechar={() => setModalVisualizarAberto(false)} custo={custoParaVisualizar} />
-      <ModalConfirmacao estaAberto={modalConfirmacaoExclusaoAberto} aoFechar={() => setModalConfirmacaoExclusaoAberto(false)} aoConfirmar={confirmarExclusao} titulo="Confirmar exclusão" mensagem="Tem certeza que deseja excluir este custo? Esta ação não pode ser desfeita." textoBotaoConfirmar="Excluir" textoBotaoCancelar="Cancelar" tipo="exclusao" />
+      <ModalCustos
+        estaAberto={modalEditarAberto}
+        aoFechar={() => setModalEditarAberto(false)}
+        custo={custoEmEdicao}
+        aoSalvar={salvarCusto}
+        abaAtiva={abaAtiva}
+      />
+      <ModalVisualizarCusto
+        estaAberto={modalVisualizarAberto}
+        aoFechar={() => setModalVisualizarAberto(false)}
+        custo={custoParaVisualizar}
+      />
+      <ModalConfirmacao
+        estaAberto={modalConfirmacaoExclusaoAberto}
+        aoFechar={() => setModalConfirmacaoExclusaoAberto(false)}
+        aoConfirmar={confirmarExclusao}
+        titulo="Confirmar exclusão"
+        mensagem="Tem certeza que deseja excluir este custo? Esta ação não pode ser desfeita."
+        textoBotaoConfirmar="Excluir"
+        textoBotaoCancelar="Cancelar"
+        tipo="exclusao"
+      />
     </div>
   );
 };
