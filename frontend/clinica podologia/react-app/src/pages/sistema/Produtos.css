@@ -29,10 +29,14 @@
 /* Estilos para a página de Produtos */
 .container-produtos {
   padding: 20px;
-  padding-bottom: 150px;
+  padding-bottom: 40px;
   max-width: 100%;
-  height: calc(100vh - 60px);
+  height: 100%;
   overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .container-produtos h1 {
@@ -386,12 +390,16 @@
   margin-top: 20px;
 }
 
-/* Estilos de cards para produtos */
-.grid-cards {
+/* Estilos de cards para produtos (layout grid apenas) */
+.container-produtos .grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 20px;
+  max-height: none !important;
+  overflow: visible !important;
+  align-content: start;
+  padding-bottom: 20px;
 }
 
 .card-produto {
