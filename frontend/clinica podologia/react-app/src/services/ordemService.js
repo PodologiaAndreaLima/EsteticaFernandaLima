@@ -3,15 +3,36 @@ import api from "./api";
 const path = "/ordem-servico";
 
 export default {
-  async list() {
+  async list(filters = {}) {
     try {
-      const resp = await api.get(path);
+      const params = {};
+
+      if (filters?.data) {
+        params.data = filters.data;
+      }
+
+      if (filters?.dataInicio) {
+        params.dataInicio = filters.dataInicio;
+      }
+
+      if (filters?.dataFim) {
+        params.dataFim = filters.dataFim;
+      }
+
+      if (filters?.usuarioId) {
+        params.usuarioId = filters.usuarioId;
+      }
+
+      const resp = await api.get(path, { params });
       // se a API devolver 204 (no content) axios chama como 204; tratamos
       if (resp.status === 204) return { success: true, data: [] };
       return { success: true, data: resp.data || [] };
     } catch (err) {
       console.error("ordemService.list error", err);
-      return { success: false, error: err.response?.data || err.message || "Erro ao buscar ordens" };
+      return {
+        success: false,
+        error: err.response?.data || err.message || "Erro ao buscar ordens",
+      };
     }
   },
 
@@ -21,7 +42,10 @@ export default {
       return { success: true, data: resp.data };
     } catch (err) {
       console.error("ordemService.create error", err);
-      return { success: false, error: err.response?.data || err.message || "Erro ao criar ordem" };
+      return {
+        success: false,
+        error: err.response?.data || err.message || "Erro ao criar ordem",
+      };
     }
   },
 
@@ -31,7 +55,10 @@ export default {
       return { success: true, data: resp.data };
     } catch (err) {
       console.error("ordemService.update error", err);
-      return { success: false, error: err.response?.data || err.message || "Erro ao atualizar ordem" };
+      return {
+        success: false,
+        error: err.response?.data || err.message || "Erro ao atualizar ordem",
+      };
     }
   },
 
@@ -42,7 +69,10 @@ export default {
       return { success: true };
     } catch (err) {
       console.error("ordemService.remove error", err);
-      return { success: false, error: err.response?.data || err.message || "Erro ao excluir ordem" };
+      return {
+        success: false,
+        error: err.response?.data || err.message || "Erro ao excluir ordem",
+      };
     }
   },
 };

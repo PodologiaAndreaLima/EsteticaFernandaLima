@@ -585,6 +585,9 @@ const OrdemServico = () => {
   const [ordemParaVisualizar, setOrdemParaVisualizar] = useState(null);
   const [ordemParaExcluir, setOrdemParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
+  const [filtroDataInicio, setFiltroDataInicio] = useState("");
+  const [filtroDataFim, setFiltroDataFim] = useState("");
+  const [filtroUsuarioId, setFiltroUsuarioId] = useState("");
 
   const [listaServicos, setListaServicos] = useState([]);
   const [listaProdutos, setListaProdutos] = useState([]);
@@ -592,38 +595,229 @@ const OrdemServico = () => {
   const [listaClientes, setListaClientes] = useState([]);
   const [listaUsuarios, setListaUsuarios] = useState([]);
 
+  const unwrap = (r) => {
+    if (!r) return [];
+    if (Array.isArray(r)) return r;
+    if (r.data) return r.data;
+    return r;
+  };
+
+  const normalizarDataParaIso = (valorData) => {
+    if (!valorData) return "";
+
+    if (valorData instanceof Date && !Number.isNaN(valorData.getTime())) {
+      const ano = valorData.getFullYear();
+      const mes = String(valorData.getMonth() + 1).padStart(2, "0");
+      const dia = String(valorData.getDate()).padStart(2, "0");
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    const texto = String(valorData).trim();
+    if (!texto) return "";
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+      return texto;
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+      return texto;
+    }
+
+    const matchIso = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (matchIso) {
+      return `${matchIso[1]}-${matchIso[2]}-${matchIso[3]}`;
+    }
+
+    const matchBr = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (matchBr) {
+      return `${matchBr[3]}-${matchBr[2]}-${matchBr[1]}`;
+    }
+
+    const dataParseada = new Date(texto);
+    if (!Number.isNaN(dataParseada.getTime())) {
+      const ano = dataParseada.getFullYear();
+      const mes = String(dataParseada.getMonth() + 1).padStart(2, "0");
+      const dia = String(dataParseada.getDate()).padStart(2, "0");
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    return "";
+  };
+
+  const buscarDataRecursiva = (objeto, profundidade = 0) => {
+    if (!objeto || profundidade > 3) return "";
+
+    if (Array.isArray(objeto)) {
+      for (const item of objeto) {
+        const dataEncontrada = buscarDataRecursiva(item, profundidade + 1);
+        if (dataEncontrada) return dataEncontrada;
+      }
+      return "";
+    }
+
+    if (typeof objeto !== "object") {
+      return "";
+    }
+
+    for (const [chave, valor] of Object.entries(objeto)) {
+      const chaveNormalizada = String(chave).toLowerCase();
+      const pareceChaveDeData =
+        chaveNormalizada.includes("data") ||
+        chaveNormalizada.startsWith("dt") ||
+        chaveNormalizada.includes("date") ||
+        chaveNormalizada.includes("created") ||
+        chaveNormalizada.includes("criado") ||
+        chaveNormalizada.includes("atendimento") ||
+        chaveNormalizada.includes("agendamento");
+
+      if (pareceChaveDeData) {
+        const dataNormalizada = normalizarDataParaIso(valor);
+        if (dataNormalizada) return dataNormalizada;
+      }
+
+      if (valor && typeof valor === "object") {
+        const dataFilha = buscarDataRecursiva(valor, profundidade + 1);
+        if (dataFilha) return dataFilha;
+      }
+    }
+
+    return "";
+  };
+
+  const obterDataDaOrdem = (ordem) => {
+    const dataCandidata =
+      ordem?.dataOrdem ??
+      ordem?.data ??
+      ordem?.dataCadastro ??
+      ordem?.createdAt ??
+      ordem?.updatedAt ??
+      ordem?.criadoEm ??
+      ordem?.atualizadoEm ??
+      ordem?.dataCriacao ??
+      ordem?.dataAtendimento ??
+      ordem?.dataServico ??
+      ordem?.dtHora ??
+      ordem?.dataHora ??
+      ordem?.agendamento?.data ??
+      ordem?.agendamento?.dataHora ??
+      ordem?.agenda?.data ??
+      ordem?.agenda?.dataHora;
+
+    const dataNormalizada = normalizarDataParaIso(dataCandidata);
+    if (dataNormalizada) return dataNormalizada;
+
+    return buscarDataRecursiva(ordem);
+  };
+
+  const filtrarOrdensLocalmente = (listaOrdens, filtros = {}) => {
+    const usuarioFiltro = filtros?.usuarioId ? Number(filtros.usuarioId) : null;
+    const dataInicioFiltro = normalizarDataParaIso(
+      filtros?.dataInicio ?? filtros?.data,
+    );
+    const dataFimFiltro = normalizarDataParaIso(filtros?.dataFim);
+
+    return (Array.isArray(listaOrdens) ? listaOrdens : []).filter((ordem) => {
+      if (usuarioFiltro) {
+        const usuarioDaOrdem = Number(
+          ordem?.usuario?.id ??
+            ordem?.usuarioId ??
+            ordem?.idUsuario ??
+            ordem?.funcionarioId ??
+            0,
+        );
+
+        if (!usuarioDaOrdem || usuarioDaOrdem !== usuarioFiltro) {
+          return false;
+        }
+      }
+
+      if (dataInicioFiltro || dataFimFiltro) {
+        const dataDaOrdem = obterDataDaOrdem(ordem);
+        if (!dataDaOrdem) {
+          return false;
+        }
+
+        if (dataInicioFiltro && dataDaOrdem < dataInicioFiltro) {
+          return false;
+        }
+
+        if (dataFimFiltro && dataDaOrdem > dataFimFiltro) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
+  const carregarOrdens = async (filtros = {}) => {
+    const filtrosAtivos = {
+      dataInicio: filtros?.dataInicio ?? filtros?.data ?? "",
+      dataFim: filtros?.dataFim ?? "",
+      usuarioId: filtros?.usuarioId ?? "",
+    };
+
+    const r = (await ordemService.list?.()) ?? ordemService.listAll?.() ?? [];
+
+    const ordensArr = unwrap(r);
+    const ordensFiltradas = filtrarOrdensLocalmente(ordensArr, filtrosAtivos);
+    setOrdens(ordensFiltradas);
+  };
+
+  const aplicarFiltros = async () => {
+    try {
+      if (
+        filtroDataInicio &&
+        filtroDataFim &&
+        filtroDataInicio > filtroDataFim
+      ) {
+        error("A data de início não pode ser maior que a data fim");
+        return;
+      }
+
+      await carregarOrdens({
+        dataInicio: filtroDataInicio,
+        dataFim: filtroDataFim,
+        usuarioId: filtroUsuarioId,
+      });
+    } catch (err) {
+      console.error("Erro ao aplicar filtros de ordens", err);
+      error("Erro ao filtrar ordens");
+    }
+  };
+
+  const limparFiltros = async () => {
+    setFiltroDataInicio("");
+    setFiltroDataFim("");
+    setFiltroUsuarioId("");
+
+    try {
+      await carregarOrdens({});
+    } catch (err) {
+      console.error("Erro ao limpar filtros de ordens", err);
+      error("Erro ao recarregar ordens");
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
-        const unwrap = (r) => {
-          if (!r) return [];
-          if (Array.isArray(r)) return r;
-          if (r.data) return r.data;
-          return r;
-        };
-
-        const [sRes, pRes, cRes, ordRes, clientesRes] =
-          await Promise.allSettled([
-            servicoProdutoService.list?.() ??
-              servicoProdutoService.listAll?.() ??
-              Promise.resolve([]),
-            produtoService.list?.() ??
-              produtoService.listAll?.() ??
-              Promise.resolve([]),
-            combosService.list?.() ??
-              combosService.listAll?.() ??
-              Promise.resolve([]),
-            ordemService.list?.() ??
-              ordemService.listAll?.() ??
-              Promise.resolve([]),
-            clienteService?.list?.() ?? Promise.resolve([]),
-          ]);
+        const [sRes, pRes, cRes, clientesRes] = await Promise.allSettled([
+          servicoProdutoService.list?.() ??
+            servicoProdutoService.listAll?.() ??
+            Promise.resolve([]),
+          produtoService.list?.() ??
+            produtoService.listAll?.() ??
+            Promise.resolve([]),
+          combosService.list?.() ??
+            combosService.listAll?.() ??
+            Promise.resolve([]),
+          clienteService?.list?.() ?? Promise.resolve([]),
+        ]);
 
         const servicos = sRes.status === "fulfilled" ? unwrap(sRes.value) : [];
         const produtos = pRes.status === "fulfilled" ? unwrap(pRes.value) : [];
         const combos = cRes.status === "fulfilled" ? unwrap(cRes.value) : [];
-        const ordensRaw =
-          ordRes.status === "fulfilled" ? unwrap(ordRes.value) : [];
         const clientes =
           clientesRes.status === "fulfilled" ? unwrap(clientesRes.value) : [];
 
@@ -643,19 +837,13 @@ const OrdemServico = () => {
         console.log("DEBUG - Usuário Logado:", usuarios);
         console.log("DEBUG - Servicos (sem produtos):", servicos);
         console.log("DEBUG - Produtos (só produtos):", produtos);
-        console.log("DEBUG - Ordens:", ordensRaw);
-        if (ordensRaw.length > 0) {
-          console.log("DEBUG - Primeira ordem com itens:", ordensRaw[0]);
-          console.log("DEBUG - Itens da primeira ordem:", ordensRaw[0].itens);
-        }
 
         setListaServicos(servicos);
         setListaProdutos(produtos);
         setListaCombos(combos);
         setListaClientes(clientes);
         setListaUsuarios(usuarios);
-
-        setOrdens(Array.isArray(ordensRaw) ? ordensRaw : []);
+        await carregarOrdens({});
       } catch (err) {
         console.error("Erro ao carregar catálogos/ordens", err);
         error("Erro ao carregar dados");
@@ -687,16 +875,11 @@ const OrdemServico = () => {
         console.log("DEBUG - Resultado após criar:", result);
         success("Ordem adicionada com sucesso");
       }
-      const r = (await ordemService.list?.()) ?? ordemService.listAll?.();
-      const ordensArr = r?.data ?? r ?? [];
-      console.log("DEBUG - Ordens após salvar:", ordensArr);
-      if (ordensArr.length > 0) {
-        console.log(
-          "DEBUG - Última ordem salva:",
-          ordensArr[ordensArr.length - 1],
-        );
-      }
-      setOrdens(Array.isArray(ordensArr) ? ordensArr : []);
+      await carregarOrdens({
+        dataInicio: filtroDataInicio,
+        dataFim: filtroDataFim,
+        usuarioId: filtroUsuarioId,
+      });
     } catch (err) {
       console.error("Erro ao salvar ordem", err);
       error(
@@ -726,9 +909,11 @@ const OrdemServico = () => {
       (await ordemService.remove?.(ordemParaExcluir)) ??
         ordemService.delete?.(ordemParaExcluir);
       success("Ordem excluída");
-      const r = (await ordemService.list?.()) ?? ordemService.listAll?.();
-      const ordensArr = r?.data ?? r ?? [];
-      setOrdens(Array.isArray(ordensArr) ? ordensArr : []);
+      await carregarOrdens({
+        dataInicio: filtroDataInicio,
+        dataFim: filtroDataFim,
+        usuarioId: filtroUsuarioId,
+      });
     } catch (err) {
       console.error("Erro ao excluir ordem", err);
       error("Erro ao excluir ordem");
@@ -771,6 +956,64 @@ const OrdemServico = () => {
         <button className="botao-adicionar" onClick={abrirNovaOrdem}>
           Adicionar Ordem
         </button>
+      </div>
+
+      <div className="container-filtros-ordem">
+        <div className="grupo-filtro-ordem">
+          <label htmlFor="filtroDataInicioOrdem">Data início</label>
+          <input
+            id="filtroDataInicioOrdem"
+            type="date"
+            className="campo-filtro-ordem"
+            value={filtroDataInicio}
+            onChange={(e) => setFiltroDataInicio(e.target.value)}
+          />
+        </div>
+
+        <div className="grupo-filtro-ordem">
+          <label htmlFor="filtroDataFimOrdem">Data fim</label>
+          <input
+            id="filtroDataFimOrdem"
+            type="date"
+            className="campo-filtro-ordem"
+            value={filtroDataFim}
+            onChange={(e) => setFiltroDataFim(e.target.value)}
+          />
+        </div>
+
+        <div className="grupo-filtro-ordem">
+          <label htmlFor="filtroFuncionarioOrdem">Funcionário</label>
+          <select
+            id="filtroFuncionarioOrdem"
+            className="campo-filtro-ordem"
+            value={filtroUsuarioId}
+            onChange={(e) => setFiltroUsuarioId(e.target.value)}
+          >
+            <option value="">Todos</option>
+            {(listaUsuarios || []).map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.nome || u.nomeCompleto || `Usuário ${u.id}`}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="acoes-filtro-ordem">
+          <button
+            type="button"
+            className="botao-filtro-ordem"
+            onClick={aplicarFiltros}
+          >
+            Filtrar
+          </button>
+          <button
+            type="button"
+            className="botao-limpar-filtro-ordem"
+            onClick={limparFiltros}
+          >
+            Limpar
+          </button>
+        </div>
       </div>
 
       <div className="lista-ordens">
