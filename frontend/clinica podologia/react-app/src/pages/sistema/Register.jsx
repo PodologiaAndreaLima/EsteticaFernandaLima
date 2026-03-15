@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/site/Header";
 import { useAuth } from "../../contexts/AuthContext";
+import {
+  buildPasswordPolicyMessage,
+  validateStrongPassword,
+} from "../../utils/authErrorUtils";
 import "./AuthStyles.css";
 
 // Importe as imagens usando importação estática que funciona com o Vite
@@ -84,6 +88,13 @@ const Register = () => {
     // Validação básica
     if (formData.senha !== formData.confirmPassword) {
       setError("As senhas não coincidem!");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const passwordValidation = validateStrongPassword(formData.senha);
+    if (!passwordValidation.isValid) {
+      setError(buildPasswordPolicyMessage(passwordValidation.missing));
       setIsSubmitting(false);
       return;
     }
@@ -270,6 +281,9 @@ const Register = () => {
                   textAlign: "center",
                 }}
               >
+                Politica de senha: minimo 8 caracteres, com letra maiuscula,
+                letra minuscula, numero e caractere especial.
+                <br />
                 Este cadastro será analisado pela administração antes da
                 aprovação
               </p>

@@ -3,8 +3,8 @@ package lima.fernanda.esteticaFernandaLima.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lima.fernanda.esteticaFernandaLima.enums.Role;
 
 import java.util.List;
 
@@ -36,8 +36,13 @@ public class UsuarioCriacaoDto {
     @Schema(description = "Email do usuário", example = "fernanda@lima.com")
     private String email;
 
-    @Size(min = 6, max = 20)
-    @Schema(description = "Senha de acesso")
+    @NotBlank
+    @Size(min = 8, max = 20)
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$",
+            message = "Senha deve ter no minimo 8 caracteres, com letra maiuscula, minuscula, numero e caractere especial. Exemplo: Estetica@2026"
+    )
+    @Schema(description = "Senha de acesso", example = "Estetica@2026")
     private String senha;
 
     @Schema(description = "Tipo de acesso: ADMIN ou USER")

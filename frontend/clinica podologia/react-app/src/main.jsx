@@ -40,9 +40,15 @@ checkDomReady().then(() => {
       ReactDOM.createRoot(rootElement).render(
         <React.StrictMode>
           <App />
-          {/* Use react-hot-toast default styling but set global duration to 3500ms */}
-          <Toaster position="top-right" toastOptions={{ duration: 3500 }} />
-        </React.StrictMode>
+          {/* Keep global duration and allow multiline messages in toasts */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3500,
+              style: { whiteSpace: "pre-line" },
+            }}
+          />
+        </React.StrictMode>,
       );
       console.log("Aplicação React renderizada com sucesso!");
     } catch (error) {

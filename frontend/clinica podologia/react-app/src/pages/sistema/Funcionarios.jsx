@@ -5,6 +5,10 @@ import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 import { AuthService } from "../../services/authService";
 import { useRoleProtection } from "../../hooks/useRoleProtection";
 import { useAuth } from "../../contexts/AuthContext";
+import {
+  buildPasswordPolicyMessage,
+  validateStrongPassword,
+} from "../../utils/authErrorUtils";
 
 // Componente Modal para Visualização de Funcionário
 const ModalVisualizarFuncionario = ({ estaAberto, aoFechar, funcionario }) => {
@@ -49,7 +53,7 @@ const ModalVisualizarFuncionario = ({ estaAberto, aoFechar, funcionario }) => {
             <h3>Serviços Prestados</h3>
             <div className="servicos-visualizacao">
               {funcionario.servicosPrestados &&
-                funcionario.servicosPrestados.length > 0 ? (
+              funcionario.servicosPrestados.length > 0 ? (
                 funcionario.servicosPrestados.map((servico, index) => (
                   <div key={index} className="servico-badge">
                     {servico}
@@ -153,6 +157,16 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
 
   const enviarFormulario = (e) => {
     e.preventDefault();
+
+    const shouldValidatePassword = !funcionario.id || !!dadosFormulario.senha;
+    if (shouldValidatePassword) {
+      const passwordValidation = validateStrongPassword(dadosFormulario.senha);
+      if (!passwordValidation.isValid) {
+        error(buildPasswordPolicyMessage(passwordValidation.missing));
+        return;
+      }
+    }
+
     aoSalvar(dadosFormulario);
     aoFechar();
   };
@@ -275,6 +289,10 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                   {mostrarSenha ? "👁️" : "👁️‍🗨️"}
                 </button>
               </div>
+              <small>
+                Minimo 8 caracteres com letra maiuscula, letra minuscula, numero
+                e caractere especial.
+              </small>
             </div>
           </div>
 
@@ -340,7 +358,7 @@ const Funcionarios = () => {
     useState(false);
   const [funcionarioEmEdicao, setFuncionarioEmEdicao] = useState(null);
   const [funcionarioParaVisualizar, setFuncionarioParaVisualizar] = useState(
-    {}
+    {},
   );
   const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
@@ -398,8 +416,8 @@ const Funcionarios = () => {
       if (resposta.success) {
         setListaFuncionarios(
           listaFuncionarios.filter(
-            (funcionario) => funcionario.id !== funcionarioParaExcluir
-          )
+            (funcionario) => funcionario.id !== funcionarioParaExcluir,
+          ),
         );
         success("Funcionário excluído com sucesso!");
       } else {
@@ -433,8 +451,8 @@ const Funcionarios = () => {
           // Atualizar lista local
           setListaFuncionarios(
             listaFuncionarios.map((func) =>
-              func.id === dadosFuncionario.id ? dadosFuncionario : func
-            )
+              func.id === dadosFuncionario.id ? dadosFuncionario : func,
+            ),
           );
           success("Funcionário atualizado com sucesso!");
         } else {
@@ -477,15 +495,17 @@ const Funcionarios = () => {
           .toLowerCase()
           .includes(termoPesquisa.toLowerCase())) ||
       (funcionario.email &&
-        funcionario.email.toLowerCase().includes(termoPesquisa.toLowerCase())) ||
+        funcionario.email
+          .toLowerCase()
+          .includes(termoPesquisa.toLowerCase())) ||
       (funcionario.cpf && funcionario.cpf.includes(termoPesquisa)) ||
       (funcionario.servicosPrestados &&
         Array.isArray(funcionario.servicosPrestados) &&
         funcionario.servicosPrestados.some(
           (servico) =>
             servico &&
-            servico.toLowerCase().includes(termoPesquisa.toLowerCase())
-        ))
+            servico.toLowerCase().includes(termoPesquisa.toLowerCase()),
+        )),
   );
 
   return (

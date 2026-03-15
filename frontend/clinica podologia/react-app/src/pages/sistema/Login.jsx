@@ -23,30 +23,30 @@ const Login = () => {
     if (error) setError("");
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
 
-  try {
-    console.log("Tentando login com:", credentials);
-    const result = await login(credentials.identifier, credentials.senha);
-    console.log("Resultado do login:", result);
-    
-    if (result.success && result.user) {
-      console.log("Login bem-sucedido, usuário:", result.user);
-      navigate("/sistema", { replace: true });
-    } else {
-      console.log("Login falhou:", result.error);
-      setError(result.error || "Credenciais inválidas");
+    try {
+      console.log("Tentando login com:", credentials);
+      const result = await login(credentials.identifier, credentials.senha);
+      console.log("Resultado do login:", result);
+
+      if (result.success && result.user) {
+        console.log("Login bem-sucedido, usuário:", result.user);
+        navigate("/sistema", { replace: true });
+      } else {
+        console.log("Login falhou:", result.error);
+        setError(result.error || "Email ou senha incorretos.");
+      }
+    } catch (error) {
+      console.error("Erro no login:", error);
+      setError("Nao foi possivel realizar login. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (error) {
-    console.error("Erro no login:", error);
-    setError("Erro ao realizar login");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   return (
     <>
@@ -122,7 +122,7 @@ const handleSubmit = async (e) => {
               PRIMEIRO ACESSO? <Link to="/register">SOLICITAR CADASTRO</Link>
             </p>
             <p className="whatsapp-text">
-              Esqueceu sua senha? Entre em contato com a administração
+              Esqueceu sua senha? Entre em contato com a administração.
             </p>
           </div>
         </div>

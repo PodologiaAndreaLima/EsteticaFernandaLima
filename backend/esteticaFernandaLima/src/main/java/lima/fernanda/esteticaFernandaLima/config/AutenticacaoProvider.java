@@ -27,17 +27,17 @@ public class AutenticacaoProvider implements AuthenticationProvider {
 
         UserDetails userDetails = this.usuarioAutorizacaoService.loadUserByUsername(username);
 
-        System.out.println("Tentativa de login:");
-        System.out.println("Usuário fornecido: " + username);
-        System.out.println("Senha fornecida: " + password);
-        System.out.println("Senha armazenada: " + userDetails.getPassword());
-        System.out.println("Senha confere? " + this.passwordEncoder.matches(password, userDetails.getPassword()));
+        if (!userDetails.isAccountNonLocked()) {
+            throw new BadCredentialsException("Usuário bloqueado após 5 tentativas de login inválidas");
+        }
 
         if (this.passwordEncoder.matches(password, userDetails.getPassword())) {
+            this.usuarioAutorizacaoService.resetarTentativasLogin(username);
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        } else {
-            throw new BadCredentialsException("Usuário ou Senha inválidos");
         }
+
+        this.usuarioAutorizacaoService.registrarTentativaFalha(username);
+        throw new BadCredentialsException("Usuário ou Senha inválidos");
     }
 
     @Override

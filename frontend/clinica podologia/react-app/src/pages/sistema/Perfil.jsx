@@ -5,6 +5,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import perfilService from "../../services/perfilService";
 import { success, error as toastError } from "../../services/toastService";
 import { useNavigate } from "react-router-dom";
+import {
+  buildPasswordPolicyMessage,
+  getFriendlyPasswordError,
+  validateStrongPassword,
+} from "../../utils/authErrorUtils";
 
 const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
   const [dadosFormulario, setDadosFormulario] = useState({
@@ -25,7 +30,9 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
         email: perfil?.email ?? "",
         telefone: perfil?.telefone ?? "",
         bio: perfil?.bio ?? "",
-        servicosPrestados: Array.isArray(perfil?.servicosPrestados) ? perfil.servicosPrestados : [],
+        servicosPrestados: Array.isArray(perfil?.servicosPrestados)
+          ? perfil.servicosPrestados
+          : [],
       });
     }
   }, [estaAberto, perfil]);
@@ -143,7 +150,9 @@ const ModalEditarPerfil = ({ estaAberto, aoFechar, perfil, aoSalvar }) => {
                     <input
                       type="checkbox"
                       value={servico}
-                      checked={dadosFormulario.servicosPrestados?.includes(servico)}
+                      checked={dadosFormulario.servicosPrestados?.includes(
+                        servico,
+                      )}
                       onChange={() => alterarServicos(servico)}
                     />
                     <span>{servico}</span>
@@ -181,6 +190,13 @@ const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
       alert("As senhas não coincidem!");
       return;
     }
+
+    const passwordValidation = validateStrongPassword(novaSenha);
+    if (!passwordValidation.isValid) {
+      alert(buildPasswordPolicyMessage(passwordValidation.missing));
+      return;
+    }
+
     aoSalvar({ senhaAtual, novaSenha });
     // reseta campos
     setSenhaAtual("");
@@ -245,6 +261,10 @@ const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
                   {mostrarNovaSenha ? "👁️" : "👁️‍🗨️"}
                 </button>
               </div>
+              <small>
+                Minimo 8 caracteres com letra maiuscula, letra minuscula, numero
+                e caractere especial.
+              </small>
             </div>
           </div>
 
@@ -263,7 +283,9 @@ const ModalAlterarSenha = ({ estaAberto, aoFechar, aoSalvar }) => {
                 <button
                   type="button"
                   className="botao-ver-senha"
-                  onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                  onClick={() =>
+                    setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+                  }
                 >
                   {mostrarConfirmarSenha ? "👁️" : "👁️‍🗨️"}
                 </button>
@@ -319,7 +341,9 @@ const Perfil = () => {
         email: res.email ?? "",
         telefone: res.telefone ?? "",
         bio: res.bio ?? "",
-        servicosPrestados: Array.isArray(res.servicosPrestados) ? res.servicosPrestados : [],
+        servicosPrestados: Array.isArray(res.servicosPrestados)
+          ? res.servicosPrestados
+          : [],
         role: res.role ?? user?.role ?? null,
       });
     } catch (err) {
@@ -355,17 +379,23 @@ const Perfil = () => {
         const stored = localStorage.getItem("user");
         if (stored) {
           const parsed = JSON.parse(stored);
-          parsed.nomeCompleto = atualizado.nomeCompleto ?? atualizado.nome ?? parsed.nomeCompleto;
+          parsed.nomeCompleto =
+            atualizado.nomeCompleto ?? atualizado.nome ?? parsed.nomeCompleto;
           parsed.email = atualizado.email ?? parsed.email;
           localStorage.setItem("user", JSON.stringify(parsed));
         }
         // atualiza também campos separados (userName)
-        if (atualizado.nomeCompleto) localStorage.setItem("userName", atualizado.nomeCompleto);
-        if (atualizado.email) localStorage.setItem("userEmail", atualizado.email);
-      } catch (e) {
-      }
+        if (atualizado.nomeCompleto)
+          localStorage.setItem("userName", atualizado.nomeCompleto);
+        if (atualizado.email)
+          localStorage.setItem("userEmail", atualizado.email);
+      } catch (e) {}
       if (setUser) {
-        setUser((u) => ({ ...(u || {}), nome: atualizado.nomeCompleto ?? atualizado.nome ?? u?.nome, email: atualizado.email ?? u?.email }));
+        setUser((u) => ({
+          ...(u || {}),
+          nome: atualizado.nomeCompleto ?? atualizado.nome ?? u?.nome,
+          email: atualizado.email ?? u?.email,
+        }));
       }
     } catch (err) {
       console.error("Erro ao salvar perfil:", err);
@@ -382,12 +412,12 @@ const Perfil = () => {
     try {
       // payload conforme seu DTO TrocaSenhaDto
       const payload = { senhaAtual, novaSenha };
-      
+
       await perfilService.changePassword(Number(id), payload);
       success("Senha alterada com sucesso!");
     } catch (err) {
       console.error("Erro ao alterar senha:", err);
-      const msg = err?.response?.data?.message || err?.response?.data || "Erro ao alterar senha";
+      const msg = getFriendlyPasswordError(err, "Erro ao alterar senha");
       toastError(String(msg));
     }
   };
@@ -401,7 +431,11 @@ const Perfil = () => {
   };
 
   if (carregando) {
-    return <div className="container-perfil"><p>Carregando perfil...</p></div>;
+    return (
+      <div className="container-perfil">
+        <p>Carregando perfil...</p>
+      </div>
+    );
   }
 
   if (!dadosPerfil) {
@@ -447,7 +481,8 @@ const Perfil = () => {
             <div className="info-item info-item-full">
               <span className="info-label">Serviços Prestados:</span>
               <span className="info-valor">
-                {Array.isArray(dadosPerfil.servicosPrestados) && dadosPerfil.servicosPrestados.length > 0
+                {Array.isArray(dadosPerfil.servicosPrestados) &&
+                dadosPerfil.servicosPrestados.length > 0
                   ? dadosPerfil.servicosPrestados.join(", ")
                   : "-"}
               </span>
@@ -456,9 +491,24 @@ const Perfil = () => {
         </div>
 
         <div className="card-actions-perfil">
-          <button className="botao-acao botao-editar" onClick={() => setModalEditarAberto(true)}>Editar Perfil</button>
-          <button className="botao-acao botao-senha" onClick={() => setModalSenhaAberto(true)}>Alterar Senha</button>
-          <button className="botao-acao botao-excluir" onClick={() => setModalExcluirAberto(true)}>Excluir Conta</button>
+          <button
+            className="botao-acao botao-editar"
+            onClick={() => setModalEditarAberto(true)}
+          >
+            Editar Perfil
+          </button>
+          <button
+            className="botao-acao botao-senha"
+            onClick={() => setModalSenhaAberto(true)}
+          >
+            Alterar Senha
+          </button>
+          <button
+            className="botao-acao botao-excluir"
+            onClick={() => setModalExcluirAberto(true)}
+          >
+            Excluir Conta
+          </button>
         </div>
       </div>
 

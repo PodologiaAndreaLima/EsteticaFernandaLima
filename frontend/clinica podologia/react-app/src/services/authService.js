@@ -2,6 +2,11 @@ import api from "./api";
 import API_CONFIG from "../config/apiConfig";
 import Cliente from "../models/Cliente";
 import Funcionario from "../models/Funcionario";
+import {
+  extractApiErrorMessage,
+  getFriendlyLoginError,
+  getFriendlyPasswordError,
+} from "../utils/authErrorUtils";
 
 export const AuthService = {
   // Função para fazer login
@@ -9,28 +14,31 @@ export const AuthService = {
     try {
       const response = await api.post("/usuarios/login", {
         email: identifier,
-        senha: senha
+        senha: senha,
       });
 
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify({
-          id: response.data.userId,
-          nome: response.data.nomeCompleto,
-          email: response.data.email,
-          role: response.data.role
-        }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: response.data.userId,
+            nome: response.data.nomeCompleto,
+            email: response.data.email,
+            role: response.data.role,
+          }),
+        );
       }
 
       return {
         success: true,
         user: response.data,
-        token: response.data.token
+        token: response.data.token,
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Credenciais inválidas"
+        error: getFriendlyLoginError(error),
       };
     }
   },
@@ -46,17 +54,17 @@ export const AuthService = {
         telefone: dados.telefone,
         servicosPrestados: dados.servicosPrestados,
         bio: dados.bio,
-        role: dados.role
+        role: dados.role,
       });
 
       return {
         success: true,
-        message: "Usuário cadastrado com sucesso!"
+        message: "Usuário cadastrado com sucesso!",
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao cadastrar usuário"
+        error: getFriendlyPasswordError(error, "Erro ao cadastrar usuario"),
       };
     }
   },
@@ -67,12 +75,12 @@ export const AuthService = {
       const response = await api.get("/usuarios");
       return {
         success: true,
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao buscar funcionários"
+        error: extractApiErrorMessage(error) || "Erro ao buscar funcionarios",
       };
     }
   },
@@ -83,12 +91,12 @@ export const AuthService = {
       const response = await api.put(`/usuarios/${usuarioId}`, dados);
       return {
         success: true,
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao atualizar funcionário"
+        error: getFriendlyPasswordError(error, "Erro ao atualizar funcionario"),
       };
     }
   },
@@ -99,12 +107,12 @@ export const AuthService = {
       await api.delete(`/usuarios/${usuarioId}`);
       return {
         success: true,
-        message: "Funcionário deletado com sucesso"
+        message: "Funcionário deletado com sucesso",
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao deletar funcionário"
+        error: extractApiErrorMessage(error) || "Erro ao deletar funcionario",
       };
     }
   },
@@ -122,7 +130,7 @@ export const AuthService = {
 
       // Busca os dados atualizados do funcionário
       const response = await api.get(
-        `${API_CONFIG.ENDPOINTS.STAFF.BASE}/${localUser.id}`
+        `${API_CONFIG.ENDPOINTS.STAFF.BASE}/${localUser.id}`,
       );
 
       if (response.data) {
@@ -152,7 +160,7 @@ export const AuthService = {
       // Fazemos a chamada para atualizar o funcionário
       const response = await api.put(
         `${API_CONFIG.ENDPOINTS.STAFF.BASE}/${userId}`,
-        funcionarioData
+        funcionarioData,
       );
 
       if (response.data) {
@@ -170,7 +178,7 @@ export const AuthService = {
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error);
       const errorMessage =
-        error.response?.data?.message || "Erro ao atualizar dados";
+        extractApiErrorMessage(error) || "Erro ao atualizar dados";
       return { success: false, error: errorMessage };
     }
   },

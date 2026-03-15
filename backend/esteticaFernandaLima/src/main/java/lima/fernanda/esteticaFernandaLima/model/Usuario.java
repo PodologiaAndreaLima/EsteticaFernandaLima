@@ -41,6 +41,12 @@ public class Usuario {
     @com.fasterxml.jackson.annotation.JsonIgnore
     private List<ServicoProduto> servicosProdutos;
 
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int tentativasLogin = 0;
+
+    @Column(name = "bloqueado_ate")
+    private Long bloqueadoAte = null;
+
     public Long getId() {
         return id;
     }
@@ -123,5 +129,35 @@ public class Usuario {
 
     public void setServicosProdutos(List<ServicoProduto> servicosProdutos) {
         this.servicosProdutos = servicosProdutos;
+    }
+
+    public int getTentativasLogin() {
+        return tentativasLogin;
+    }
+
+    public void setTentativasLogin(int tentativasLogin) {
+        this.tentativasLogin = tentativasLogin;
+    }
+
+    public Long getBloqueadoAte() {
+        return bloqueadoAte;
+    }
+
+    public void setBloqueadoAte(Long bloqueadoAte) {
+        this.bloqueadoAte = bloqueadoAte;
+    }
+
+    public boolean isBloqueado() {
+        if (bloqueadoAte == null) {
+            return false;
+        }
+        long agora = System.currentTimeMillis();
+        if (agora > bloqueadoAte) {
+            // Bloqueio expirou, reseta
+            this.bloqueadoAte = null;
+            this.tentativasLogin = 0;
+            return false;
+        }
+        return true;
     }
 }

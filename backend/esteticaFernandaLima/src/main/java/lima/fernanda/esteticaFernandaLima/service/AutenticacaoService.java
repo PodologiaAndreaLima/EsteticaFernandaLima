@@ -14,6 +14,10 @@ import java.util.Optional;
 @Service
 public class AutenticacaoService implements UserDetailsService {
 
+    private static final int MAX_TENTATIVAS_LOGIN = 5;
+    private static final long BLOQUEIO_MINUTOS = 5;
+    private static final long BLOQUEIO_MS = BLOQUEIO_MINUTOS * 60 * 1000;
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -32,5 +36,32 @@ public class AutenticacaoService implements UserDetailsService {
 
         System.out.println("Usuário encontrado: " + usuarioOpt.get().getEmail());
         return new UsuarioDetalhesDto(usuarioOpt.get());
+    }
+
+    public void registrarTentativaFalha(String email) {
+        usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+            if (usuario.isBloqueado()) {
+                return;
+            }
+
+            int tentativas = usuario.getTentativasLogin() + 1;
+            usuario.setTentativasLogin(tentativas);
+            if (tentativas >= MAX_TENTATIVAS_LOGIN) {
+                long bloqueadoAte = System.currentTimeMillis() + BLOQUEIO_MS;
+                usuario.setBloqueadoAte(bloqueadoAte);
+                System.out.println("Usuário bloqueado por 5 minutos: " + email);
+            }
+            usuarioRepository.save(usuario);
+        });
+    }
+
+    public void resetarTentativasLogin(String email) {
+        usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+            if (usuario.getTentativasLogin() != 0) {
+                usuario.setTentativasLogin(0);
+                usuario.setBloqueadoAte(null);
+                usuarioRepository.save(usuario);
+            }
+        });
     }
 }
