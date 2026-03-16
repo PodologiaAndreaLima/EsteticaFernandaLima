@@ -1,7 +1,10 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.repository.FuncionarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,13 +13,15 @@ import java.util.List;
 public class FuncionarioService {
 
     private final FuncionarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public FuncionarioService(FuncionarioRepository repository) {
+    public FuncionarioService(FuncionarioRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Funcionario> buscarTodos() {
-            return repository.findAll();
+        return repository.findAll();
     }
 
     public Funcionario buscarPorId(Integer id) {
@@ -24,7 +29,15 @@ public class FuncionarioService {
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
     }
 
-    public Funcionario salvar(Funcionario funcionario) {
+    public Funcionario salvar(FuncionarioCriacaoDto dto) {
+        Funcionario funcionario = new Funcionario();
+        funcionario.setNome(dto.getNome());
+        funcionario.setCPF(dto.getCPF());
+        funcionario.setTelefone(dto.getTelefone());
+        funcionario.setEmail(dto.getEmail());
+        funcionario.setDescricao(dto.getDescricao());
+        funcionario.setSenha(prepararSenha(dto.getSenha()));
+
         return repository.save(funcionario);
     }
 
@@ -35,18 +48,40 @@ public class FuncionarioService {
         repository.deleteById(id);
     }
 
-    public Funcionario atualizar(Integer id, Funcionario funcionarioAtualizado) {
+    public Funcionario atualizar(Integer id, FuncionarioAtualizacaoDto dto) {
         Funcionario funcionarioExistente = buscarPorId(id);
 
-        funcionarioExistente.setNome(funcionarioAtualizado.getNome());
-        funcionarioExistente.setCPF(funcionarioAtualizado.getCPF());
-        funcionarioExistente.setTelefone(funcionarioAtualizado.getTelefone());
-        funcionarioExistente.setEmail(funcionarioAtualizado.getEmail());
-        funcionarioExistente.setSenha(funcionarioAtualizado.getSenha());
-        funcionarioExistente.setDescricao(funcionarioAtualizado.getDescricao());
+        if (dto.getNome() != null) {
+            funcionarioExistente.setNome(dto.getNome());
+        }
+        if (dto.getCPF() != null) {
+            funcionarioExistente.setCPF(dto.getCPF());
+        }
+        if (dto.getTelefone() != null) {
+            funcionarioExistente.setTelefone(dto.getTelefone());
+        }
+        if (dto.getEmail() != null) {
+            funcionarioExistente.setEmail(dto.getEmail());
+        }
+        if (dto.getDescricao() != null) {
+            funcionarioExistente.setDescricao(dto.getDescricao());
+        }
+        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
+            funcionarioExistente.setSenha(prepararSenha(dto.getSenha()));
+        }
 
         return repository.save(funcionarioExistente);
     }
 
-}
+    private String prepararSenha(String senha) {
+        if (senha == null || senha.isBlank()) {
+            throw new RuntimeException("Senha não pode ser vazia");
+        }
 
+        if (senha.startsWith("$2a$") || senha.startsWith("$2b$") || senha.startsWith("$2y$")) {
+            return senha;
+        }
+
+        return passwordEncoder.encode(senha);
+    }
+}

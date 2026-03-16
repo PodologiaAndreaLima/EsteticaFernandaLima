@@ -6,8 +6,7 @@ public record FuncionarioResponse(
         String CPF,
         String telefone,
         String email,
-        String descricao,
-        String senha
+        String descricao
 ) {
     public static FuncionarioResponse fromFuncionario(lima.fernanda.esteticaFernandaLima.model.Funcionario funcionario) {
         return new FuncionarioResponse(
@@ -16,8 +15,7 @@ public record FuncionarioResponse(
                 funcionario.getCPF(),
                 funcionario.getTelefone(),
                 funcionario.getEmail(),
-                funcionario.getDescricao(),
-                funcionario.getSenha()
+                funcionario.getDescricao()
         );
     }
 }

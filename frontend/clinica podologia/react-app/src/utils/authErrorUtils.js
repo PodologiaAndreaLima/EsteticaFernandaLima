@@ -15,11 +15,49 @@ const normalize = (text = "") =>
 export const extractApiErrorMessage = (error) => {
   const data = error?.response?.data;
 
+  const formatValidationEntries = (entries = []) =>
+    entries
+      .map((entry) => {
+        if (typeof entry === "string") return entry;
+        if (!entry || typeof entry !== "object") return "";
+
+        const field = entry.field || entry.objectName || "campo";
+        const message =
+          entry.defaultMessage ||
+          entry.message ||
+          entry.code ||
+          "valor invalido";
+
+        return `${field}: ${message}`;
+      })
+      .filter(Boolean)
+      .join(" ");
+
+  const formatValidationObject = (value = {}) =>
+    Object.entries(value)
+      .map(([field, message]) => {
+        if (Array.isArray(message)) {
+          return `${field}: ${message.join(", ")}`;
+        }
+
+        return `${field}: ${message}`;
+      })
+      .filter(Boolean)
+      .join(" ");
+
   if (typeof data === "string") return data;
+  if (Array.isArray(data?.errors)) {
+    return formatValidationEntries(data.errors);
+  }
+  if (Array.isArray(data?.fieldErrors)) {
+    return formatValidationEntries(data.fieldErrors);
+  }
+  if (data?.errors && typeof data.errors === "object") {
+    return formatValidationObject(data.errors);
+  }
   if (typeof data?.message === "string") return data.message;
   if (Array.isArray(data?.message)) return data.message.join(" ");
   if (typeof data?.error === "string") return data.error;
-  if (Array.isArray(data?.errors)) return data.errors.join(" ");
 
   return "";
 };

@@ -8,12 +8,43 @@ import {
   getFriendlyPasswordError,
 } from "../utils/authErrorUtils";
 
+const SERVICOS_CACHE_KEY = "funcionarios_servicos_por_email";
+
+const getServicosCache = () => {
+  try {
+    const raw = localStorage.getItem(SERVICOS_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const salvarServicosNoCache = (email, servicosPrestados = []) => {
+  const emailKey = String(email || "")
+    .trim()
+    .toLowerCase();
+  if (!emailKey) return;
+
+  const lista = Array.isArray(servicosPrestados)
+    ? servicosPrestados.filter((s) => typeof s === "string" && s.trim())
+    : [];
+
+  const cache = getServicosCache();
+  cache[emailKey] = [...new Set(lista)];
+  localStorage.setItem(SERVICOS_CACHE_KEY, JSON.stringify(cache));
+};
+
 export const AuthService = {
   // Função para fazer login
   login: async (identifier, senha) => {
     try {
+      const normalizedEmail = String(identifier || "")
+        .trim()
+        .toLowerCase();
+
       const response = await api.post("/usuarios/login", {
-        email: identifier,
+        email: normalizedEmail,
         senha: senha,
       });
 
@@ -46,25 +77,43 @@ export const AuthService = {
   // Função para registrar novo funcionário
   register: async (dados) => {
     try {
-      const response = await api.post("/usuarios", {
+      const normalizedEmail = String(dados.email || "")
+        .trim()
+        .toLowerCase();
+
+      salvarServicosNoCache(normalizedEmail, dados.servicosPrestados);
+
+      // 1) Cria no módulo de usuários para permitir autenticação em /usuarios/login
+      await api.post("/usuarios", {
         nomeCompleto: dados.nomeCompleto,
-        email: dados.email,
-        senha: dados.senha,
         cpf: dados.cpf,
         telefone: dados.telefone,
-        servicosPrestados: dados.servicosPrestados,
         bio: dados.bio,
+        servicosPrestados: dados.servicosPrestados,
+        email: normalizedEmail,
+        senha: dados.senha,
         role: dados.role,
+      });
+
+      // 2) Cria no módulo de funcionários para aparecer na gestão de funcionários
+      await api.post("/funcionarios", {
+        nome: dados.nomeCompleto,
+        CPF: dados.cpf,
+        cpf: dados.cpf,
+        descricao: dados.bio,
+        email: normalizedEmail,
+        senha: dados.senha,
+        telefone: dados.telefone,
       });
 
       return {
         success: true,
-        message: "Usuário cadastrado com sucesso!",
+        message: "Funcionário cadastrado com sucesso!",
       };
     } catch (error) {
       return {
         success: false,
-        error: getFriendlyPasswordError(error, "Erro ao cadastrar usuario"),
+        error: getFriendlyPasswordError(error, "Erro ao cadastrar funcionário"),
       };
     }
   },
@@ -72,15 +121,52 @@ export const AuthService = {
   // Buscar todos os funcionários
   getUsuarios: async () => {
     try {
-      const response = await api.get("/usuarios");
+      // Junta dados de /funcionarios (gestao) + /usuarios (servicosPrestados/role)
+      const [responseFuncionarios, responseUsuarios] = await Promise.all([
+        api.get("/funcionarios"),
+        api.get("/usuarios"),
+      ]);
+
+      const funcionarios = Array.isArray(responseFuncionarios.data)
+        ? responseFuncionarios.data
+        : [];
+      const usuarios = Array.isArray(responseUsuarios.data)
+        ? responseUsuarios.data
+        : [];
+
+      const usuariosPorEmail = new Map(
+        usuarios
+          .filter((u) => u?.email)
+          .map((u) => [String(u.email).toLowerCase(), u]),
+      );
+      const servicosCache = getServicosCache();
+
+      const dataMesclada = funcionarios.map((f) => {
+        const email = String(f?.email || "").toLowerCase();
+        const usuario = usuariosPorEmail.get(email) || {};
+        const servicosDoCache = servicosCache[email] || [];
+
+        return {
+          ...f,
+          nomeCompleto: f?.nomeCompleto ?? f?.nome ?? usuario?.nomeCompleto,
+          cpf: f?.cpf ?? f?.CPF ?? usuario?.cpf,
+          bio: f?.bio ?? f?.descricao ?? usuario?.bio,
+          servicosPrestados:
+            f?.servicosPrestados ??
+            usuario?.servicosPrestados ??
+            servicosDoCache,
+          role: f?.role ?? usuario?.role,
+        };
+      });
+
       return {
         success: true,
-        data: response.data,
+        data: dataMesclada,
       };
     } catch (error) {
       return {
         success: false,
-        error: extractApiErrorMessage(error) || "Erro ao buscar funcionarios",
+        error: extractApiErrorMessage(error) || "Erro ao buscar funcionários",
       };
     }
   },
@@ -88,7 +174,21 @@ export const AuthService = {
   // Atualizar funcionário
   updateUsuario: async (usuarioId, dados) => {
     try {
-      const response = await api.put(`/usuarios/${usuarioId}`, dados);
+      salvarServicosNoCache(dados.email, dados.servicosPrestados);
+
+      // PUT /funcionarios/{id} — contrato do DTO de atualização
+      const payload = {
+        nome: dados.nomeCompleto ?? dados.nome,
+        CPF: dados.cpf ?? dados.CPF,
+        cpf: dados.cpf ?? dados.CPF,
+        descricao: dados.bio ?? dados.descricao,
+        email: dados.email,
+        telefone: dados.telefone,
+      };
+      if (dados.senha && dados.senha.trim()) {
+        payload.senha = dados.senha;
+      }
+      const response = await api.put(`/funcionarios/${usuarioId}`, payload);
       return {
         success: true,
         data: response.data,
@@ -96,7 +196,7 @@ export const AuthService = {
     } catch (error) {
       return {
         success: false,
-        error: getFriendlyPasswordError(error, "Erro ao atualizar funcionario"),
+        error: getFriendlyPasswordError(error, "Erro ao atualizar funcionário"),
       };
     }
   },
@@ -104,7 +204,7 @@ export const AuthService = {
   // Deletar funcionário
   deleteUsuario: async (usuarioId) => {
     try {
-      await api.delete(`/usuarios/${usuarioId}`);
+      await api.delete(`/funcionarios/${usuarioId}`);
       return {
         success: true,
         message: "Funcionário deletado com sucesso",

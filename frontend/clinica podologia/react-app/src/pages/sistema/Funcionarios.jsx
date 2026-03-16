@@ -10,6 +10,82 @@ import {
   validateStrongPassword,
 } from "../../utils/authErrorUtils";
 
+const SERVICOS_DISPONIVEIS = [
+  "Design de Sobrancelhas",
+  "Micropigmentação",
+  "Limpeza de Pele",
+  "Peeling Facial",
+  "Tratamento Capilar",
+  "Tratamento de Estrias",
+  "Depilação",
+];
+
+const normalizarTexto = (valor = "") =>
+  String(valor)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+const normalizarServicosPrestados = (valor) => {
+  const itens = Array.isArray(valor)
+    ? valor
+    : typeof valor === "string"
+      ? valor.split(",")
+      : [];
+
+  return [
+    ...new Set(
+      itens
+        .map((item) => {
+          if (typeof item !== "string") return "";
+
+          const servicoLimpo = item.trim();
+          if (!servicoLimpo) return "";
+
+          const equivalente = SERVICOS_DISPONIVEIS.find(
+            (servico) =>
+              normalizarTexto(servico) === normalizarTexto(servicoLimpo),
+          );
+
+          return equivalente || servicoLimpo;
+        })
+        .filter(Boolean),
+    ),
+  ];
+};
+
+const formatarCPF = (valor = "") => {
+  const digitos = String(valor).replace(/\D/g, "").slice(0, 11);
+
+  return digitos
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+};
+
+const cpfEhValido = (valor = "") => {
+  const cpf = String(valor).replace(/\D/g, "");
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+  const calcularDigito = (base, pesoInicial) => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i += 1) {
+      soma += Number(base[i]) * (pesoInicial - i);
+    }
+    const resto = (soma * 10) % 11;
+    return resto === 10 ? 0 : resto;
+  };
+
+  const digito1 = calcularDigito(cpf.slice(0, 9), 10);
+  const digito2 = calcularDigito(cpf.slice(0, 10), 11);
+
+  return digito1 === Number(cpf[9]) && digito2 === Number(cpf[10]);
+};
+
 // Componente Modal para Visualização de Funcionário
 const ModalVisualizarFuncionario = ({ estaAberto, aoFechar, funcionario }) => {
   if (!estaAberto) return null;
@@ -106,8 +182,10 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
         // Garantir que servicosPrestados seja um array
         setDadosFormulario({
           ...funcionario,
-          servicosPrestados: funcionario.servicosPrestados || [], // ← ADICIONAR ISTO
-          role: funcionario.role || "USER", // ← ADICIONAR ISTO também
+          servicosPrestados: normalizarServicosPrestados(
+            funcionario.servicosPrestados,
+          ),
+          role: funcionario.role || "USER",
         });
       } else {
         setDadosFormulario({
@@ -128,14 +206,18 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
+    const valorFinal = name === "cpf" ? formatarCPF(value) : value;
+
     setDadosFormulario({
       ...dadosFormulario,
-      [name]: value,
+      [name]: valorFinal,
     });
   };
 
   const alterarServicos = (servico) => {
-    const servicosAtuais = [...dadosFormulario.servicosPrestados];
+    const servicosAtuais = normalizarServicosPrestados(
+      dadosFormulario.servicosPrestados,
+    );
 
     if (servicosAtuais.includes(servico)) {
       const novosServicos = servicosAtuais.filter((item) => item !== servico);
@@ -158,6 +240,11 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
   const enviarFormulario = (e) => {
     e.preventDefault();
 
+    if (!cpfEhValido(dadosFormulario.cpf)) {
+      error("CPF invalido. Digite um CPF valido.");
+      return;
+    }
+
     const shouldValidatePassword = !funcionario.id || !!dadosFormulario.senha;
     if (shouldValidatePassword) {
       const passwordValidation = validateStrongPassword(dadosFormulario.senha);
@@ -168,7 +255,6 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
     }
 
     aoSalvar(dadosFormulario);
-    aoFechar();
   };
 
   if (!estaAberto) return null;
@@ -210,6 +296,9 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 name="cpf"
                 value={dadosFormulario.cpf}
                 onChange={alterarCampo}
+                maxLength={14}
+                inputMode="numeric"
+                placeholder="000.000.000-00"
                 required
               />
             </div>
@@ -230,15 +319,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
             <div className="grupo-formulario">
               <label>Serviços Prestados</label>
               <div className="servicos-container">
-                {[
-                  "Design de Sobrancelhas",
-                  "Micropigmentação",
-                  "Limpeza de Pele",
-                  "Peeling Facial",
-                  "Tratamento Capilar",
-                  "Tratamento de Estrias",
-                  "Depilação",
-                ].map((servico) => (
+                {SERVICOS_DISPONIVEIS.map((servico) => (
                   <div className="servico-item" key={servico}>
                     <label className="checkbox-container">
                       <input
@@ -279,6 +360,11 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                   name="senha"
                   value={dadosFormulario.senha}
                   onChange={alterarCampo}
+                  placeholder={
+                    funcionario.id
+                      ? "Deixe em branco para manter a senha atual"
+                      : ""
+                  }
                   required={!funcionario.id}
                 />
                 <button
@@ -290,8 +376,9 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 </button>
               </div>
               <small>
-                Minimo 8 caracteres com letra maiuscula, letra minuscula, numero
-                e caractere especial.
+                {funcionario.id
+                  ? "Se quiser alterar, informe uma nova senha com no minimo 8 caracteres, letra maiuscula, letra minuscula, numero e caractere especial."
+                  : "Minimo 8 caracteres com letra maiuscula, letra minuscula, numero e caractere especial."}
               </small>
             </div>
           </div>
@@ -322,6 +409,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 value={dadosFormulario.bio}
                 onChange={alterarCampo}
                 placeholder="Uma breve descrição sobre o funcionário..."
+                required
               />
             </div>
           </div>
@@ -368,11 +456,22 @@ const Funcionarios = () => {
     carregarFuncionarios();
   }, []);
 
+  const normalizarFuncionario = (f) => ({
+    id: f.id ?? f.idFuncionario,
+    nomeCompleto: f.nomeCompleto ?? f.nome ?? "",
+    cpf: f.cpf ?? f.CPF ?? "",
+    telefone: f.telefone ?? "",
+    email: f.email ?? "",
+    bio: f.bio ?? f.descricao ?? "",
+    role: f.role ?? "USER",
+    servicosPrestados: normalizarServicosPrestados(f.servicosPrestados ?? []),
+  });
+
   const carregarFuncionarios = async () => {
     setCarregando(true);
     const resposta = await AuthService.getUsuarios();
     if (resposta.success) {
-      setListaFuncionarios(resposta.data);
+      setListaFuncionarios(resposta.data.map(normalizarFuncionario));
       console.log("Funcionários carregados:", resposta.data);
     } else {
       error("Erro ao carregar funcionários");
@@ -436,16 +535,11 @@ const Funcionarios = () => {
       // Se tem ID, é edição; senão, é criação
       if (dadosFuncionario.id) {
         // EDITAR
-        resposta = await AuthService.updateUsuario(dadosFuncionario.id, {
-          nomeCompleto: dadosFuncionario.nomeCompleto,
-          cpf: dadosFuncionario.cpf,
-          telefone: dadosFuncionario.telefone,
-          servicosPrestados: dadosFuncionario.servicosPrestados,
-          email: dadosFuncionario.email,
-          bio: dadosFuncionario.bio,
-          role: dadosFuncionario.role,
-          // Nota: senha não é enviada na edição por segurança
-        });
+        // authService.updateUsuario faz o mapeamento para nome/CPF/descricao
+        resposta = await AuthService.updateUsuario(
+          dadosFuncionario.id,
+          dadosFuncionario,
+        );
 
         if (resposta.success) {
           // Atualizar lista local
@@ -464,7 +558,9 @@ const Funcionarios = () => {
           nomeCompleto: dadosFuncionario.nomeCompleto,
           cpf: dadosFuncionario.cpf,
           telefone: dadosFuncionario.telefone,
-          servicosPrestados: dadosFuncionario.servicosPrestados,
+          servicosPrestados: normalizarServicosPrestados(
+            dadosFuncionario.servicosPrestados,
+          ),
           email: dadosFuncionario.email,
           senha: dadosFuncionario.senha,
           bio: dadosFuncionario.bio,

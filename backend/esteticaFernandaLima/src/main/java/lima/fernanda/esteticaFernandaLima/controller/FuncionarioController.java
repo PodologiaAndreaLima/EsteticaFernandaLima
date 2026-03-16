@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioResponse;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.service.FuncionarioService;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +31,27 @@ public class FuncionarioController {
     @Operation(summary = "Listar funcionários", description = "Retorna todos os funcionários")
     @ApiResponse(responseCode = "200", description = "Funcionários encontrados")
     @ApiResponse(responseCode = "204", description = "Nenhum funcionário encontrado")
-    public ResponseEntity<List<Funcionario>> getFuncionarios() {
+    public ResponseEntity<List<FuncionarioResponse>> getFuncionarios() {
         List<Funcionario> funcionarios = service.buscarTodos();
-        return funcionarios.isEmpty()?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.ok(funcionarios);
+        if (funcionarios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<FuncionarioResponse> resposta = funcionarios.stream()
+                .map(FuncionarioResponse::fromFuncionario)
+                .toList();
+
+        return ResponseEntity.ok(resposta);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar funcionário por ID", description = "Retorna um funcionário específico pelo ID")
     @ApiResponse(responseCode = "200", description = "Funcionário encontrado")
     @ApiResponse(responseCode = "404", description = "Funcionário não encontrado")
-    public ResponseEntity<Funcionario> getFuncionarioPorId(@PathVariable Integer id) {
+    public ResponseEntity<FuncionarioResponse> getFuncionarioPorId(@PathVariable Integer id) {
         try {
-            return ResponseEntity.ok(service.buscarPorId(id));
+            Funcionario funcionario = service.buscarPorId(id);
+            return ResponseEntity.ok(FuncionarioResponse.fromFuncionario(funcionario));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -50,8 +60,9 @@ public class FuncionarioController {
     @PostMapping
     @Operation(summary = "Cadastrar funcionário", description = "Cadastra um novo funcionário")
     @ApiResponse(responseCode = "201", description = "Funcionário cadastrado com sucesso")
-    public ResponseEntity<Funcionario> postFuncionario(@RequestBody @Valid Funcionario funcionario) {
-        return ResponseEntity.status(201).body(service.salvar(funcionario));
+    public ResponseEntity<FuncionarioResponse> postFuncionario(@RequestBody @Valid FuncionarioCriacaoDto funcionario) {
+        Funcionario salvo = service.salvar(funcionario);
+        return ResponseEntity.status(201).body(FuncionarioResponse.fromFuncionario(salvo));
     }
 
     @DeleteMapping("/{id}")
@@ -71,13 +82,12 @@ public class FuncionarioController {
     @Operation(summary = "Atualizar funcionário", description = "Atualiza os dados de um funcionário existente")
     @ApiResponse(responseCode = "200", description = "Funcionário atualizado com sucesso")
     @ApiResponse(responseCode = "404", description = "Funcionário não encontrado")
-    public ResponseEntity<Funcionario> putFuncionario(@PathVariable Integer id, @RequestBody @Valid Funcionario funcionarioAtualizado) {
+    public ResponseEntity<FuncionarioResponse> putFuncionario(@PathVariable Integer id, @RequestBody @Valid FuncionarioAtualizacaoDto funcionarioAtualizado) {
         try {
-            return ResponseEntity.ok(service.atualizar(id, funcionarioAtualizado));
+            Funcionario atualizado = service.atualizar(id, funcionarioAtualizado);
+            return ResponseEntity.ok(FuncionarioResponse.fromFuncionario(atualizado));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 }

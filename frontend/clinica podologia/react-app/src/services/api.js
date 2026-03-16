@@ -3,25 +3,28 @@ import API_CONFIG from "../config/apiConfig";
 
 // Cria uma instância do axios com a URL base da API
 const api = axios.create({
-  baseURL: 'http://localhost:8080'
+  baseURL: "http://localhost:8080",
 });
 
 // Intercepta as requisições para adicionar o token de autenticação se disponível
 api.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('token');
+  (config) => {
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     // Garantir que o Content-Type seja application/json para POST e PUT
-    if ((config.method === 'post' || config.method === 'put') && !config.headers['Content-Type']) {
-      config.headers['Content-Type'] = 'application/json';
+    if (
+      (config.method === "post" || config.method === "put") &&
+      !config.headers["Content-Type"]
+    ) {
+      config.headers["Content-Type"] = "application/json";
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Intercepta as respostas para tratar erros comuns
@@ -41,7 +44,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

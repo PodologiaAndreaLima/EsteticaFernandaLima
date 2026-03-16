@@ -1,4 +1,5 @@
-import api from "./api"; 
+import api from "./api";
+import { extractApiErrorMessage } from "../utils/authErrorUtils";
 
 export const ClienteService = {
   getClientes: async () => {
@@ -6,27 +7,27 @@ export const ClienteService = {
       const response = await api.get("/cliente");
       return {
         success: true,
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao buscar clientes"
+        error: extractApiErrorMessage(error) || "Erro ao buscar clientes",
       };
     }
   },
 
   criarCliente: async (dados) => {
     try {
-      const response = await api.post("/cliente", dados);
+      await api.post("/cliente", dados);
       return {
         success: true,
-        message: "Cliente criado com sucesso!"
+        message: "Cliente criado com sucesso!",
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao criar cliente"
+        error: extractApiErrorMessage(error) || "Erro ao criar cliente",
       };
     }
   },
@@ -36,12 +37,12 @@ export const ClienteService = {
       const response = await api.put(`/cliente/${clienteId}`, dados);
       return {
         success: true,
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao atualizar cliente"
+        error: extractApiErrorMessage(error) || "Erro ao atualizar cliente",
       };
     }
   },
@@ -51,15 +52,15 @@ export const ClienteService = {
       await api.delete(`/cliente/${clienteId}`);
       return {
         success: true,
-        message: "Cliente deletado com sucesso"
+        message: "Cliente deletado com sucesso",
       };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || "Erro ao deletar cliente"
+        error: extractApiErrorMessage(error) || "Erro ao deletar cliente",
       };
     }
-  }
+  },
 };
 
 // Wrapper para compatibilidade com o padrão usado em outros services
@@ -123,5 +124,5 @@ export default {
 
   async delete(id) {
     return this.remove(id);
-  }
+  },
 };

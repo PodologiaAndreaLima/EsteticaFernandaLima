@@ -4,6 +4,61 @@ import "./Clientes.css";
 import ModalConfirmacao from "../../components/sistema/ModalConfirmacao";
 import { ClienteService } from "../../services/clienteService";
 
+const normalizarDataParaInput = (valor) => {
+  if (!valor) return "";
+  const texto = String(valor);
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(texto)) {
+    const [dia, mes, ano] = texto.split("/");
+    return `${ano}-${mes}-${dia}`;
+  }
+  return texto.includes("T") ? texto.split("T")[0] : texto;
+};
+
+const formatarCPF = (valor = "") => {
+  const digitos = String(valor).replace(/\D/g, "").slice(0, 11);
+
+  return digitos
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+};
+
+const cpfEhValido = (valor = "") => {
+  const cpf = String(valor).replace(/\D/g, "");
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+  const calcularDigito = (base, pesoInicial) => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i += 1) {
+      soma += Number(base[i]) * (pesoInicial - i);
+    }
+    const resto = (soma * 10) % 11;
+    return resto === 10 ? 0 : resto;
+  };
+
+  const digito1 = calcularDigito(cpf.slice(0, 9), 10);
+  const digito2 = calcularDigito(cpf.slice(0, 10), 11);
+
+  return digito1 === Number(cpf[9]) && digito2 === Number(cpf[10]);
+};
+
+const normalizarCpf = (valor = "") => String(valor).replace(/\D/g, "");
+
+const normalizarEmail = (valor = "") => String(valor).trim().toLowerCase();
+
+const obterIdCliente = (cliente = {}) =>
+  cliente?.id ?? cliente?.idCliente ?? cliente?.id_cliente ?? null;
+
+const normalizarClienteApi = (cliente = {}) => ({
+  ...cliente,
+  id: obterIdCliente(cliente),
+  dataNascimento:
+    normalizarDataParaInput(
+      cliente.dataNascimento ?? cliente.data_nascimento,
+    ) || "",
+});
+
 // ✅ ADICIONAR: Componente Modal para Visualizar Cliente
 const ModalVisualizarCliente = ({ estaAberto, aoFechar, cliente }) => {
   if (!estaAberto) return null;
@@ -64,8 +119,14 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
   const [dadosFormulario, setDadosFormulario] = useState(formInicial);
 
   useEffect(() => {
-    if (cliente && cliente.id) {
-      setDadosFormulario(cliente);
+    const idCliente = obterIdCliente(cliente);
+
+    if (cliente && idCliente) {
+      setDadosFormulario({
+        ...cliente,
+        id: idCliente,
+        dataNascimento: normalizarDataParaInput(cliente.dataNascimento),
+      });
     } else {
       setDadosFormulario(formInicial);
     }
@@ -73,16 +134,29 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
 
   const alterarCampo = (e) => {
     const { name, value } = e.target;
+    const valorFinal = name === "cpf" ? formatarCPF(value) : value;
+
     setDadosFormulario((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: valorFinal,
     }));
   };
 
   const enviarFormulario = (e) => {
     e.preventDefault();
+
+    const cpfAtual = normalizarCpf(dadosFormulario.cpf);
+    const cpfOriginal = normalizarCpf(cliente?.cpf);
+    const clienteExistente = Boolean(dadosFormulario.id);
+    const cpfFoiAlterado = cpfAtual !== cpfOriginal;
+    const deveValidarCpf = !clienteExistente || cpfFoiAlterado;
+
+    if (deveValidarCpf && !cpfEhValido(dadosFormulario.cpf)) {
+      error("CPF invalido. Digite um CPF valido.");
+      return;
+    }
+
     aoSalvar(dadosFormulario);
-    setDadosFormulario(formInicial);
   };
 
   if (!estaAberto) return null;
@@ -91,9 +165,7 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h2>
-            {dadosFormulario.id ? "Editar Cliente" : "Adicionar Cliente"}
-          </h2>
+          <h2>{dadosFormulario.id ? "Editar Cliente" : "Adicionar Cliente"}</h2>
           <button className="botao-fechar" onClick={aoFechar}>
             &times;
           </button>
@@ -123,6 +195,9 @@ const ModalCliente = ({ estaAberto, aoFechar, cliente, aoSalvar }) => {
                 name="cpf"
                 value={dadosFormulario.cpf}
                 onChange={alterarCampo}
+                maxLength={14}
+                inputMode="numeric"
+                placeholder="000.000.000-00"
                 required
               />
             </div>
@@ -191,6 +266,7 @@ const Clientes = () => {
   const [clienteParaVisualizar, setClienteParaVisualizar] = useState({});
   const [clienteParaExcluir, setClienteParaExcluir] = useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
+  const [isEditandoCliente, setIsEditandoCliente] = useState(false);
 
   useEffect(() => {
     carregarClientes();
@@ -201,7 +277,7 @@ const Clientes = () => {
     const resposta = await ClienteService.getClientes();
     if (resposta.success) {
       const dados = Array.isArray(resposta.data) ? resposta.data : [];
-      setListaClientes(dados);
+      setListaClientes(dados.map(normalizarClienteApi));
       console.log("Clientes carregados:", dados);
     } else {
       error("Erro ao carregar clientes");
@@ -211,6 +287,7 @@ const Clientes = () => {
   };
 
   const adicionarCliente = () => {
+    setIsEditandoCliente(false);
     setClienteEmEdicao({
       nomeCompleto: "",
       cpf: "",
@@ -222,12 +299,13 @@ const Clientes = () => {
   };
 
   const visualizarCliente = (cliente) => {
-    setClienteParaVisualizar({ ...cliente });
+    setClienteParaVisualizar(normalizarClienteApi(cliente));
     setModalVisualizarAberto(true);
   };
 
   const editarCliente = (cliente) => {
-    setClienteEmEdicao({ ...cliente });
+    setIsEditandoCliente(true);
+    setClienteEmEdicao(normalizarClienteApi(cliente));
     setModalEditarAberto(true);
   };
 
@@ -242,7 +320,9 @@ const Clientes = () => {
 
       if (resposta.success) {
         setListaClientes(
-          listaClientes.filter((cliente) => cliente.id !== clienteParaExcluir)
+          listaClientes.filter(
+            (cliente) => obterIdCliente(cliente) !== clienteParaExcluir,
+          ),
         );
         success("Cliente excluído com sucesso!");
       } else {
@@ -255,35 +335,106 @@ const Clientes = () => {
   };
 
   const salvarCliente = async (dadosCliente) => {
+    let idAtual = obterIdCliente(dadosCliente);
+    if (!idAtual && isEditandoCliente) {
+      idAtual = obterIdCliente(clienteEmEdicao);
+    }
+
+    if (!idAtual && isEditandoCliente) {
+      const candidato = listaClientes.find((cliente) => {
+        const mesmoCpf =
+          normalizarCpf(cliente.cpf) === normalizarCpf(clienteEmEdicao?.cpf);
+        const mesmoEmail =
+          normalizarEmail(cliente.email) ===
+          normalizarEmail(clienteEmEdicao?.email);
+        return mesmoCpf || mesmoEmail;
+      });
+      idAtual = obterIdCliente(candidato);
+    }
+
+    const cpfInformado = normalizarCpf(dadosCliente.cpf);
+    const emailInformado = normalizarEmail(dadosCliente.email);
+
+    // Regra de negócio: bloquear duplicidade apenas no cadastro (não na edição)
+    if (!isEditandoCliente) {
+      const clienteDuplicado = listaClientes.find((cliente) => {
+        const cpfExistente = normalizarCpf(cliente.cpf);
+        const emailExistente = normalizarEmail(cliente.email);
+
+        return (
+          cpfExistente === cpfInformado || emailExistente === emailInformado
+        );
+      });
+
+      if (clienteDuplicado) {
+        if (normalizarCpf(clienteDuplicado.cpf) === cpfInformado) {
+          error("Ja existe um cliente cadastrado com este CPF.");
+          return;
+        }
+
+        error("Ja existe um cliente cadastrado com este email.");
+        return;
+      }
+    }
+
     try {
       let resposta;
 
-      if (dadosCliente.id) {
-        resposta = await ClienteService.updateCliente(dadosCliente.id, {
+      if (isEditandoCliente) {
+        if (!idAtual) {
+          error("Nao foi possivel identificar o cliente para edicao.");
+          return;
+        }
+
+        const dataNascimentoNormalizada = normalizarDataParaInput(
+          dadosCliente.dataNascimento,
+        );
+
+        const cpfAtual = normalizarCpf(dadosCliente.cpf);
+        const cpfOriginal = normalizarCpf(clienteEmEdicao?.cpf);
+        const cpfFoiAlterado = cpfAtual !== cpfOriginal;
+
+        const payloadAtualizacao = {
           nomeCompleto: dadosCliente.nomeCompleto,
-          cpf: dadosCliente.cpf,
           email: dadosCliente.email,
           telefone: dadosCliente.telefone,
-          dataNascimento: dadosCliente.dataNascimento,
-        });
+          dataNascimento: dataNascimentoNormalizada,
+          data_nascimento: dataNascimentoNormalizada,
+        };
+
+        if (cpfFoiAlterado) {
+          payloadAtualizacao.cpf = cpfAtual;
+        }
+
+        resposta = await ClienteService.updateCliente(
+          idAtual,
+          payloadAtualizacao,
+        );
 
         if (resposta.success) {
           setListaClientes(
             listaClientes.map((cliente) =>
-              cliente.id === dadosCliente.id ? dadosCliente : cliente
-            )
+              String(obterIdCliente(cliente)) === String(idAtual)
+                ? { ...dadosCliente, id: idAtual }
+                : cliente,
+            ),
           );
           success("Cliente atualizado com sucesso!");
         } else {
           error(resposta.error);
         }
       } else {
+        const dataNascimentoNormalizada = normalizarDataParaInput(
+          dadosCliente.dataNascimento,
+        );
+
         resposta = await ClienteService.criarCliente({
           nomeCompleto: dadosCliente.nomeCompleto,
-          cpf: dadosCliente.cpf,
+          cpf: normalizarCpf(dadosCliente.cpf),
           email: dadosCliente.email,
           telefone: dadosCliente.telefone,
-          dataNascimento: dadosCliente.dataNascimento,
+          dataNascimento: dataNascimentoNormalizada,
+          data_nascimento: dataNascimentoNormalizada,
         });
 
         if (resposta.success) {
@@ -295,6 +446,7 @@ const Clientes = () => {
       }
 
       setModalEditarAberto(false);
+      setIsEditandoCliente(false);
     } catch (err) {
       console.error("Erro ao salvar cliente:", err);
       error("Erro ao salvar cliente");
@@ -309,8 +461,10 @@ const Clientes = () => {
               .toLowerCase()
               .includes(termoPesquisa.toLowerCase())) ||
           (cliente.email &&
-            cliente.email.toLowerCase().includes(termoPesquisa.toLowerCase())) ||
-          (cliente.cpf && cliente.cpf.includes(termoPesquisa))
+            cliente.email
+              .toLowerCase()
+              .includes(termoPesquisa.toLowerCase())) ||
+          (cliente.cpf && cliente.cpf.includes(termoPesquisa)),
       )
     : [];
 
@@ -353,7 +507,7 @@ const Clientes = () => {
           </thead>
           <tbody>
             {clientesFiltrados.map((cliente) => (
-              <tr key={cliente.id}>
+              <tr key={obterIdCliente(cliente) || cliente.email}>
                 <td>{cliente.nomeCompleto}</td>
                 <td>{cliente.cpf}</td>
                 <td>{cliente.email}</td>
@@ -375,7 +529,7 @@ const Clientes = () => {
                     </button>
                     <button
                       className="botao-tabela-excluir"
-                      onClick={() => prepararExclusao(cliente.id)}
+                      onClick={() => prepararExclusao(obterIdCliente(cliente))}
                     >
                       Excluir
                     </button>
@@ -395,7 +549,10 @@ const Clientes = () => {
 
       <ModalCliente
         estaAberto={modalEditarAberto}
-        aoFechar={() => setModalEditarAberto(false)}
+        aoFechar={() => {
+          setModalEditarAberto(false);
+          setIsEditandoCliente(false);
+        }}
         cliente={clienteEmEdicao}
         aoSalvar={salvarCliente}
       />
