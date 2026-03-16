@@ -66,6 +66,8 @@ const formatarCPF = (valor = "") => {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 };
 
+const normalizarCpf = (valor = "") => String(valor).replace(/\D/g, "");
+
 const cpfEhValido = (valor = "") => {
   const cpf = String(valor).replace(/\D/g, "");
   if (cpf.length !== 11) return false;
@@ -175,29 +177,24 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
   };
 
   const [dadosFormulario, setDadosFormulario] = useState(formInicial);
+  const funcionarioExistente = Boolean(funcionario?.id);
 
   React.useEffect(() => {
     if (estaAberto) {
+      setMostrarSenha(false);
+
       if (funcionario && Object.keys(funcionario).length > 0) {
         // Garantir que servicosPrestados seja um array
         setDadosFormulario({
           ...funcionario,
+          senha: "",
           servicosPrestados: normalizarServicosPrestados(
             funcionario.servicosPrestados,
           ),
           role: funcionario.role || "USER",
         });
       } else {
-        setDadosFormulario({
-          nomeCompleto: "",
-          cpf: "",
-          telefone: "",
-          servicosPrestados: [],
-          email: "",
-          senha: "",
-          bio: "",
-          role: "USER",
-        });
+        setDadosFormulario({ ...formInicial });
       }
     }
   }, [estaAberto, funcionario]);
@@ -240,12 +237,20 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
   const enviarFormulario = (e) => {
     e.preventDefault();
 
-    if (!cpfEhValido(dadosFormulario.cpf)) {
+    const cpfAtual = normalizarCpf(dadosFormulario.cpf);
+    const cpfOriginal = normalizarCpf(funcionario?.cpf);
+    const funcionarioExistente = Boolean(
+      funcionario?.id || dadosFormulario?.id,
+    );
+    const cpfFoiAlterado = cpfAtual !== cpfOriginal;
+    const deveValidarCpf = !funcionarioExistente || cpfFoiAlterado;
+
+    if (deveValidarCpf && !cpfEhValido(dadosFormulario.cpf)) {
       error("CPF invalido. Digite um CPF valido.");
       return;
     }
 
-    const shouldValidatePassword = !funcionario.id || !!dadosFormulario.senha;
+    const shouldValidatePassword = !funcionarioExistente;
     if (shouldValidatePassword) {
       const passwordValidation = validateStrongPassword(dadosFormulario.senha);
       if (!passwordValidation.isValid) {
@@ -275,7 +280,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
           </button>
         </div>
 
-        <form onSubmit={enviarFormulario}>
+        <form onSubmit={enviarFormulario} autoComplete="off">
           <div className="linha-formulario">
             <div className="grupo-formulario">
               <label htmlFor="nomeCompleto">Nome completo</label>
@@ -285,6 +290,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 name="nomeCompleto"
                 value={dadosFormulario.nomeCompleto}
                 onChange={alterarCampo}
+                autoComplete="off"
                 required
               />
             </div>
@@ -299,6 +305,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 maxLength={14}
                 inputMode="numeric"
                 placeholder="000.000.000-00"
+                autoComplete="off"
                 required
               />
             </div>
@@ -313,6 +320,7 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 name="telefone"
                 value={dadosFormulario.telefone}
                 onChange={alterarCampo}
+                autoComplete="off"
                 required
               />
             </div>
@@ -348,39 +356,37 @@ const ModalFuncionario = ({ estaAberto, aoFechar, funcionario, aoSalvar }) => {
                 name="email"
                 value={dadosFormulario.email}
                 onChange={alterarCampo}
+                autoComplete="off"
                 required
               />
             </div>
-            <div className="grupo-formulario">
-              <label htmlFor="senha">Senha</label>
-              <div className="senha-container">
-                <input
-                  type={mostrarSenha ? "text" : "password"}
-                  id="senha"
-                  name="senha"
-                  value={dadosFormulario.senha}
-                  onChange={alterarCampo}
-                  placeholder={
-                    funcionario.id
-                      ? "Deixe em branco para manter a senha atual"
-                      : ""
-                  }
-                  required={!funcionario.id}
-                />
-                <button
-                  type="button"
-                  className="toggle-senha"
-                  onClick={toggleMostrarSenha}
-                >
-                  {mostrarSenha ? "👁️" : "👁️‍🗨️"}
-                </button>
+            {!funcionarioExistente && (
+              <div className="grupo-formulario">
+                <label htmlFor="senha">Senha</label>
+                <div className="senha-container">
+                  <input
+                    type={mostrarSenha ? "text" : "password"}
+                    id="senha"
+                    name="senha"
+                    value={dadosFormulario.senha}
+                    onChange={alterarCampo}
+                    autoComplete="new-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="toggle-senha"
+                    onClick={toggleMostrarSenha}
+                  >
+                    {mostrarSenha ? "👁️" : "👁️‍🗨️"}
+                  </button>
+                </div>
+                <small>
+                  Minimo 8 caracteres com letra maiuscula, letra minuscula,
+                  numero e caractere especial.
+                </small>
               </div>
-              <small>
-                {funcionario.id
-                  ? "Se quiser alterar, informe uma nova senha com no minimo 8 caracteres, letra maiuscula, letra minuscula, numero e caractere especial."
-                  : "Minimo 8 caracteres com letra maiuscula, letra minuscula, numero e caractere especial."}
-              </small>
-            </div>
+            )}
           </div>
 
           <div className="linha-formulario">
@@ -458,6 +464,7 @@ const Funcionarios = () => {
 
   const normalizarFuncionario = (f) => ({
     id: f.id ?? f.idFuncionario,
+    usuarioId: f.usuarioId ?? f.idUsuario ?? null,
     nomeCompleto: f.nomeCompleto ?? f.nome ?? "",
     cpf: f.cpf ?? f.CPF ?? "",
     telefone: f.telefone ?? "",
@@ -534,29 +541,62 @@ const Funcionarios = () => {
 
       // Se tem ID, é edição; senão, é criação
       if (dadosFuncionario.id) {
+        const cpfAtual = normalizarCpf(dadosFuncionario.cpf);
+        const cpfOriginal = normalizarCpf(funcionarioEmEdicao?.cpf);
+        const cpfFoiAlterado = cpfAtual !== cpfOriginal;
+
+        const dadosAtualizacao = {
+          ...dadosFuncionario,
+          usuarioId:
+            dadosFuncionario.usuarioId ?? funcionarioEmEdicao?.usuarioId,
+          cpfOriginal: funcionarioEmEdicao?.cpf,
+          emailOriginal: funcionarioEmEdicao?.email,
+          senha: "",
+          email: String(dadosFuncionario.email || "")
+            .trim()
+            .toLowerCase(),
+          servicosPrestados: normalizarServicosPrestados(
+            dadosFuncionario.servicosPrestados,
+          ),
+        };
+
+        if (cpfFoiAlterado) {
+          dadosAtualizacao.cpf = cpfAtual;
+        } else {
+          delete dadosAtualizacao.cpf;
+        }
+
+        dadosAtualizacao.enviarCpf = cpfFoiAlterado;
+
         // EDITAR
         // authService.updateUsuario faz o mapeamento para nome/CPF/descricao
         resposta = await AuthService.updateUsuario(
           dadosFuncionario.id,
-          dadosFuncionario,
+          dadosAtualizacao,
         );
 
         if (resposta.success) {
           // Atualizar lista local
           setListaFuncionarios(
             listaFuncionarios.map((func) =>
-              func.id === dadosFuncionario.id ? dadosFuncionario : func,
+              func.id === dadosFuncionario.id
+                ? {
+                    ...func,
+                    ...dadosFuncionario,
+                    cpf: cpfFoiAlterado ? formatarCPF(cpfAtual) : func.cpf,
+                  }
+                : func,
             ),
           );
           success("Funcionário atualizado com sucesso!");
         } else {
-          error(resposta.error);
+          error(resposta.error || "Erro ao atualizar funcionário");
         }
       } else {
         // CRIAR
         resposta = await AuthService.register({
           nomeCompleto: dadosFuncionario.nomeCompleto,
-          cpf: dadosFuncionario.cpf,
+          cpf: normalizarCpf(dadosFuncionario.cpf),
           telefone: dadosFuncionario.telefone,
           servicosPrestados: normalizarServicosPrestados(
             dadosFuncionario.servicosPrestados,
@@ -572,7 +612,7 @@ const Funcionarios = () => {
           await carregarFuncionarios();
           success("Funcionário registrado com sucesso!");
         } else {
-          error(resposta.error);
+          error(resposta.error || "Erro ao registrar funcionário");
         }
       }
 

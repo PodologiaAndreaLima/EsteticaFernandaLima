@@ -148,6 +148,7 @@ export const AuthService = {
 
         return {
           ...f,
+          usuarioId: usuario?.id ?? usuario?.idUsuario ?? null,
           nomeCompleto: f?.nomeCompleto ?? f?.nome ?? usuario?.nomeCompleto,
           cpf: f?.cpf ?? f?.CPF ?? usuario?.cpf,
           bio: f?.bio ?? f?.descricao ?? usuario?.bio,
@@ -176,27 +177,146 @@ export const AuthService = {
     try {
       salvarServicosNoCache(dados.email, dados.servicosPrestados);
 
+      const emailNormalizado = String(dados.email || "")
+        .trim()
+        .toLowerCase();
+
+      const cpfNormalizado = String(dados.cpf ?? dados.CPF ?? "").replace(
+        /\D/g,
+        "",
+      );
+      const deveEnviarCpf = dados.enviarCpf === true;
+
       // PUT /funcionarios/{id} — contrato do DTO de atualização
       const payload = {
         nome: dados.nomeCompleto ?? dados.nome,
-        CPF: dados.cpf ?? dados.CPF,
-        cpf: dados.cpf ?? dados.CPF,
         descricao: dados.bio ?? dados.descricao,
         email: dados.email,
         telefone: dados.telefone,
       };
+
+      if (deveEnviarCpf && cpfNormalizado) {
+        payload.CPF = cpfNormalizado;
+      }
+
       if (dados.senha && dados.senha.trim()) {
         payload.senha = dados.senha;
       }
+
       const response = await api.put(`/funcionarios/${usuarioId}`, payload);
+
+      // Sincroniza com /usuarios apenas quando ha troca de senha.
+      if (dados.senha && dados.senha.trim()) {
+        let usuarioSistemaId =
+          dados.usuarioId ?? dados.userId ?? dados.idUsuario ?? null;
+
+        const emailOriginalNormalizado = String(dados.emailOriginal || "")
+          .trim()
+          .toLowerCase();
+
+        if (
+          !usuarioSistemaId &&
+          (emailNormalizado || emailOriginalNormalizado)
+        ) {
+          try {
+            const usuariosResponse = await api.get("/usuarios");
+            const usuarios = Array.isArray(usuariosResponse.data)
+              ? usuariosResponse.data
+              : [];
+            const usuarioEncontrado = usuarios.find((u) =>
+              [emailNormalizado, emailOriginalNormalizado]
+                .filter(Boolean)
+                .includes(
+                  String(u?.email || "")
+                    .trim()
+                    .toLowerCase(),
+                ),
+            );
+            usuarioSistemaId =
+              usuarioEncontrado?.id ?? usuarioEncontrado?.idUsuario ?? null;
+          } catch {
+            usuarioSistemaId = null;
+          }
+        }
+
+        if (!usuarioSistemaId) {
+          throw new Error(
+            "Nao foi possivel localizar o usuario de login para sincronizar a nova senha.",
+          );
+        }
+
+        let senhaSincronizada = false;
+        const cpfSync = String(
+          dados.cpf ?? dados.CPF ?? dados.cpfOriginal ?? "",
+        ).replace(/\D/g, "");
+        const payloadUsuarioCompleto = {
+          nomeCompleto: dados.nomeCompleto ?? dados.nome ?? "",
+          cpf: cpfSync,
+          telefone: dados.telefone ?? "",
+          bio: dados.bio ?? dados.descricao ?? "",
+          servicosPrestados: Array.isArray(dados.servicosPrestados)
+            ? dados.servicosPrestados
+            : [],
+          email: emailNormalizado || emailOriginalNormalizado || "",
+          senha: dados.senha,
+          role: dados.role ?? "USER",
+        };
+        const tentativas = [
+          () =>
+            api.put(`/usuarios/${usuarioSistemaId}/senha`, {
+              senha: dados.senha,
+            }),
+          () =>
+            api.put(`/usuarios/${usuarioSistemaId}/password`, {
+              senha: dados.senha,
+            }),
+          () =>
+            api.put(`/usuarios/${usuarioSistemaId}`, payloadUsuarioCompleto),
+        ];
+
+        let ultimoErro = null;
+        for (const tentar of tentativas) {
+          try {
+            await tentar();
+            senhaSincronizada = true;
+            break;
+          } catch (err) {
+            ultimoErro = err;
+          }
+        }
+
+        if (!senhaSincronizada && ultimoErro) {
+          throw ultimoErro;
+        }
+      }
+
       return {
         success: true,
         data: response.data,
       };
     } catch (error) {
+      const status = error?.response?.status;
+      const data = error?.response?.data;
+      const url = error?.config?.url;
+      const method = String(error?.config?.method || "").toUpperCase();
+
+      // Log temporario de diagnostico para identificar o endpoint/validacao que falhou.
+      console.error("[AuthService.updateUsuario] Falha na requisicao", {
+        usuarioId,
+        endpoint: url,
+        method,
+        status,
+        responseData: data,
+      });
+
+      const detailedFallback =
+        extractApiErrorMessage(error) ||
+        error?.message ||
+        "Erro ao atualizar funcionário";
+
       return {
         success: false,
-        error: getFriendlyPasswordError(error, "Erro ao atualizar funcionário"),
+        error: getFriendlyPasswordError(error, detailedFallback),
       };
     }
   },
