@@ -510,8 +510,8 @@ const Funcionarios = () => {
     setModalEditarAberto(true);
   };
 
-  const prepararExclusao = (funcionario) => {
-    setFuncionarioParaExcluir(funcionario);
+  const prepararExclusao = (funcionarioId) => {
+    setFuncionarioParaExcluir(funcionarioId);
     setModalConfirmacaoExclusaoAberto(true);
   };
 
@@ -522,7 +522,7 @@ const Funcionarios = () => {
       if (resposta.success) {
         setListaFuncionarios(
           listaFuncionarios.filter(
-            (funcionario) => funcionario.id !== funcionarioParaExcluir.id,
+            (funcionario) => funcionario.id !== funcionarioParaExcluir,
           ),
         );
         success("Funcionário excluído com sucesso!");
@@ -701,7 +701,7 @@ const Funcionarios = () => {
                     </button>
                     <button
                       className="botao-tabela-excluir"
-                      onClick={() => prepararExclusao(funcionario)}
+                      onClick={() => prepararExclusao(funcionario.id)}
                     >
                       Excluir
                     </button>
