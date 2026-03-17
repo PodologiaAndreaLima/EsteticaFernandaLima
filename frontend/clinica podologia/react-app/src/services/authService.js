@@ -321,18 +321,75 @@ export const AuthService = {
     }
   },
 
-  // Deletar funcionário
-  deleteUsuario: async (usuarioId) => {
+  // Deletar funcionário e usuário vinculado
+  deleteUsuario: async (funcionario) => {
     try {
-      await api.delete(`/funcionarios/${usuarioId}`);
+      const funcionarioId = funcionario?.id ?? funcionario?.idFuncionario;
+      const usuarioId = funcionario?.usuarioId ?? funcionario?.idUsuario;
+      const emailNormalizado = String(funcionario?.email || "")
+        .trim()
+        .toLowerCase();
+
+      if (!funcionarioId) {
+        return {
+          success: false,
+          error: "ID do funcionário não informado para exclusão",
+        };
+      }
+
+      await api.delete(`/funcionarios/${funcionarioId}`);
+
+      let usuarioSistemaId = usuarioId || null;
+
+      if (!usuarioSistemaId && emailNormalizado) {
+        try {
+          const usuariosResponse = await api.get("/usuarios");
+          const usuarios = Array.isArray(usuariosResponse.data)
+            ? usuariosResponse.data
+            : [];
+          const usuarioEncontrado = usuarios.find(
+            (u) =>
+              String(u?.email || "")
+                .trim()
+                .toLowerCase() === emailNormalizado,
+          );
+
+          usuarioSistemaId =
+            usuarioEncontrado?.id ?? usuarioEncontrado?.idUsuario ?? null;
+        } catch {
+          usuarioSistemaId = null;
+        }
+      }
+
+      if (usuarioSistemaId) {
+        try {
+          await api.delete(`/usuarios/${usuarioSistemaId}`);
+        } catch (userDeleteError) {
+          const status = userDeleteError?.response?.status;
+          if (status !== 404) {
+            throw userDeleteError;
+          }
+        }
+      }
+
+      if (emailNormalizado) {
+        const cache = getServicosCache();
+        if (cache[emailNormalizado]) {
+          delete cache[emailNormalizado];
+          localStorage.setItem(SERVICOS_CACHE_KEY, JSON.stringify(cache));
+        }
+      }
+
       return {
         success: true,
-        message: "Funcionário deletado com sucesso",
+        message: "Funcionário e usuário deletados com sucesso",
       };
     } catch (error) {
       return {
         success: false,
-        error: extractApiErrorMessage(error) || "Erro ao deletar funcionario",
+        error:
+          extractApiErrorMessage(error) ||
+          "Erro ao deletar funcionário e usuário",
       };
     }
   },
