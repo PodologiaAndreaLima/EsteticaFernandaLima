@@ -321,13 +321,68 @@ export const AuthService = {
     }
   },
 
-  // Deletar funcionário
-  deleteUsuario: async (usuarioId) => {
+  // Deletar funcionario e usuario de login correspondente
+  deleteUsuario: async (funcionarioRef) => {
     try {
-      await api.delete(`/funcionarios/${usuarioId}`);
+      const funcionarioId =
+        typeof funcionarioRef === "object"
+          ? (funcionarioRef?.id ?? funcionarioRef?.idFuncionario)
+          : funcionarioRef;
+
+      let usuarioSistemaId =
+        typeof funcionarioRef === "object"
+          ? (funcionarioRef?.usuarioId ?? funcionarioRef?.idUsuario ?? null)
+          : null;
+
+      const emailNormalizado =
+        typeof funcionarioRef === "object"
+          ? String(funcionarioRef?.email || "")
+              .trim()
+              .toLowerCase()
+          : "";
+
+      const cpfNormalizado =
+        typeof funcionarioRef === "object"
+          ? String(funcionarioRef?.cpf || "").replace(/\D/g, "")
+          : "";
+
+      if (funcionarioId) {
+        await api.delete(`/funcionarios/${funcionarioId}`);
+      }
+
+      if (!usuarioSistemaId && (emailNormalizado || cpfNormalizado)) {
+        try {
+          const usuariosResponse = await api.get("/usuarios");
+          const usuarios = Array.isArray(usuariosResponse.data)
+            ? usuariosResponse.data
+            : [];
+
+          const usuarioEncontrado = usuarios.find((u) => {
+            const emailUsuario = String(u?.email || "")
+              .trim()
+              .toLowerCase();
+            const cpfUsuario = String(u?.cpf || "").replace(/\D/g, "");
+
+            return (
+              (emailNormalizado && emailUsuario === emailNormalizado) ||
+              (cpfNormalizado && cpfUsuario === cpfNormalizado)
+            );
+          });
+
+          usuarioSistemaId =
+            usuarioEncontrado?.id ?? usuarioEncontrado?.idUsuario ?? null;
+        } catch {
+          usuarioSistemaId = null;
+        }
+      }
+
+      if (usuarioSistemaId) {
+        await api.delete(`/usuarios/${usuarioSistemaId}`);
+      }
+
       return {
         success: true,
-        message: "Funcionário deletado com sucesso",
+        message: "Funcionario e usuario removidos com sucesso",
       };
     } catch (error) {
       return {
