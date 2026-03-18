@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lima.fernanda.esteticaFernandaLima.model.CustoFixo;
 import lima.fernanda.esteticaFernandaLima.service.CustoFixoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/custos-fixos")
 @Tag(name = "Custos Fixos", description = "Endpoints para gerenciamento de custos fixos")
 @SecurityRequirement(name = "Bearer")
+@PreAuthorize("hasRole('ADMIN')")
 public class CustoFixoController {
 
     private final CustoFixoService service;

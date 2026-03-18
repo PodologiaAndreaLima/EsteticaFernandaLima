@@ -19,7 +19,21 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem("user");
 
         if (token && storedUser) {
-          // Se tem token e dados do usuário no localStorage, apenas usa
+          // Valida minimamente: verifica se o token JWT não está expirado
+          // antes de restaurar a sessão do localStorage
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.exp * 1000 < Date.now()) {
+              AuthService.logout();
+              setLoading(false);
+              return;
+            }
+          } catch {
+            AuthService.logout();
+            setLoading(false);
+            return;
+          }
+          // Se tem token válido e dados do usuário no localStorage, apenas usa
           const userData = JSON.parse(storedUser);
           setUser(userData);
           setLoading(false);

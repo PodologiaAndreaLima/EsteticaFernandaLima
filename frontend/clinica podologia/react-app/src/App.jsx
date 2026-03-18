@@ -45,8 +45,6 @@ const PrivateRoute = ({ children }) => {
 // Componente de rota pública (redireciona se já estiver autenticado)
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  console.log("PublicRoute - isAuthenticated:", isAuthenticated);
-  console.log("PublicRoute - loading:", loading);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -56,11 +54,14 @@ const PublicRoute = ({ children }) => {
 };
 
 const ProtectedRoute = ({ children, requiredRoles = [] }) => {
-  const { userRole, loading } = useAuth();
-
+  const { isAuthenticated, userRole, loading } = useAuth();
 
   if (loading) {
     return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
   }
 
   if (!userRole || !requiredRoles.includes(userRole)) {

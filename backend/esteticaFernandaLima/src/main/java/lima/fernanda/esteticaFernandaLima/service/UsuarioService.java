@@ -67,7 +67,6 @@ public class UsuarioService {
         logger.info("=== Login realizado com sucesso ===");
         logger.info("ID: {}", usuarioAutenticado.getId());
         logger.info("Email: {}", usuarioAutenticado.getEmail());
-        logger.info("Token: {}", token);
         logger.info("================================");
 
         return UsuarioMapper.of(usuarioAutenticado, token);
@@ -103,13 +102,19 @@ public class UsuarioService {
         usuario.setEmail(usuarioCriacaoDto.getEmail());
     }
     
-    // Atualizar role
+    // Atualizar role — apenas ADMIN pode alterar a role de um usuário
     String roleStr = usuarioCriacaoDto.getRole();
     if (roleStr != null && !roleStr.isEmpty()) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas administradores podem alterar a role de um usuário");
+        }
         try {
             usuario.setRole(Role.valueOf(roleStr.toUpperCase()));
         } catch (IllegalArgumentException e) {
-            usuario.setRole(Role.USER);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role inválida");
         }
     }
     

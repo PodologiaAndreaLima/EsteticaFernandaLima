@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioListarDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioMapper;
@@ -18,7 +19,6 @@ import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
 
-
 @RestController
 @RequestMapping("/usuarios")
 @Tag(name = "Usuarios", description = "Endpoints para gerenciamento de usuários da aplicação")
@@ -30,6 +30,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> criar(@RequestBody @Valid UsuarioCriacaoDto usuarioCriacaoDto) {
         final Usuario novoUsuario = UsuarioMapper.of(usuarioCriacaoDto);
@@ -47,6 +48,7 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuarioListarDto>> listarTodos() {
 
@@ -60,6 +62,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @SecurityRequirement(name = "Bearer")
 public ResponseEntity<UsuarioListarDto> atualizar(
     @PathVariable Long id,
@@ -68,6 +71,8 @@ public ResponseEntity<UsuarioListarDto> atualizar(
         Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioCriacaoDto);
         logger.info("Usuário atualizado: {}", id);
         return ResponseEntity.ok(UsuarioMapper.of(usuarioAtualizado));
+    } catch (org.springframework.web.server.ResponseStatusException e) {
+        throw e;
     } catch (Exception e) {
         logger.error("Erro ao atualizar usuário: {}", e.getMessage());
         return ResponseEntity.status(400).build();
@@ -75,6 +80,7 @@ public ResponseEntity<UsuarioListarDto> atualizar(
 }
 
 @DeleteMapping("/{id}")
+@PreAuthorize("hasRole('ADMIN')")
 @SecurityRequirement(name = "Bearer")
 public ResponseEntity<Void> deletar(@PathVariable Long id) {
     try {
@@ -88,6 +94,7 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
 }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioListarDto> buscarPorId(@PathVariable Long id) {
         try {
@@ -100,6 +107,7 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
     }
 
     @PostMapping("/{id}/alterar-senha")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> alterarSenha(
             @PathVariable Long id,

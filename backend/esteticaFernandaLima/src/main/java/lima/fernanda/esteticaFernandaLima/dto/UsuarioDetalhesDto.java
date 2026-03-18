@@ -9,6 +9,8 @@ import lima.fernanda.esteticaFernandaLima.model.Usuario;
 
 public class UsuarioDetalhesDto implements UserDetails {
 
+    private final Long id;
+
     private final String nome;
 
     private final String email;
@@ -18,10 +20,15 @@ public class UsuarioDetalhesDto implements UserDetails {
     private final Usuario usuario;
 
     public UsuarioDetalhesDto(Usuario usuario) {
+        this.id = usuario.getId();
         this.nome = usuario.getNomeCompleto();
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();
         this.usuario = usuario;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getNome(){
@@ -30,7 +37,7 @@ public class UsuarioDetalhesDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

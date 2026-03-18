@@ -11,6 +11,7 @@ import lima.fernanda.esteticaFernandaLima.dto.FuncionarioResponse;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.service.FuncionarioService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping("/funcionarios")
 @Tag(name = "Funcionários", description = "Endpoints para gerenciamento de funcionários")
 @SecurityRequirement(name = "Bearer")
+@PreAuthorize("hasRole('ADMIN')")
 public class FuncionarioController {
 
     private final FuncionarioService service;

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lima.fernanda.esteticaFernandaLima.model.CustoExtra;
 import lima.fernanda.esteticaFernandaLima.service.CustoExtraService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/custos-extras")
 @Tag(name = "Custos Extras", description = "Endpoints para gerenciamento de custos extras")
 @SecurityRequirement(name = "Bearer")
+@PreAuthorize("hasRole('ADMIN')")
 public class CustoExtraController {
 
     private final CustoExtraService service;
