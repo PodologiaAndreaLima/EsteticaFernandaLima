@@ -4,11 +4,13 @@ import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.repository.FuncionarioRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class FuncionarioService {
 

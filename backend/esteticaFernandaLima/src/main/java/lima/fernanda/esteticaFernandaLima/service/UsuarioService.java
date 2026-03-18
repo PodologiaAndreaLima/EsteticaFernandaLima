@@ -8,6 +8,7 @@ import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.enums.Role;
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import lima.fernanda.esteticaFernandaLima.repository.UsuarioRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class UsuarioService {
 

@@ -4,11 +4,13 @@ import lima.fernanda.esteticaFernandaLima.adapter.Adapter;
 import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.repository.ClienteRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ClienteService {
 

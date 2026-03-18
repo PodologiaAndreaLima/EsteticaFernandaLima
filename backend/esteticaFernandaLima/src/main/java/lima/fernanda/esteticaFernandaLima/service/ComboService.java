@@ -2,10 +2,12 @@ package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.model.Combo;
 import lima.fernanda.esteticaFernandaLima.repository.ComboRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ComboService {
 

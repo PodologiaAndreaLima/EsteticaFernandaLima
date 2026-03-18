@@ -4,6 +4,7 @@ import lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.dto.ServicoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.repository.CustoExtraRepository;
 import lima.fernanda.esteticaFernandaLima.repository.OrdemServicoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class DashSimplesService {
 

@@ -3,10 +3,12 @@ package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.model.CustoFixo;
 import lima.fernanda.esteticaFernandaLima.repository.CustoFixoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class CustoFixoService {
 
