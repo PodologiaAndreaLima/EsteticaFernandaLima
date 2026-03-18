@@ -2,8 +2,10 @@ package lima.fernanda.esteticaFernandaLima.dto;
 
 import lima.fernanda.esteticaFernandaLima.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
+import java.util.List;
 
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
 
@@ -37,9 +39,17 @@ public class UsuarioDetalhesDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
+        Role userRole = usuario != null ? usuario.getRole() : null;
 
+        // Se por algum motivo o role não estiver setado, fallback para USER
+        if (userRole == null) {
+            userRole = Role.USER;
+        }
+
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + userRole.name())
+        );
+    }
     @Override
     public String getPassword() {
         return senha;

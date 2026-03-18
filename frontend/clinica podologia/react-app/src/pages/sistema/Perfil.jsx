@@ -361,14 +361,13 @@ const Perfil = () => {
       return;
     }
     try {
-      // payload deve seguir UsuarioCriacaoDto (back usa esse DTO no PUT)
+      // payload segue o UsuarioAtualizacaoDto (sem senha, email, role - somente leitura)
       const payload = {
         nomeCompleto: novosDados.nomeCompleto,
         cpf: novosDados.cpf,
         telefone: novosDados.telefone,
         bio: novosDados.bio,
         servicosPrestados: novosDados.servicosPrestados,
-        email: novosDados.email,
       };
       const atualizado = await perfilService.update(Number(id), payload);
       success("Perfil atualizado com sucesso!");

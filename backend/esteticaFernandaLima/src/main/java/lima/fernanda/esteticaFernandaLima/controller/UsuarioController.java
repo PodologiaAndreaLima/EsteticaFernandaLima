@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
 
 @RestController
@@ -66,9 +67,9 @@ public class UsuarioController {
     @SecurityRequirement(name = "Bearer")
 public ResponseEntity<UsuarioListarDto> atualizar(
     @PathVariable Long id,
-    @RequestBody @Valid UsuarioCriacaoDto usuarioCriacaoDto) {
+    @RequestBody @Valid UsuarioAtualizacaoDto usuarioAtualizacaoDto) {
     try {
-        Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioCriacaoDto);
+        Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioAtualizacaoDto);
         logger.info("Usuário atualizado: {}", id);
         return ResponseEntity.ok(UsuarioMapper.of(usuarioAtualizado));
     } catch (org.springframework.web.server.ResponseStatusException e) {

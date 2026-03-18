@@ -1,12 +1,13 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.config.GerenciadorTokenJwt;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioListarDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioMapper;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
-import lima.fernanda.esteticaFernandaLima.enums.Role;
+import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
+import lima.fernanda.esteticaFernandaLima.repository.FuncionarioRepository;
 import lima.fernanda.esteticaFernandaLima.repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class UsuarioService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
 
     public void criar(Usuario novoUsuario) {
         String senhaCriptografada = passwordEncoder.encode(novoUsuario.getSenha());
@@ -78,53 +82,82 @@ public class UsuarioService {
         return usuariosEncontrados.stream().map(UsuarioMapper::of).toList();
     }
 
-    public Usuario atualizar(Long id, UsuarioCriacaoDto usuarioCriacaoDto) {
+    public Usuario atualizar(Long id, UsuarioAtualizacaoDto usuarioAtualizacaoDto) {
     Usuario usuario = usuarioRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-    
-    // Atualizar campos
-    if (usuarioCriacaoDto.getNomeCompleto() != null) {
-        usuario.setNomeCompleto(usuarioCriacaoDto.getNomeCompleto());
+
+    String cpfAnterior = usuario.getCpf();
+
+    if (usuarioAtualizacaoDto.getNomeCompleto() != null) {
+        usuario.setNomeCompleto(usuarioAtualizacaoDto.getNomeCompleto());
     }
-    if (usuarioCriacaoDto.getCpf() != null) {
-        usuario.setCpf(usuarioCriacaoDto.getCpf());
+    if (usuarioAtualizacaoDto.getCpf() != null) {
+        usuario.setCpf(usuarioAtualizacaoDto.getCpf());
     }
-    if (usuarioCriacaoDto.getTelefone() != null) {
-        usuario.setTelefone(usuarioCriacaoDto.getTelefone());
+    if (usuarioAtualizacaoDto.getTelefone() != null) {
+        usuario.setTelefone(usuarioAtualizacaoDto.getTelefone());
     }
-    if (usuarioCriacaoDto.getBio() != null) {
-        usuario.setBio(usuarioCriacaoDto.getBio());
+    if (usuarioAtualizacaoDto.getBio() != null) {
+        usuario.setBio(usuarioAtualizacaoDto.getBio());
     }
-    if (usuarioCriacaoDto.getServicosPrestados() != null) {
-        usuario.setServicosPrestados(usuarioCriacaoDto.getServicosPrestados());
+    if (usuarioAtualizacaoDto.getServicosPrestados() != null) {
+        usuario.setServicosPrestados(usuarioAtualizacaoDto.getServicosPrestados());
     }
-    if (usuarioCriacaoDto.getEmail() != null) {
-        usuario.setEmail(usuarioCriacaoDto.getEmail());
-    }
-    
-    // Atualizar role — apenas ADMIN pode alterar a role de um usuário
-    String roleStr = usuarioCriacaoDto.getRole();
-    if (roleStr != null && !roleStr.isEmpty()) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        if (!isAdmin) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas administradores podem alterar a role de um usuário");
+
+    Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+    try {
+        Funcionario funcionario = buscarFuncionarioParaSincronizar(cpfAnterior, usuarioSalvo);
+
+        if (funcionario != null) {
+            if (usuarioAtualizacaoDto.getNomeCompleto() != null) {
+                funcionario.setNome(usuarioAtualizacaoDto.getNomeCompleto());
+            }
+            if (usuarioAtualizacaoDto.getCpf() != null) {
+                funcionario.setCPF(usuarioAtualizacaoDto.getCpf());
+            }
+            if (usuarioAtualizacaoDto.getTelefone() != null) {
+                funcionario.setTelefone(usuarioAtualizacaoDto.getTelefone());
+            }
+            if (usuarioAtualizacaoDto.getBio() != null) {
+                funcionario.setDescricao(usuarioAtualizacaoDto.getBio());
+            }
+
+            funcionarioRepository.save(funcionario);
+            logger.info("Funcionário sincronizado com sucesso para o usuário: {}", id);
+        } else {
+            logger.warn("Nenhum funcionário correspondente encontrado para sincronização do usuário: {}", id);
         }
-        try {
-            usuario.setRole(Role.valueOf(roleStr.toUpperCase()));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role inválida");
+    } catch (Exception e) {
+        logger.warn("Erro ao sincronizar funcionário para usuário {}: {}", id, e.getMessage());
+    }
+
+    return usuarioSalvo;
+    }
+
+    private Funcionario buscarFuncionarioParaSincronizar(String cpfAnterior, Usuario usuarioSalvo) {
+        if (cpfAnterior != null && !cpfAnterior.isBlank()) {
+            List<Funcionario> porCpfAnterior = funcionarioRepository.findAllByCpf(cpfAnterior);
+            if (!porCpfAnterior.isEmpty()) {
+                return porCpfAnterior.getFirst();
+            }
         }
-    }
-    
-    // Só atualiza senha se foi informada (não é obrigatória na edição)
-    if (usuarioCriacaoDto.getSenha() != null && !usuarioCriacaoDto.getSenha().isEmpty()) {
-        String senhaCriptografada = passwordEncoder.encode(usuarioCriacaoDto.getSenha());
-        usuario.setSenha(senhaCriptografada);
-    }
-    
-    return usuarioRepository.save(usuario);
+
+        if (usuarioSalvo.getCpf() != null && !usuarioSalvo.getCpf().isBlank()) {
+            List<Funcionario> porCpfAtual = funcionarioRepository.findAllByCpf(usuarioSalvo.getCpf());
+            if (!porCpfAtual.isEmpty()) {
+                return porCpfAtual.getFirst();
+            }
+        }
+
+        if (usuarioSalvo.getEmail() != null && !usuarioSalvo.getEmail().isBlank()) {
+            List<Funcionario> porEmail = funcionarioRepository.findAllByEmailIgnoreCase(usuarioSalvo.getEmail());
+            if (!porEmail.isEmpty()) {
+                return porEmail.getFirst();
+            }
+        }
+
+        return null;
     }
 
     public void deletar(Long id) {
