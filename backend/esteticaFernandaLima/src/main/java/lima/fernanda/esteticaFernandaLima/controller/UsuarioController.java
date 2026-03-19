@@ -34,6 +34,12 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> criar(@RequestBody @Valid UsuarioCriacaoDto usuarioCriacaoDto) {
+        // Valida padrões de injection
+        if (usuarioCriacaoDto.contemPadraoSuspeito(usuarioCriacaoDto.getNomeCompleto())) {
+            logger.warn("⚠️ TENTATIVA DE INJECTION no campo nomeCompleto");
+            return ResponseEntity.status(400).build();
+        }
+        
         final Usuario novoUsuario = UsuarioMapper.of(usuarioCriacaoDto);
         this.usuarioService.criar(novoUsuario);
         return ResponseEntity.status(201).build();
@@ -41,6 +47,11 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {
+        // Valida padrões de injection no login
+        if (usuarioLoginDto.temPadraoSuspeito()) {
+            logger.warn("⚠️ TENTATIVA DE INJECTION na autenticação");
+            return ResponseEntity.status(403).build();
+        }
 
         final Usuario usuario = UsuarioMapper.of(usuarioLoginDto);
         UsuarioTokenDto usuarioTokenDto = this.usuarioService.autenticar(usuario);
@@ -69,6 +80,12 @@ public ResponseEntity<UsuarioListarDto> atualizar(
     @PathVariable Long id,
     @RequestBody @Valid UsuarioAtualizacaoDto usuarioAtualizacaoDto) {
     try {
+        //Valida ID contra injection
+        if (id <= 0) {
+            logger.warn("⚠️ ID suspeito: {}", id);
+            return ResponseEntity.status(400).build();
+        }
+        
         Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioAtualizacaoDto);
         logger.info("Usuário atualizado: {}", id);
         return ResponseEntity.ok(UsuarioMapper.of(usuarioAtualizado));
@@ -85,6 +102,11 @@ public ResponseEntity<UsuarioListarDto> atualizar(
 @SecurityRequirement(name = "Bearer")
 public ResponseEntity<Void> deletar(@PathVariable Long id) {
     try {
+        if (id <= 0) {
+            logger.warn("⚠️ ID inválido para deleção: {}", id);
+            return ResponseEntity.status(400).build();
+        }
+        
         usuarioService.deletar(id);
         logger.info("Usuário deletado com sucesso: {}", id);
         return ResponseEntity.noContent().build();
@@ -99,6 +121,11 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioListarDto> buscarPorId(@PathVariable Long id) {
         try {
+            if (id <= 0) {
+                logger.warn("⚠️ ID inválido para busca: {}", id);
+                return ResponseEntity.status(400).build();
+            }
+            
             Usuario usuario = usuarioService.buscarPorId(id);
             return ResponseEntity.ok(UsuarioMapper.of(usuario));
         } catch (RuntimeException e) {
@@ -114,6 +141,11 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
             @PathVariable Long id,
             @RequestBody @Valid TrocaSenhaDto dto
     ) {
+        if (id <= 0) {
+            logger.warn("⚠️ ID inválido para alteração de senha: {}", id);
+            return ResponseEntity.status(400).build();
+        }
+        
         usuarioService.alterarSenha(id, dto.getSenhaAtual(), dto.getNovaSenha());
         return ResponseEntity.noContent().build();
     }

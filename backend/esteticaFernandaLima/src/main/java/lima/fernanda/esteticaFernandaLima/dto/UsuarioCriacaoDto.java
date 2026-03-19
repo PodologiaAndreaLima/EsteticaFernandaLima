@@ -10,41 +10,49 @@ import java.util.List;
 
 public class UsuarioCriacaoDto {
 
-    @NotBlank
-    @Size(min = 3, max = 150)
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúàâãõçÁÉÍÓÚÀÂÃÕÇ\\s'-]+$", message = "Nome contém caracteres inválidos")
     @Schema(description = "Nome completo do funcionário", example = "Fernanda Lima")
     private String nomeCompleto;
 
-    @NotBlank
+    @NotBlank(message = "CPF é obrigatório")
+    @Pattern(regexp = "^[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}-?[0-9]{2}$", message = "CPF deve estar no formato: 123.456.789-10 ou 12345678910")
     @Size(min = 11, max = 14)
-    @Schema(description = "CPF do funcionário", example = "12345678900")
+    @Schema(description = "CPF do funcionário", example = "123.456.789-10")
     private String cpf;
 
-    @NotBlank
+    @NotBlank(message = "Telefone é obrigatório")
+    @Pattern(regexp = "^\\(?[0-9]{2}\\)?\\s?9?[0-9]{4}-?[0-9]{4}$", message = "Telefone inválido. Exemplo: (11) 99999-0000")
     @Size(min = 8, max = 20)
     @Schema(description = "Telefone do funcionário", example = "(11) 99999-0000")
     private String telefone;
 
+    @Size(max = 500, message = "Bio não pode exceder 500 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9áéíóúàâãõçÁÉÍÓÚÀÂÃÕÇ\\s.,-]*$", message = "Bio contém caracteres inválidos")
     @Schema(description = "Descrição do funcionário", example = "Especialista em estética facial e corporal")
     private String bio;
 
     @Schema(description = "Serviços prestados", example = "Limpeza de pele, drenagem linfática, massagem relaxante")
     private List<String> servicosPrestados;
 
-    @Email
-    @NotBlank
+    @Email(message = "Email deve ser válido")
+    @NotBlank(message = "Email é obrigatório")
+    @Size(max = 100, message = "Email não pode exceder 100 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email contém caracteres inválidos")
     @Schema(description = "Email do usuário", example = "fernanda@lima.com")
     private String email;
 
-    @NotBlank
-    @Size(min = 8, max = 20)
+    @NotBlank(message = "Senha é obrigatória")
+    @Size(min = 8, max = 20, message = "Senha deve ter entre 8 e 20 caracteres")
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$",
-            message = "Senha deve ter no minimo 8 caracteres, com letra maiuscula, minuscula, numero e caractere especial. Exemplo: Estetica@2026"
+            message = "Senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula, número e caractere especial. Exemplo: Estetica@2026"
     )
     @Schema(description = "Senha de acesso", example = "Estetica@2026")
     private String senha;
 
+    @Pattern(regexp = "^(ADMIN|USER)$", message = "Role deve ser ADMIN ou USER")
     @Schema(description = "Tipo de acesso: ADMIN ou USER")
     private String role;
 
@@ -110,5 +118,30 @@ public class UsuarioCriacaoDto {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    // Detecta padrões suspeitos de SQL Injection e XSS
+    public boolean contemPadraoSuspeito(String entrada) {
+        if (entrada == null) return false;
+
+        String pattern = entrada.toLowerCase();
+
+        // Detecta SQL Injection
+        if (pattern.matches(".*('|(\\-\\-)|(;)|(\\|\\|)|(\\*)|(\\bor\\b)|(\\band\\b)|(\\bunion\\b)|" +
+                "(\\bselect\\b)|(\\binsert\\b)|(\\bupdate\\b)|(\\bdelete\\b)|(\\bdrop\\b)).*")) {
+            return true;
+        }
+
+        // Detecta XSS
+        if (pattern.matches(".*(<script|javascript:|onerror=|onload=|onclick=).*")) {
+            return true;
+        }
+
+        // Detecta Command Injection
+        if (entrada.matches(".*[`$(){}\\[\\]|&;<>].*")) {
+            return true;
+        }
+
+        return false;
     }
 }

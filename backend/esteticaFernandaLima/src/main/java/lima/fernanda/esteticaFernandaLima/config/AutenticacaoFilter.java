@@ -37,6 +37,14 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
         String requestTokenHeader = request.getHeader("Authorization");
 
+        // Valida header para padrões suspeitos de injection
+        if (requestTokenHeader != null && contemPadraoSuspeito(requestTokenHeader)) {
+            LOGGER.warn("⚠️ TENTATIVA DE INJECTION detectada no header Authorization");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("{\"erro\": \"Requisição suspeita bloqueada\"}");
+            return;
+        }
+
         if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
 
@@ -75,5 +83,26 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         }
+    }
+
+    // Detecta padrões de SQL Injection no header
+    private boolean contemPadraoSuspeito(String header) {
+        if (header == null) return false;
+
+        String pattern = header.toLowerCase();
+
+        // Detecta SQL Injection
+        if (pattern.matches(".*('|(\\-\\-)|(;)|(\\|\\|)|(\\*)|" +
+                "(\\bor\\b)|(\\band\\b)|(\\bunion\\b)|(\\bselect\\b)|" +
+                "(\\binsert\\b)|(\\bupdate\\b)|(\\bdelete\\b)|(\\bdrop\\b)).*")) {
+            return true;
+        }
+
+        // Detecta XSS
+        if (pattern.matches(".*(<script|javascript:|onerror=|onload=).*")) {
+            return true;
+        }
+
+        return false;
     }
 }
