@@ -37,6 +37,9 @@ public class SecurityConfiguracao {
     @Autowired
     private AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
 
+    @Autowired
+    private HeaderSegurancaFilter headerSegurancaFilter;
+
     private static final String[] URLS_PERMITIDAS = {
             "/swagger-ui/**",
             "/swagger-ui.html",
@@ -76,6 +79,7 @@ public class SecurityConfiguracao {
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        http.addFilterBefore(headerSegurancaFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
