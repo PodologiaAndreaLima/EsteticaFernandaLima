@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lima.fernanda.esteticaFernandaLima.dto.AlterarSenhaFuncionarioDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioResponse;
@@ -91,24 +90,6 @@ public class FuncionarioController {
             return ResponseEntity.ok(FuncionarioResponse.fromFuncionario(atualizado));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/{id}/alterar-senha")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Alterar senha do funcionario", description = "Altera a senha de um funcionario pelo ID")
-    @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso")
-    @ApiResponse(responseCode = "404", description = "Funcionario nao encontrado")
-    @ApiResponse(responseCode = "400", description = "Senha invalida")
-    public ResponseEntity<Void> alterarSenhaFuncionario(@PathVariable Integer id, @RequestBody @Valid AlterarSenhaFuncionarioDto dto) {
-        try {
-            service.alterarSenha(id, dto.getNovaSenha());
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            if ("Funcionário não encontrado".equals(e.getMessage())) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.badRequest().build();
         }
     }
 }

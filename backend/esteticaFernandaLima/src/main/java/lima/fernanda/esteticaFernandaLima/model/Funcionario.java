@@ -21,10 +21,6 @@ public class Funcionario {
     private String senha;
     private String descricao;
 
-    @OneToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-
     public Integer getIdFuncionario() {
         return idFuncionario;
     }
@@ -79,13 +75,5 @@ public class Funcionario {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 }

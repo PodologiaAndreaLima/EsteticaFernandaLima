@@ -88,131 +88,6 @@ const cpfEhValido = (valor = "") => {
   return digito1 === Number(cpf[9]) && digito2 === Number(cpf[10]);
 };
 
-// Componente Modal para Alterar Senha de Funcionário (Admin Only)
-const ModalAlterarSenhaFuncionario = ({
-  estaAberto,
-  aoFechar,
-  funcionario,
-  aoSalvar,
-}) => {
-  const [novaSenha, setNovaSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
-  const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
-  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
-
-  React.useEffect(() => {
-    if (estaAberto) {
-      setNovaSenha("");
-      setConfirmarSenha("");
-      setMostrarNovaSenha(false);
-      setMostrarConfirmarSenha(false);
-    }
-  }, [estaAberto]);
-
-  const enviarFormulario = (e) => {
-    e.preventDefault();
-
-    // Validar se as senhas coincidem
-    if (novaSenha !== confirmarSenha) {
-      error("As senhas não coincidem!");
-      return;
-    }
-
-    // Validar força da senha
-    const passwordValidation = validateStrongPassword(novaSenha);
-    if (!passwordValidation.isValid) {
-      error(buildPasswordPolicyMessage(passwordValidation.missing));
-      return;
-    }
-
-    // Chamar função de salvamento
-    aoSalvar({ senha: novaSenha });
-
-    // Limpar campos
-    setNovaSenha("");
-    setConfirmarSenha("");
-    aoFechar();
-  };
-
-  if (!estaAberto) return null;
-
-  return (
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
-          <h2>Alterar Senha: {funcionario?.nomeCompleto}</h2>
-          <button className="botao-fechar" onClick={aoFechar}>
-            &times;
-          </button>
-        </div>
-
-        <form onSubmit={enviarFormulario}>
-          <div className="linha-formulario">
-            <div className="grupo-formulario grupo-senha">
-              <label htmlFor="novaSenha">Nova Senha</label>
-              <div className="input-senha">
-                <input
-                  type={mostrarNovaSenha ? "text" : "password"}
-                  id="novaSenha"
-                  value={novaSenha}
-                  onChange={(e) => setNovaSenha(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  className="botao-ver-senha"
-                  onClick={() => setMostrarNovaSenha(!mostrarNovaSenha)}
-                >
-                  {mostrarNovaSenha ? "👁️" : "👁️‍🗨️"}
-                </button>
-              </div>
-              <small>
-                Mínimo 8 caracteres com letra maiúscula, letra minúscula, número
-                e caractere especial.
-              </small>
-            </div>
-          </div>
-
-          <div className="linha-formulario">
-            <div className="grupo-formulario grupo-senha">
-              <label htmlFor="confirmarSenha">Confirmar Nova Senha</label>
-              <div className="input-senha">
-                <input
-                  type={mostrarConfirmarSenha ? "text" : "password"}
-                  id="confirmarSenha"
-                  value={confirmarSenha}
-                  onChange={(e) => setConfirmarSenha(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  className="botao-ver-senha"
-                  onClick={() =>
-                    setMostrarConfirmarSenha(!mostrarConfirmarSenha)
-                  }
-                >
-                  {mostrarConfirmarSenha ? "👁️" : "👁️‍🗨️"}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="rodape-modal">
-            <button type="button" className="botao-cancelar" onClick={aoFechar}>
-              Cancelar
-            </button>
-            <button type="submit" className="botao-salvar">
-              Alterar Senha
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
 // Componente Modal para Visualização de Funcionário
 const ModalVisualizarFuncionario = ({ estaAberto, aoFechar, funcionario }) => {
   if (!estaAberto) return null;
@@ -575,14 +450,11 @@ const Funcionarios = () => {
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [modalConfirmacaoExclusaoAberto, setModalConfirmacaoExclusaoAberto] =
     useState(false);
-  const [modalAlterarSenhaAberto, setModalAlterarSenhaAberto] = useState(false);
   const [funcionarioEmEdicao, setFuncionarioEmEdicao] = useState(null);
   const [funcionarioParaVisualizar, setFuncionarioParaVisualizar] = useState(
     {},
   );
   const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState(null);
-  const [funcionarioParaAlterarSenha, setFuncionarioParaAlterarSenha] =
-    useState(null);
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
 
@@ -660,29 +532,6 @@ const Funcionarios = () => {
 
       setModalConfirmacaoExclusaoAberto(false);
       setFuncionarioParaExcluir(null);
-    }
-  };
-
-  const prepararAlteracaoSenha = (funcionario) => {
-    setFuncionarioParaAlterarSenha(funcionario);
-    setModalAlterarSenhaAberto(true);
-  };
-
-  const confirmarAlteracaoSenha = async (dadosSenha) => {
-    if (funcionarioParaAlterarSenha?.id) {
-      const resposta = await AuthService.changeEmployeePassword(
-        funcionarioParaAlterarSenha.id,
-        dadosSenha.senha,
-      );
-
-      if (resposta.success) {
-        success("Senha do funcionário alterada com sucesso!");
-      } else {
-        error(resposta.error || "Erro ao alterar senha do funcionário");
-      }
-
-      setModalAlterarSenhaAberto(false);
-      setFuncionarioParaAlterarSenha(null);
     }
   };
 
@@ -851,12 +700,6 @@ const Funcionarios = () => {
                       Editar
                     </button>
                     <button
-                      className="botao-tabela-editar"
-                      onClick={() => prepararAlteracaoSenha(funcionario)}
-                    >
-                      Alterar Senha
-                    </button>
-                    <button
                       className="botao-tabela-excluir"
                       onClick={() => prepararExclusao(funcionario)}
                     >
@@ -887,13 +730,6 @@ const Funcionarios = () => {
         estaAberto={modalVisualizarAberto}
         aoFechar={() => setModalVisualizarAberto(false)}
         funcionario={funcionarioParaVisualizar}
-      />
-
-      <ModalAlterarSenhaFuncionario
-        estaAberto={modalAlterarSenhaAberto}
-        aoFechar={() => setModalAlterarSenhaAberto(false)}
-        funcionario={funcionarioParaAlterarSenha}
-        aoSalvar={confirmarAlteracaoSenha}
       />
 
       <ModalConfirmacao

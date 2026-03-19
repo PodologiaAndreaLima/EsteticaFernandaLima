@@ -1,5 +1,6 @@
 package lima.fernanda.esteticaFernandaLima.repository;
 
+import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
