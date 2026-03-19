@@ -5,7 +5,6 @@ import "./styles/global.css";
 import "./styles/fix-visibility.css";
 import "./styles/fix-scrollbars.css";
 import "./styles/fix-images.css"; // Correções de estilo para imagens
-import "./config/env.js"; // Importar configuração de ambiente
 import App from "./App.jsx";
 import { Toaster } from "react-hot-toast";
 
