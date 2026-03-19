@@ -141,6 +141,7 @@
 
 .botao-tabela-visualizar,
 .botao-tabela-editar,
+.botao-tabela-senha,
 .botao-tabela-excluir {
   padding: 8px 14px;
   border: none;
@@ -175,6 +176,18 @@
   background-color: #4a2f5d;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(87, 60, 108, 0.4);
+}
+
+.botao-tabela-senha {
+  background-color: #f6efe1;
+  color: #7d5200;
+  border: 1px solid #e7d5ad;
+}
+
+.botao-tabela-senha:hover {
+  background-color: #f0e1c2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(175, 133, 9, 0.25);
 }
 
 .botao-tabela-excluir {
@@ -448,6 +461,14 @@
 /* Estilos para o modal de visualização */
 .modal-visualizar {
   max-width: 650px;
+}
+
+.modal-alterar-senha {
+  max-width: 700px;
+}
+
+.grupo-senha-modal-admin {
+  min-width: 0;
 }
 
 .conteudo-visualizacao {

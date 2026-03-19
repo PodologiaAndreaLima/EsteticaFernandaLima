@@ -23,12 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
 public class UsuarioService {
 
     private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+    private static final Pattern SENHA_FORTE_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$");
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -177,15 +179,59 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        // valida senha atual
         if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual incorreta");
         }
 
-        // atualiza para a nova senha (criptografada)
+        validarForcaSenha(novaSenha);
+
         String novaCriptografada = passwordEncoder.encode(novaSenha);
         usuario.setSenha(novaCriptografada);
-        usuarioRepository.save(usuario);
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        sincronizarSenhaFuncionario(usuarioSalvo, novaCriptografada);
+    }
+
+    public void resetarSenhaAdmin(Long id, String novaSenha) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        validarForcaSenha(novaSenha);
+
+        String novaCriptografada = passwordEncoder.encode(novaSenha);
+        usuario.setSenha(novaCriptografada);
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        sincronizarSenhaFuncionario(usuarioSalvo, novaCriptografada);
+    }
+
+    private void validarForcaSenha(String novaSenha) {
+        if (novaSenha == null || novaSenha.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nova senha não pode ser vazia");
+        }
+
+        if (novaSenha.length() < 8 || novaSenha.length() > 20 || !SENHA_FORTE_PATTERN.matcher(novaSenha).matches()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Senha deve ter no minimo 8 caracteres, com letra maiuscula, minuscula, numero e caractere especial"
+            );
+        }
+    }
+
+    private void sincronizarSenhaFuncionario(Usuario usuarioSalvo, String senhaCriptografada) {
+        try {
+            Funcionario funcionario = buscarFuncionarioParaSincronizar(usuarioSalvo.getCpf(), usuarioSalvo);
+            if (funcionario == null) {
+                logger.warn("Nenhum funcionário correspondente encontrado para sincronização de senha do usuário: {}", usuarioSalvo.getId());
+                return;
+            }
+
+            funcionario.setSenha(senhaCriptografada);
+            funcionarioRepository.save(funcionario);
+            logger.info("Senha sincronizada no funcionário para o usuário: {}", usuarioSalvo.getId());
+        } catch (Exception e) {
+            logger.warn("Erro ao sincronizar senha no funcionário para usuário {}: {}", usuarioSalvo.getId(), e.getMessage());
+        }
     }
 
 }

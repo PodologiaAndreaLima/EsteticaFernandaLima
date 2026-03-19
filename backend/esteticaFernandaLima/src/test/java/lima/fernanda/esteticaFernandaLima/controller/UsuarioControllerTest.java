@@ -16,7 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -118,5 +120,33 @@ class UsuarioControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(service).listarTodos();
+    }
+
+    @Test
+    void resetarSenhaAdmin() throws Exception {
+        Map<String, String> payload = new HashMap<>();
+        payload.put("novaSenha", "NovaSenha@2026");
+
+        doNothing().when(service).resetarSenhaAdmin(1L, "NovaSenha@2026");
+
+        mockMvc.perform(post("/usuarios/1/resetar-senha")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isNoContent());
+
+        verify(service).resetarSenhaAdmin(1L, "NovaSenha@2026");
+    }
+
+    @Test
+    void resetarSenhaAdminComIdInvalido() throws Exception {
+        Map<String, String> payload = new HashMap<>();
+        payload.put("novaSenha", "NovaSenha@2026");
+
+        mockMvc.perform(post("/usuarios/0/resetar-senha")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isBadRequest());
+
+        verify(service, never()).resetarSenhaAdmin(anyLong(), anyString());
     }
 }
