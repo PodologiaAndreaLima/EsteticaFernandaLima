@@ -289,6 +289,8 @@ const Dashboard = () => {
     //==========================================
     //      DASHBOARD DETALHADO CHARTS
     //==========================================
+    // Temporariamente desativado: a visualização detalhada não é necessária no momento.
+    /*
     // additional charts used on the detailed extra card: services & products (top row)
     if (detailServicesRef.current) {
       try {
@@ -553,6 +555,7 @@ const Dashboard = () => {
         console.error("Error creating final bottom chart:", err);
       }
     }
+    */
 
     // somente os dois charts principais (linha e doughnut)
 
@@ -593,24 +596,24 @@ const Dashboard = () => {
               >
                 Simples
               </button>
-              <button
+              {/* <button
                 className={`btn-primary ${view === "detalhada" ? "active" : ""
                   }`}
                 onClick={() => setView("detalhada")}
               >
                 Detalhada
-              </button>
+              </button> */}
             </div>
             <div className="period">
               Período atual
               <br />
-              <strong>Novembro/25</strong>
+              <strong>Março/26</strong>
             </div>
           </div>
         </div>
 
-        {/* Render da view detalhada */}
-        {view === "detalhada" && (
+        {/* Render da view detalhada temporariamente desativado */}
+        {false && view === "detalhada" && (
           <div className="dashboard-grid top-grid">
             <section className="dashboard-section metrics-card">
               <div className="metrics-row vertical">
