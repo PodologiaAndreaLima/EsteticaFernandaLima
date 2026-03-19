@@ -3,7 +3,9 @@ package lima.fernanda.esteticaFernandaLima.service;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
+import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import lima.fernanda.esteticaFernandaLima.repository.FuncionarioRepository;
+import lima.fernanda.esteticaFernandaLima.repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,15 @@ public class FuncionarioService {
 
     private final FuncionarioRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
 
-    public FuncionarioService(FuncionarioRepository repository, PasswordEncoder passwordEncoder) {
+    public FuncionarioService(
+            FuncionarioRepository repository,
+            PasswordEncoder passwordEncoder,
+            UsuarioRepository usuarioRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Funcionario> buscarTodos() {
@@ -72,7 +79,57 @@ public class FuncionarioService {
             funcionarioExistente.setSenha(prepararSenha(dto.getSenha()));
         }
 
+        if (funcionarioExistente.getUsuario() != null) {
+            Usuario usuario = funcionarioExistente.getUsuario();
+
+            if (dto.getNome() != null) {
+                usuario.setNomeCompleto(dto.getNome());
+            }
+            if (dto.getCPF() != null) {
+                usuario.setCpf(dto.getCPF());
+            }
+            if (dto.getTelefone() != null) {
+                usuario.setTelefone(dto.getTelefone());
+            }
+            if (dto.getEmail() != null) {
+                usuario.setEmail(dto.getEmail());
+            }
+            if (dto.getDescricao() != null) {
+                usuario.setBio(dto.getDescricao());
+            }
+
+            usuarioRepository.save(usuario);
+            log.info("Usuario sincronizado com sucesso para o funcionario: {}", id);
+        }
+
         return repository.save(funcionarioExistente);
+    }
+
+    public void alterarSenha(Integer id, String novaSenha) {
+        Funcionario funcionario = buscarPorId(id);
+
+        validarForcaSenha(novaSenha);
+        String senhaEncriptada = passwordEncoder.encode(novaSenha);
+        funcionario.setSenha(senhaEncriptada);
+        repository.save(funcionario);
+
+        if (funcionario.getUsuario() != null) {
+            Usuario usuario = funcionario.getUsuario();
+            usuario.setSenha(senhaEncriptada);
+            usuarioRepository.save(usuario);
+            log.info("Senha do usuario sincronizada com sucesso para o funcionario: {}", id);
+        }
+    }
+
+    private void validarForcaSenha(String senha) {
+        if (senha == null || senha.isBlank()) {
+            throw new RuntimeException("Nova senha nao pode ser vazia");
+        }
+
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$";
+        if (!senha.matches(regex)) {
+            throw new RuntimeException("Senha deve conter ao menos 8 caracteres, incluindo maiuscula, minuscula, numero e simbolo");
+        }
     }
 
     private String prepararSenha(String senha) {

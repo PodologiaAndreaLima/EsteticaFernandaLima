@@ -8,17 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioListarDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioMapper;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import lima.fernanda.esteticaFernandaLima.service.UsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
-import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
 
 @RestController
 @RequestMapping("/usuarios")

@@ -122,7 +122,7 @@ const Login = () => {
               PRIMEIRO ACESSO? <Link to="/register">SOLICITAR CADASTRO</Link>
             </p>
             <p className="whatsapp-text">
-              Esqueceu sua senha? Entre em contato com a administração.
+              Esqueceu sua senha? Entre em contato com a administração
             </p>
           </div>
         </div>

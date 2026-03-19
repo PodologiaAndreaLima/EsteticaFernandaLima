@@ -252,3 +252,89 @@ form input:focus {
     gap: 10px;
   }
 }
+
+/* Messages and Alerts */
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #c3e6cb;
+  margin-bottom: 20px;
+}
+
+.success-message p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.success-message p:first-child {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.redirect-text {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Password Input Group (para toggle de mostrar/ocultar senha) */
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group input {
+  padding: 10px;
+  border: 1px solid #af8509;
+  border-radius: 6px;
+  width: 100%;
+  outline: none;
+  padding-right: 45px; /* Espaço para o botão */
+}
+
+.password-input-group input:focus {
+  box-shadow: 0 0 3px rgba(175, 133, 9, 0.3);
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #8e44ad;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 8px;
+  transition: color 0.3s;
+}
+
+.btn-toggle-password:hover {
+  color: #6c3483;
+}
+
+.btn-toggle-password:focus {
+  outline: none;
+}
