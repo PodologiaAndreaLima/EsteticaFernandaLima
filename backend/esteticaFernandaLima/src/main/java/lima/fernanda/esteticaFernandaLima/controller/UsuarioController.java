@@ -18,6 +18,7 @@ import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.ResetSenhaAdminDto;
 import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
 
 @RestController
@@ -145,8 +146,24 @@ public ResponseEntity<Void> deletar(@PathVariable Long id) {
             logger.warn("⚠️ ID inválido para alteração de senha: {}", id);
             return ResponseEntity.status(400).build();
         }
-        
+
         usuarioService.alterarSenha(id, dto.getSenhaAtual(), dto.getNovaSenha());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/resetar-senha")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> resetarSenhaAdmin(
+            @PathVariable Long id,
+            @RequestBody @Valid ResetSenhaAdminDto dto
+    ) {
+        if (id <= 0) {
+            logger.warn("⚠️ ID inválido para reset de senha admin: {}", id);
+            return ResponseEntity.status(400).build();
+        }
+
+        usuarioService.resetarSenhaAdmin(id, dto.getNovaSenha());
         return ResponseEntity.noContent().build();
     }
 }

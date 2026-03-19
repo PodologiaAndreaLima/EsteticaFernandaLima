@@ -35,6 +35,43 @@ const salvarServicosNoCache = (email, servicosPrestados = []) => {
   localStorage.setItem(SERVICOS_CACHE_KEY, JSON.stringify(cache));
 };
 
+const resolverUsuarioSistemaId = async ({
+  usuarioId,
+  userId,
+  idUsuario,
+  email,
+  emailOriginal,
+} = {}) => {
+  let usuarioSistemaId = usuarioId ?? userId ?? idUsuario ?? null;
+
+  const emailNormalizado = String(email || "")
+    .trim()
+    .toLowerCase();
+  const emailOriginalNormalizado = String(emailOriginal || "")
+    .trim()
+    .toLowerCase();
+
+  if (!usuarioSistemaId && (emailNormalizado || emailOriginalNormalizado)) {
+    const usuariosResponse = await api.get("/usuarios");
+    const usuarios = Array.isArray(usuariosResponse.data)
+      ? usuariosResponse.data
+      : [];
+
+    const usuarioEncontrado = usuarios.find((u) =>
+      [emailNormalizado, emailOriginalNormalizado].filter(Boolean).includes(
+        String(u?.email || "")
+          .trim()
+          .toLowerCase(),
+      ),
+    );
+
+    usuarioSistemaId =
+      usuarioEncontrado?.id ?? usuarioEncontrado?.idUsuario ?? null;
+  }
+
+  return usuarioSistemaId;
+};
+
 export const AuthService = {
   // Função para fazer login
   login: async (identifier, senha) => {
@@ -199,95 +236,74 @@ export const AuthService = {
         payload.CPF = cpfNormalizado;
       }
 
-      if (dados.senha && dados.senha.trim()) {
-        payload.senha = dados.senha;
-      }
-
       const response = await api.put(`/funcionarios/${usuarioId}`, payload);
 
-      // Sincroniza com /usuarios apenas quando ha troca de senha.
-      if (dados.senha && dados.senha.trim()) {
-        let usuarioSistemaId =
-          dados.usuarioId ?? dados.userId ?? dados.idUsuario ?? null;
+      // Sincroniza SEMPRE com /usuarios para manter as duas tabelas consistentes.
+      let usuarioSistemaId = null;
+      try {
+        usuarioSistemaId = await resolverUsuarioSistemaId({
+          usuarioId: dados.usuarioId,
+          userId: dados.userId,
+          idUsuario: dados.idUsuario,
+          email: emailNormalizado,
+          emailOriginal: dados.emailOriginal,
+        });
+      } catch {
+        usuarioSistemaId = null;
+      }
 
-        const emailOriginalNormalizado = String(dados.emailOriginal || "")
-          .trim()
-          .toLowerCase();
+      if (!usuarioSistemaId) {
+        throw new Error(
+          "Nao foi possivel localizar o usuario de login para sincronizar os dados.",
+        );
+      }
 
-        if (
-          !usuarioSistemaId &&
-          (emailNormalizado || emailOriginalNormalizado)
-        ) {
-          try {
-            const usuariosResponse = await api.get("/usuarios");
-            const usuarios = Array.isArray(usuariosResponse.data)
-              ? usuariosResponse.data
-              : [];
-            const usuarioEncontrado = usuarios.find((u) =>
-              [emailNormalizado, emailOriginalNormalizado]
-                .filter(Boolean)
-                .includes(
-                  String(u?.email || "")
-                    .trim()
-                    .toLowerCase(),
-                ),
-            );
-            usuarioSistemaId =
-              usuarioEncontrado?.id ?? usuarioEncontrado?.idUsuario ?? null;
-          } catch {
-            usuarioSistemaId = null;
-          }
+      const cpfSync = String(
+        dados.cpf ?? dados.CPF ?? dados.cpfOriginal ?? "",
+      ).replace(/\D/g, "");
+
+      const payloadUsuarioBase = {
+        nomeCompleto: dados.nomeCompleto ?? dados.nome ?? "",
+        cpf: cpfSync,
+        telefone: dados.telefone ?? "",
+        bio: dados.bio ?? dados.descricao ?? "",
+        servicosPrestados: Array.isArray(dados.servicosPrestados)
+          ? dados.servicosPrestados
+          : [],
+        email: emailNormalizado || emailOriginalNormalizado || "",
+        role: dados.role ?? "USER",
+      };
+
+      const senhaInformada = Boolean(dados.senha && dados.senha.trim());
+      const payloadUsuario = payloadUsuarioBase;
+
+      let dadosSincronizados = false;
+      let ultimoErroSync = null;
+
+      const tentativasSync = [
+        () => api.put(`/usuarios/${usuarioSistemaId}`, payloadUsuario),
+        () => api.patch(`/usuarios/${usuarioSistemaId}`, payloadUsuario),
+      ];
+
+      for (const tentar of tentativasSync) {
+        try {
+          await tentar();
+          dadosSincronizados = true;
+          break;
+        } catch (err) {
+          ultimoErroSync = err;
         }
+      }
 
-        if (!usuarioSistemaId) {
-          throw new Error(
-            "Nao foi possivel localizar o usuario de login para sincronizar a nova senha.",
-          );
-        }
+      if (!dadosSincronizados && ultimoErroSync) {
+        throw ultimoErroSync;
+      }
 
-        let senhaSincronizada = false;
-        const cpfSync = String(
-          dados.cpf ?? dados.CPF ?? dados.cpfOriginal ?? "",
-        ).replace(/\D/g, "");
-        const payloadUsuarioCompleto = {
-          nomeCompleto: dados.nomeCompleto ?? dados.nome ?? "",
-          cpf: cpfSync,
-          telefone: dados.telefone ?? "",
-          bio: dados.bio ?? dados.descricao ?? "",
-          servicosPrestados: Array.isArray(dados.servicosPrestados)
-            ? dados.servicosPrestados
-            : [],
-          email: emailNormalizado || emailOriginalNormalizado || "",
-          senha: dados.senha,
-          role: dados.role ?? "USER",
-        };
-        const tentativas = [
-          () =>
-            api.put(`/usuarios/${usuarioSistemaId}/senha`, {
-              senha: dados.senha,
-            }),
-          () =>
-            api.put(`/usuarios/${usuarioSistemaId}/password`, {
-              senha: dados.senha,
-            }),
-          () =>
-            api.put(`/usuarios/${usuarioSistemaId}`, payloadUsuarioCompleto),
-        ];
-
-        let ultimoErro = null;
-        for (const tentar of tentativas) {
-          try {
-            await tentar();
-            senhaSincronizada = true;
-            break;
-          } catch (err) {
-            ultimoErro = err;
-          }
-        }
-
-        if (!senhaSincronizada && ultimoErro) {
-          throw ultimoErro;
-        }
+      // Quando houver senha na edicao, usa o endpoint dedicado de reset por admin.
+      if (senhaInformada) {
+        await api.post(`/usuarios/${usuarioSistemaId}/resetar-senha`, {
+          novaSenha: dados.senha,
+        });
       }
 
       return {
@@ -390,6 +406,41 @@ export const AuthService = {
         error:
           extractApiErrorMessage(error) ||
           "Erro ao deletar funcionário e usuário",
+      };
+    }
+  },
+
+  resetarSenhaAdmin: async (funcionario, novaSenha) => {
+    try {
+      const usuarioSistemaId = await resolverUsuarioSistemaId({
+        usuarioId: funcionario?.usuarioId,
+        userId: funcionario?.userId,
+        idUsuario: funcionario?.idUsuario,
+        email: funcionario?.email,
+        emailOriginal: funcionario?.email,
+      });
+
+      if (!usuarioSistemaId) {
+        return {
+          success: false,
+          error: "Usuario de login nao encontrado para redefinir senha.",
+        };
+      }
+
+      await api.post(`/usuarios/${usuarioSistemaId}/resetar-senha`, {
+        novaSenha,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          getFriendlyPasswordError(error) ||
+          extractApiErrorMessage(error) ||
+          "Erro ao redefinir senha do funcionario",
       };
     }
   },
