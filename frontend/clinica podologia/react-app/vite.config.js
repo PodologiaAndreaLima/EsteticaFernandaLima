@@ -43,12 +43,6 @@ export default defineConfig({
     },
   },
   // Configuração para lidar com variáveis de ambiente como no CRA
-  define: {
-    "process.env": {
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV || "development"),
-      PUBLIC_URL: "/",
-    },
-  },
   publicDir: "public",
   base: "/",
   css: {
