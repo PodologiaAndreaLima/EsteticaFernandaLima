@@ -23,9 +23,22 @@ public class ClienteResponse {
         this.dataNascimento = dataNascimento;
     }
 
+    // Sanitiza dados antes de enviar para o frontend
+    public String sanitizarParaFrontend(String texto) {
+        if (texto == null) return null;
+        return texto
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll("'", "&#x27;")
+                .replaceAll("&(?![a-zA-Z0-9#]+;)", "&amp;");
+    }
+
     // Getters
     public Integer getId() { return id; }
-    public String getNomeCompleto() { return nomeCompleto; }
+    public String getNomeCompleto() { 
+        return sanitizarParaFrontend(nomeCompleto); 
+    }
     public String getCpf() { return cpf; }
     public String getEmail() { return email; }
     public String getTelefone() { return telefone; }

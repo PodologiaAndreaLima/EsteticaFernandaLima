@@ -58,7 +58,12 @@ public class SecurityConfiguracao {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                        )
+                )
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers(URLS_PERMITIDAS)
