@@ -30,19 +30,10 @@ public class FuncionarioController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar funcionários", description = "Retorna todos os funcionários")
+    @Operation(summary = "Listar funcionários", description = "Retorna funcionários com filtro opcional por nome")
     @ApiResponse(responseCode = "200", description = "Funcionários encontrados")
-    @ApiResponse(responseCode = "204", description = "Nenhum funcionário encontrado")
-    public ResponseEntity<List<FuncionarioResponse>> getFuncionarios() {
-        List<Funcionario> funcionarios = service.buscarTodos();
-        if (funcionarios.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        List<FuncionarioResponse> resposta = funcionarios.stream()
-                .map(FuncionarioResponse::fromFuncionario)
-                .toList();
-
+    public ResponseEntity<List<FuncionarioResponse>> getFuncionarios(@RequestParam(required = false) String busca) {
+        List<FuncionarioResponse> resposta = service.buscarTodos(busca);
         return ResponseEntity.ok(resposta);
     }
 

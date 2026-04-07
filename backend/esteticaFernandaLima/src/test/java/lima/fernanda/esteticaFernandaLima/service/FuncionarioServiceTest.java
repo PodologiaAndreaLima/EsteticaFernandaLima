@@ -2,6 +2,7 @@ package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioResponse;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.repository.FuncionarioRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -111,5 +113,34 @@ class FuncionarioServiceTest {
         verify(repository).save(captor.capture());
         assertEquals("$2a$10$jaHash", captor.getValue().getSenha());
     }
-}
 
+    @Test
+    void buscarTodosSemBuscaDeveUsarFindAll() {
+        when(repository.findAll()).thenReturn(List.of(funcionarioExistente));
+
+        List<FuncionarioResponse> resultado = service.buscarTodos(null);
+
+        assertEquals(1, resultado.size());
+        assertEquals("Ana Silva", resultado.getFirst().nome());
+        verify(repository).findAll();
+    }
+
+    @Test
+    void buscarTodosComBuscaDeveFiltrarPorNome() {
+        when(repository.findByNomeContainingIgnoreCase("ana")).thenReturn(List.of(funcionarioExistente));
+
+        List<FuncionarioResponse> resultado = service.buscarTodos("ana");
+
+        assertEquals(1, resultado.size());
+        verify(repository).findByNomeContainingIgnoreCase("ana");
+    }
+
+    @Test
+    void buscarTodosSemResultadosRetornaListaVazia() {
+        when(repository.findAll()).thenReturn(List.of());
+
+        List<FuncionarioResponse> resultado = service.buscarTodos(null);
+
+        assertTrue(resultado.isEmpty());
+    }
+}

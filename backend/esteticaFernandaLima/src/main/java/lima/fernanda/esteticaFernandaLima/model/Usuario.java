@@ -3,7 +3,6 @@ package lima.fernanda.esteticaFernandaLima.model;
 import jakarta.persistence.*;
 import lima.fernanda.esteticaFernandaLima.enums.Role;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,10 +31,6 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private List<OrdemServico> ordensServico = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -117,14 +112,6 @@ public class Usuario {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public List<OrdemServico> getOrdensServico() {
-        return ordensServico;
-    }
-
-    public void setOrdensServico(List<OrdemServico> ordensServico) {
-        this.ordensServico = ordensServico;
     }
 
     public void setServicosProdutos(List<ServicoProduto> servicosProdutos) {

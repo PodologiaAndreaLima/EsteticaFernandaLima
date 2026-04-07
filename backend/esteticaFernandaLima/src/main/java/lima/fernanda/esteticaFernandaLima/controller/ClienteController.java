@@ -9,12 +9,13 @@ import lima.fernanda.esteticaFernandaLima.dto.ClienteMapper;
 import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.service.ClienteService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/cliente")
@@ -33,9 +34,8 @@ public class ClienteController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar clientes", description = "Retorna todos os clientes ou filtra por nome")
+    @Operation(summary = "Listar clientes", description = "Retorna clientes com filtro opcional por nome")
     @ApiResponse(responseCode = "200", description = "Clientes encontrados")
-    @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
     public ResponseEntity<List<ClienteResponse>> getCliente(@RequestParam(required = false) String busca) {
         // Valida padrões de injection na busca
         if (busca != null && temPadraoSuspeito(busca)) {
@@ -44,9 +44,7 @@ public class ClienteController {
         }
 
         List<ClienteResponse> clientesResponse = service.buscarTodos(busca);
-        return clientesResponse.isEmpty() ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.ok(clientesResponse);
+        return ResponseEntity.ok(clientesResponse);
     }
 
     @GetMapping("/{id}")
@@ -136,16 +134,12 @@ public class ClienteController {
         String pattern = entrada.toLowerCase();
 
         // Detecta SQL Injection
-        if (pattern.matches(".*('|(\\-\\-)|(;)|(\\|\\|)|(\\*)|(\\bor\\b)|(\\band\\b)|" +
+        if (pattern.matches(".*('|(--)|(;)|(\\|\\|)|(\\*)|(\\bor\\b)|(\\band\\b)|" +
                 "(\\bunion\\b)|(\\bselect\\b)|(\\binsert\\b)|(\\bupdate\\b)|(\\bdelete\\b)|(\\bdrop\\b)).*")) {
             return true;
         }
 
         // Detecta XSS
-        if (pattern.matches(".*(<script|javascript:|onerror=|onload=).*")) {
-            return true;
-        }
-
-        return false;
+        return pattern.matches(".*(<script|javascript:|onerror=|onload=).*");
     }
 }

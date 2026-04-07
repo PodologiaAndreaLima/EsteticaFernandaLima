@@ -86,8 +86,8 @@ export const AuthService = {
       });
 
       if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem(
+        sessionStorage.setItem("token", response.data.token);
+        sessionStorage.setItem(
           "user",
           JSON.stringify({
             id: response.data.userId,
@@ -449,7 +449,7 @@ export const AuthService = {
   // Como o backend não tem um endpoint /funcionario/me, usamos o ID armazenado localmente
   getCurrentUser: async () => {
     try {
-      // Obtém o usuário do localStorage
+      // Obtém o usuário da sessão do navegador
       const localUser = AuthService.getLocalUser();
 
       if (!localUser || !localUser.id) {
@@ -462,9 +462,9 @@ export const AuthService = {
       );
 
       if (response.data) {
-        // Atualiza o localStorage com os dados mais recentes
+        // Atualiza a sessão com os dados mais recentes
         const funcionario = Funcionario.fromAPI(response.data);
-        localStorage.setItem("user", JSON.stringify(funcionario));
+        sessionStorage.setItem("user", JSON.stringify(funcionario));
 
         return {
           success: true,
@@ -492,9 +492,9 @@ export const AuthService = {
       );
 
       if (response.data) {
-        // Atualiza o localStorage com os dados atualizados
+        // Atualiza a sessão com os dados atualizados
         const funcionarioAtualizado = Funcionario.fromAPI(response.data);
-        localStorage.setItem("user", JSON.stringify(funcionarioAtualizado));
+        sessionStorage.setItem("user", JSON.stringify(funcionarioAtualizado));
 
         return {
           success: true,
@@ -513,13 +513,13 @@ export const AuthService = {
 
   // Função para fazer logout
   logout: () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
   },
 
-  // Função para obter o usuário atual do localStorage
+  // Função para obter o usuário atual da sessão do navegador
   getLocalUser: () => {
-    const user = localStorage.getItem("user");
+    const user = sessionStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   },
 };

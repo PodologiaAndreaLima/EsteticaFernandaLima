@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioResponse;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.service.FuncionarioService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +49,6 @@ class FuncionarioControllerTest {
 
     @BeforeEach
     void setUp() {
-        // MockitoExtension initializes mocks automatically
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         objectMapper = new ObjectMapper();
 
@@ -75,7 +75,7 @@ class FuncionarioControllerTest {
 
     @Test
     void getFuncionarios() throws Exception {
-        when(service.buscarTodos()).thenReturn(List.of(funcionario));
+        when(service.buscarTodos(eq(null))).thenReturn(List.of(FuncionarioResponse.fromFuncionario(funcionario)));
 
         mockMvc.perform(get("/funcionarios").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -84,17 +84,32 @@ class FuncionarioControllerTest {
                 .andExpect(jsonPath("$[0].email").value("ana@email.com"))
                 .andExpect(jsonPath("$[0].senha").doesNotExist());
 
-        verify(service).buscarTodos();
+        verify(service).buscarTodos(eq(null));
     }
 
     @Test
     void getFuncionariosVazio() throws Exception {
-        when(service.buscarTodos()).thenReturn(List.of());
+        when(service.buscarTodos(eq(null))).thenReturn(List.of());
 
         mockMvc.perform(get("/funcionarios").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
 
-        verify(service).buscarTodos();
+        verify(service).buscarTodos(eq(null));
+    }
+
+    @Test
+    void getFuncionariosComFiltro() throws Exception {
+        when(service.buscarTodos(eq("ana"))).thenReturn(List.of(FuncionarioResponse.fromFuncionario(funcionario)));
+
+        mockMvc.perform(get("/funcionarios")
+                        .param("busca", "ana")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nome").value("Ana Silva"));
+
+        verify(service).buscarTodos(eq("ana"));
     }
 
     @Test
@@ -184,3 +199,4 @@ class FuncionarioControllerTest {
         verify(service).atualizar(eq(1), any(FuncionarioAtualizacaoDto.class));
     }
 }
+

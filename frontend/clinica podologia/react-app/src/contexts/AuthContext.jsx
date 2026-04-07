@@ -15,14 +15,14 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       try {
         // Verifica se há um token armazenado
-        const token = localStorage.getItem("token");
-        const storedUser = localStorage.getItem("user");
+        const token = sessionStorage.getItem("token");
+        const storedUser = sessionStorage.getItem("user");
 
         if (token && storedUser) {
           // Valida minimamente: verifica se o token JWT não está expirado
           // antes de restaurar a sessão do localStorage
           try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            const payload = JSON.parse(atob(token.split(".")[1]));
             if (payload.exp * 1000 < Date.now()) {
               AuthService.logout();
               setLoading(false);
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
           id: result.user.userId,
           nome: result.user.nomeCompleto,
           email: result.user.email,
-          role: result.user.role
+          role: result.user.role,
         });
         console.log("Usuário setado no contexto:", result.user);
         return result;
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
 
       if (result.success) {
         setUser(result.user);
-        localStorage.setItem("user", JSON.stringify(result.user));
+        sessionStorage.setItem("user", JSON.stringify(result.user));
       }
 
       return result;
@@ -97,9 +97,9 @@ export const AuthProvider = ({ children }) => {
 
   // Função de logout usando o serviço de autenticação
   const logout = () => {
-    // Remover token e dados do usuário do localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // Remover token e dados do usuário da sessão do navegador
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     // Limpar o estado do usuário
     setUser(null);
   };

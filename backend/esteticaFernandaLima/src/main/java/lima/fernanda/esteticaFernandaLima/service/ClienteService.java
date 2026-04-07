@@ -5,10 +5,10 @@ import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.repository.ClienteRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,16 +24,14 @@ public class ClienteService {
     }
 
     public List<ClienteResponse> buscarTodos(String busca) {
-        if (busca == null) {
-            return repository.findAll()
-                    .stream()
+        if (busca == null || busca.isBlank()) {
+            return repository.findAll().stream()
                     .map(clienteAdapter::adapt)
-                    .collect(Collectors.toList());
+                    .toList();
         }
-        return repository.findByNomeCompletoContainingIgnoreCase(busca)
-                .stream()
+        return repository.findByNomeCompletoContainingIgnoreCase(busca, Pageable.unpaged()).stream()
                 .map(clienteAdapter::adapt)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Cliente buscarPorId(Integer id) {
@@ -64,4 +62,3 @@ public class ClienteService {
         return repository.save(clienteExistente);
     }
 }
-

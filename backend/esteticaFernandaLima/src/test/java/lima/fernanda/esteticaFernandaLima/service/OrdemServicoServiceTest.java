@@ -1,12 +1,13 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.dto.OrdemServicoRequest;
-import lima.fernanda.esteticaFernandaLima.dto.OrdemServicoResponse;
-import lima.fernanda.esteticaFernandaLima.model.Cliente;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.OrdemServicoMsClient;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.dto.OrdemServicoMsPageResponse;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.dto.OrdemServicoMsResponse;
 import lima.fernanda.esteticaFernandaLima.model.OrdemServico;
-import lima.fernanda.esteticaFernandaLima.model.Usuario;
 import lima.fernanda.esteticaFernandaLima.repository.ClienteRepository;
-import lima.fernanda.esteticaFernandaLima.repository.OrdemServicoRepository;
+import lima.fernanda.esteticaFernandaLima.repository.ComboRepository;
+import lima.fernanda.esteticaFernandaLima.repository.ServicoProdutoRepository;
 import lima.fernanda.esteticaFernandaLima.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,14 +15,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class OrdemServicoServiceTest {
+class OrdemServicoServiceTest {
+
     @Mock
     private ClienteRepository clienteRepository;
 
@@ -29,131 +35,96 @@ public class OrdemServicoServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @Mock
-    private OrdemServicoRepository repository;
+    private ServicoProdutoRepository servicoProdutoRepository;
+
+    @Mock
+    private ComboRepository comboRepository;
+
+    @Mock
+    private OrdemServicoMsClient ordemServicoMsClient;
 
     @InjectMocks
     private OrdemServicoService service;
 
-    private OrdemServico ordemServico;
-    private OrdemServicoResponse response;
+    private OrdemServicoMsResponse response;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        ordemServico = new OrdemServico();
-        ordemServico.setDtHora(null);
-        ordemServico.setValorFinal(200.0f);
-        ordemServico.setObservacao("Teste de ordem de serviço");
-
-        response = new OrdemServicoResponse(1, 200f, null, "Teste de ordem de serviço");
-        }
-
-
+        response = new OrdemServicoMsResponse(
+                1,
+                1,
+                2,
+                200.0f,
+                LocalDate.now(),
+                "Teste de ordem de servico",
+                List.of()
+        );
+    }
 
     @Test
     void listar() {
-        when(repository.findAll()).thenReturn(java.util.Arrays.asList(ordemServico));
+        OrdemServicoMsPageResponse page = new OrdemServicoMsPageResponse();
+        page.setContent(List.of(response));
+        page.setTotalPages(1);
 
-        java.util.List<OrdemServico> result = service.listarTodos();
+        when(ordemServicoMsClient.listarPaginado(0)).thenReturn(page);
+
+        List<OrdemServico> result = service.listarTodos();
 
         assertEquals(1, result.size());
         assertEquals(200.0f, result.get(0).getValorFinal());
-        verify(repository).findAll();
-
+        verify(ordemServicoMsClient, times(1)).listarPaginado(0);
     }
 
     @Test
     void salvar() {
-        Cliente cliente = new Cliente();
-        cliente.setId(1);
-        
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        
         OrdemServicoRequest request = new OrdemServicoRequest();
         request.setClienteId(1);
-        request.setUsuarioId(1);
+        request.setUsuarioId(2);
         request.setValorFinal(200.0f);
-        request.setObservacao("Teste de ordem de serviço");
-        
-        when(clienteRepository.findById(1)).thenReturn(Optional.of(cliente));
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(repository.save(any(OrdemServico.class))).thenReturn(ordemServico);
-        
+        request.setObservacao("Teste de ordem de servico");
+
+        when(ordemServicoMsClient.criar(any(OrdemServicoRequest.class))).thenReturn(response);
+
         OrdemServico result = service.salvar(request);
 
         assertNotNull(result);
-        verify(repository).save(any(OrdemServico.class));
-    }
-
-    @Test
-    void salvarClienteNaoEncontrado() {
-        OrdemServicoRequest request = new OrdemServicoRequest();
-        request.setClienteId(1);
-        request.setUsuarioId(1);
-        request.setValorFinal(200.0f);
-
-        when(clienteRepository.findById(1)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> service.salvar(request));
-
-        assertEquals("Cliente não encontrado", ex.getMessage());
-        verify(repository, never()).save(any(OrdemServico.class));
-    }
-
-    @Test
-    void deletar() {
-        when(repository.existsById(1)).thenReturn(true);
-
-        service.deletar(1);
-
-        verify(repository).deleteById(1);
-    }
-
-    @Test
-    void deletarNaoEncontrado() {
-        when(repository.existsById(1)).thenReturn(false);
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> service.deletar(1));
-
-        assertEquals("Ordem de Serviço não encontrada", ex.getMessage());
-        verify(repository, never()).deleteById(anyInt());
+        assertEquals(200.0f, result.getValorFinal());
+        verify(ordemServicoMsClient).criar(any(OrdemServicoRequest.class));
     }
 
     @Test
     void atualizar() {
-        Cliente cliente = new Cliente();
-        cliente.setId(1);
-        
         OrdemServicoRequest request = new OrdemServicoRequest();
         request.setClienteId(1);
+        request.setUsuarioId(2);
         request.setValorFinal(250.0f);
-        request.setObservacao("Ordem de serviço atualizada");
+        request.setObservacao("Atualizada");
 
-        when(repository.findById(1)).thenReturn(java.util.Optional.of(ordemServico));
-        when(clienteRepository.findById(1)).thenReturn(Optional.of(cliente));
-        when(repository.save(any(OrdemServico.class))).thenReturn(ordemServico);
+        OrdemServicoMsResponse respostaAtualizada = new OrdemServicoMsResponse(
+                1,
+                1,
+                2,
+                250.0f,
+                LocalDate.now(),
+                "Atualizada",
+                List.of()
+        );
+
+        when(ordemServicoMsClient.atualizar(anyInt(), any(OrdemServicoRequest.class))).thenReturn(respostaAtualizada);
 
         OrdemServico result = service.atualizar(1, request);
 
         assertNotNull(result);
-        verify(repository).save(any(OrdemServico.class));
+        assertEquals(250.0f, result.getValorFinal());
+        verify(ordemServicoMsClient).atualizar(anyInt(), any(OrdemServicoRequest.class));
     }
 
     @Test
-    void atualizarNaoEncontrado() {
-        when(repository.findById(1)).thenReturn(java.util.Optional.empty());
-
-        OrdemServicoRequest request = new OrdemServicoRequest();
-        request.setClienteId(1);
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> service.atualizar(1, request));
-
-        assertEquals("Ordem não encontrada", ex.getMessage());
+    void deletar() {
+        service.deletar(1);
+        verify(ordemServicoMsClient).deletar(1);
     }
 }

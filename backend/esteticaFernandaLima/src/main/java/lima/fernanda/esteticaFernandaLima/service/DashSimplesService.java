@@ -2,58 +2,66 @@ package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.dto.ProdutoQuantidadeDTO;
 import lima.fernanda.esteticaFernandaLima.dto.ServicoQuantidadeDTO;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.OrdemServicoMsClient;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.dto.OrdemServicoMsItemResponse;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.dto.OrdemServicoMsPageResponse;
+import lima.fernanda.esteticaFernandaLima.integration.ordemservico.dto.OrdemServicoMsResponse;
+import lima.fernanda.esteticaFernandaLima.model.Combo;
+import lima.fernanda.esteticaFernandaLima.model.ServicoProduto;
+import lima.fernanda.esteticaFernandaLima.repository.ComboRepository;
 import lima.fernanda.esteticaFernandaLima.repository.CustoExtraRepository;
-import lima.fernanda.esteticaFernandaLima.repository.OrdemServicoRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lima.fernanda.esteticaFernandaLima.repository.ServicoProdutoRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class DashSimplesService {
 
-    @Autowired
-    private OrdemServicoRepository ordemServicoRepository;
+    private static final int FUNCIONARIO_ID_FIXO = 2;
 
-    @Autowired
-    CustoExtraRepository extraRepository;
+    private final OrdemServicoMsClient ordemServicoMsClient;
+    private final CustoExtraRepository extraRepository;
+    private final CustoFixoService custoFixoService;
+    private final ServicoProdutoRepository servicoProdutoRepository;
+    private final ComboRepository comboRepository;
 
-    @Autowired
-    private CustoFixoService custoFixoService;
+    public DashSimplesService(OrdemServicoMsClient ordemServicoMsClient,
+                              CustoExtraRepository extraRepository,
+                              CustoFixoService custoFixoService,
+                              ServicoProdutoRepository servicoProdutoRepository,
+                              ComboRepository comboRepository) {
+        this.ordemServicoMsClient = ordemServicoMsClient;
+        this.extraRepository = extraRepository;
+        this.custoFixoService = custoFixoService;
+        this.servicoProdutoRepository = servicoProdutoRepository;
+        this.comboRepository = comboRepository;
+    }
 
     public Float pegarRendaBrutaDoMesAtual() {
-        List<Float> valoresFinais = ordemServicoRepository.findValoresFinaisByMesAtual(LocalDate.now());
-        Float rendaBruta = 0.00F;
-        for (Float i : valoresFinais) {
-            rendaBruta += i;
-        }
-        return rendaBruta;
+        return (float) listarOrdensMesAtual().stream()
+                .map(OrdemServicoMsResponse::valorFinal)
+                .filter(java.util.Objects::nonNull)
+                .mapToDouble(Float::doubleValue)
+                .sum();
     }
 
     public Float pegarRendaLiquidaDoMesAtual() {
         Float rendaBruta = pegarRendaBrutaDoMesAtual();
 
-        List<Float> custosExtras = extraRepository.findValoresByMesAtual(LocalDate.now());
-        Float totalCustosExtras = 0.00F;
-        for (Float i : custosExtras) {
-            totalCustosExtras += i;
-        }
+        Float totalCustosExtras = extraRepository.findValoresByMesAtual(LocalDate.now())
+                .stream()
+                .reduce(0.00F, Float::sum);
 
-        List<Float> custosFixos = custoFixoService.listarTodos().stream()
+        Float totalCustosFixos = custoFixoService.listarTodos().stream()
                 .map(custoFixo -> custoFixo.getValorMensal())
-                .toList();
-
-        Float totalCustosFixos = 0.00F;
-        for (Float i : custosFixos) {
-            totalCustosFixos += i;
-        }
+                .reduce(0.00F, Float::sum);
 
         return rendaBruta - totalCustosFixos - totalCustosExtras;
     }
@@ -62,10 +70,17 @@ public class DashSimplesService {
         Map<Integer, Float> rendaBrutaPorMes = new HashMap<>();
         int anoAtual = LocalDate.now().getYear();
 
+        List<OrdemServicoMsResponse> ordensAnoAtual = listarOrdensAnoAtual();
+
         for (int mes = 1; mes <= 12; mes++) {
-            Float rendaBruta = ordemServicoRepository.findValoresFinaisByAnoEMes(anoAtual, mes)
-                    .stream()
-                    .reduce(0.00F, Float::sum); // Soma apenas os valores do mês atual
+            int mesAtualLoop = mes;
+            Float rendaBruta = (float) ordensAnoAtual.stream()
+                    .filter(os -> os.dataCriacao() != null)
+                    .filter(os -> os.dataCriacao().getMonthValue() == mesAtualLoop)
+                    .map(OrdemServicoMsResponse::valorFinal)
+                    .filter(java.util.Objects::nonNull)
+                    .mapToDouble(Float::doubleValue)
+                    .sum();
             rendaBrutaPorMes.put(mes, rendaBruta);
         }
 
@@ -76,10 +91,17 @@ public class DashSimplesService {
         Map<Integer, Float> rendaLiquidaPorMes = new HashMap<>();
         int anoAtual = LocalDate.now().getYear();
 
+        List<OrdemServicoMsResponse> ordensAnoAtual = listarOrdensAnoAtual();
+
         for (int mes = 1; mes <= 12; mes++) {
-            Float rendaBruta = ordemServicoRepository.findValoresFinaisByAnoEMes(anoAtual, mes)
-                    .stream()
-                    .reduce(0.00F, Float::sum);
+            int mesAtualLoop = mes;
+            Float rendaBruta = (float) ordensAnoAtual.stream()
+                    .filter(os -> os.dataCriacao() != null)
+                    .filter(os -> os.dataCriacao().getMonthValue() == mesAtualLoop)
+                    .map(OrdemServicoMsResponse::valorFinal)
+                    .filter(java.util.Objects::nonNull)
+                    .mapToDouble(Float::doubleValue)
+                    .sum();
 
             Float totalCustosExtras = extraRepository.findValoresByAnoEMes(anoAtual, mes)
                     .stream()
@@ -89,47 +111,152 @@ public class DashSimplesService {
                     .map(custoFixo -> custoFixo.getValorMensal())
                     .reduce(0.00F, Float::sum);
 
-            Float rendaLiquida = rendaBruta - totalCustosExtras - totalCustosFixos;
-            rendaLiquidaPorMes.put(mes, rendaLiquida);
+            rendaLiquidaPorMes.put(mes, rendaBruta - totalCustosExtras - totalCustosFixos);
         }
 
-        return rendaLiquidaPorMes; // deve retornar algo como {1=15.0, 2=20.0, 3=25.0, ...
+        return rendaLiquidaPorMes;
     }
 
     public Long pegarTotalDeOrdensDeServicoDoMesAtual() {
-        return ordemServicoRepository.countOrdensServicoByMesAtual(LocalDate.now());
+        return (long) listarOrdensMesAtual().size();
     }
 
     public List<ServicoQuantidadeDTO> pegarServicosOuComboMaisVendidosDoMesAtual() {
-        int anoAtual = LocalDate.now().getYear();
-        int mesAtual = LocalDate.now().getMonthValue();
+        Map<String, Long> quantidadePorNome = new HashMap<>();
 
-        LocalDate inicio = LocalDate.of(anoAtual, mesAtual, 1);
-        LocalDate fim = inicio.plusMonths(1).minusDays(1);
+        for (OrdemServicoMsResponse ordem : listarOrdensMesAtual()) {
+            List<OrdemServicoMsItemResponse> itens = ordem.itens();
+            if (itens == null) {
+                continue;
+            }
 
-        Pageable pageable = PageRequest.of(0, 5);
+            for (OrdemServicoMsItemResponse item : itens) {
+                int quantidade = item.quantidade() != null ? item.quantidade() : 1;
 
-        return ordemServicoRepository.buscarMaisVendidos(inicio, fim, pageable);
+                if (item.comboId() != null) {
+                    String nomeCombo = buscarNomeCombo(item.comboId());
+                    quantidadePorNome.merge(nomeCombo, (long) quantidade, Long::sum);
+                    continue;
+                }
+
+                Integer servicoId = item.servicoProdutoId() != null ? item.servicoProdutoId() : item.produtoId();
+                if (servicoId == null) {
+                    continue;
+                }
+
+                Optional<ServicoProduto> servicoProdutoOpt = servicoProdutoRepository.findById(servicoId);
+                if (servicoProdutoOpt.isPresent() && Boolean.FALSE.equals(servicoProdutoOpt.get().getProduto())) {
+                    String nomeServico = servicoProdutoOpt.get().getNome() != null
+                            ? servicoProdutoOpt.get().getNome()
+                            : "Servico #" + servicoId;
+                    quantidadePorNome.merge(nomeServico, (long) quantidade, Long::sum);
+                }
+            }
+        }
+
+        return quantidadePorNome.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(5)
+                .map(entry -> new ServicoQuantidadeDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
     public List<ProdutoQuantidadeDTO> pegarProdutosMaisVendidosDoMesAtual() {
+        Map<String, Long> quantidadePorNome = new HashMap<>();
+
+        for (OrdemServicoMsResponse ordem : listarOrdensMesAtual()) {
+            List<OrdemServicoMsItemResponse> itens = ordem.itens();
+            if (itens == null) {
+                continue;
+            }
+
+            for (OrdemServicoMsItemResponse item : itens) {
+                Integer produtoId = item.produtoId() != null ? item.produtoId() : item.servicoProdutoId();
+                if (produtoId == null) {
+                    continue;
+                }
+
+                Optional<ServicoProduto> produtoOpt = servicoProdutoRepository.findById(produtoId);
+                if (produtoOpt.isEmpty() || !Boolean.TRUE.equals(produtoOpt.get().getProduto())) {
+                    continue;
+                }
+
+                int quantidade = item.quantidade() != null ? item.quantidade() : 1;
+                String nomeProduto = produtoOpt.get().getNome() != null
+                        ? produtoOpt.get().getNome()
+                        : "Produto #" + produtoId;
+                quantidadePorNome.merge(nomeProduto, (long) quantidade, Long::sum);
+            }
+        }
+
+        return quantidadePorNome.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(5)
+                .map(entry -> new ProdutoQuantidadeDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    public Float pegarReceitaTotalFuncionarioMesAtual() {
+        return (float) listarOrdensMesAtual().stream()
+                .filter(ordem -> ordem.usuarioId() != null)
+                .filter(ordem -> ordem.usuarioId().equals(FUNCIONARIO_ID_FIXO))
+                .map(OrdemServicoMsResponse::valorFinal)
+                .filter(java.util.Objects::nonNull)
+                .mapToDouble(Float::doubleValue)
+                .sum();
+    }
+
+    public Long pegarQuantidadeOrdensFuncionarioMesAtual() {
+        return listarOrdensMesAtual().stream()
+                .filter(ordem -> ordem.usuarioId() != null)
+                .filter(ordem -> ordem.usuarioId().equals(FUNCIONARIO_ID_FIXO))
+                .count();
+    }
+
+    private String buscarNomeCombo(Integer comboId) {
+        return comboRepository.findById(comboId)
+                .map(Combo::getNome)
+                .filter(nome -> !nome.isBlank())
+                .orElse("Combo #" + comboId);
+    }
+
+    private List<OrdemServicoMsResponse> listarOrdensAnoAtual() {
         int anoAtual = LocalDate.now().getYear();
-        int mesAtual = LocalDate.now().getMonthValue();
-
-        LocalDate inicio = LocalDate.of(anoAtual, mesAtual, 1);
-        LocalDate fim = inicio.plusMonths(1).minusDays(1);
-
-        Pageable pageable = PageRequest.of(0, 5);
-        return ordemServicoRepository.buscarProdutosMaisVendidos(inicio, fim, pageable);
+        return listarTodasOrdensDoMs().stream()
+                .filter(os -> os.dataCriacao() != null)
+                .filter(os -> os.dataCriacao().getYear() == anoAtual)
+                .toList();
     }
 
+    private List<OrdemServicoMsResponse> listarOrdensMesAtual() {
+        LocalDate hoje = LocalDate.now();
+        int ano = hoje.getYear();
+        int mes = hoje.getMonthValue();
 
-    public Float pegarReceitaTotalFuncionarioMesAtual(){
-        return ordemServicoRepository.getReceitaTotalFuncionarioMesAtual(LocalDate.now());
+        return listarTodasOrdensDoMs().stream()
+                .filter(os -> os.dataCriacao() != null)
+                .filter(os -> os.dataCriacao().getYear() == ano && os.dataCriacao().getMonthValue() == mes)
+                .toList();
     }
 
-    public Long pegarQuantidadeOrdensFuncionarioMesAtual(){
-        return ordemServicoRepository.getQuantidadeOrdensFuncionarioMesAtual(LocalDate.now());
-    }
+    private List<OrdemServicoMsResponse> listarTodasOrdensDoMs() {
+        List<OrdemServicoMsResponse> resultado = new java.util.ArrayList<>();
+        int page = 0;
 
+        while (true) {
+            OrdemServicoMsPageResponse response = ordemServicoMsClient.listarPaginado(page);
+            if (response == null || response.getContent() == null || response.getContent().isEmpty()) {
+                break;
+            }
+
+            resultado.addAll(response.getContent());
+
+            if (page >= response.getTotalPages() - 1) {
+                break;
+            }
+            page++;
+        }
+
+        return resultado;
+    }
 }

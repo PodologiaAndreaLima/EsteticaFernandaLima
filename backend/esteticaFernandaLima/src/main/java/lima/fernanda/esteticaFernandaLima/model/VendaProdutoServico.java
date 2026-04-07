@@ -1,7 +1,7 @@
 package lima.fernanda.esteticaFernandaLima.model;
 
-import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "venda_produto_servico")
@@ -10,11 +10,6 @@ public class VendaProdutoServico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idVendaProdutoServico;
-
-    @ManyToOne
-    @JoinColumn(name = "fk_ordem_servico")
-    @JsonIgnoreProperties({"itens", "hibernateLazyInitializer", "handler"})
-    private OrdemServico ordemServico;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_servico_produto")
@@ -32,8 +27,6 @@ public class VendaProdutoServico {
     public Integer getIdVendaProdutoServico() { return idVendaProdutoServico; }
     public void setIdVendaProdutoServico(Integer idVendaProdutoServico) { this.idVendaProdutoServico = idVendaProdutoServico; }
 
-    public OrdemServico getOrdemServico() { return ordemServico; }
-    public void setOrdemServico(OrdemServico ordemServico) { this.ordemServico = ordemServico; }
 
     public ServicoProduto getServicoProduto() { return servicoProduto; }
     public void setServicoProduto(ServicoProduto servicoProduto) { this.servicoProduto = servicoProduto; }

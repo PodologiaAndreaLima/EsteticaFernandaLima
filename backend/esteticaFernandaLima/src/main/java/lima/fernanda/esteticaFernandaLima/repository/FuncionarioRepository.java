@@ -12,4 +12,6 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Intege
     List<Funcionario> findAllByCpf(@Param("cpf") String cpf);
 
     List<Funcionario> findAllByEmailIgnoreCase(String email);
+
+    List<Funcionario> findByNomeContainingIgnoreCase(String nome);
 }

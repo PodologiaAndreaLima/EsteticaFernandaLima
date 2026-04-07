@@ -1,10 +1,21 @@
 // Configurações da API - Clínica de Estética
+const env = import.meta.env || {};
+
+const toPath = (value, fallback) => {
+  if (!value || typeof value !== "string") return fallback;
+  return value.startsWith("/") ? value : `/${value}`;
+};
+
 const API_CONFIG = {
   // URL base para desenvolvimento local
-  DEV_BASE_URL: "http://localhost:8080",
+  DEV_BASE_URL: env.VITE_API_BASE_URL_DEV || "http://localhost:8080",
 
   // URL base para produção
-  PROD_BASE_URL: "https://api.clinicaestetica.com",
+  PROD_BASE_URL:
+    env.VITE_API_BASE_URL_PROD || "https://api.clinicaestetica.com",
+
+  // Timeout padrão das chamadas HTTP
+  TIMEOUT: Number(env.VITE_API_TIMEOUT_MS || 15000),
 
   // Endpoints comuns
   ENDPOINTS: {
@@ -29,13 +40,17 @@ const API_CONFIG = {
       BASE: "/agendamento", // A ser implementado no backend
       USER: "/agendamento/cliente/:id", // A ser implementado no backend
     },
+    SERVICE_ORDER: toPath(env.VITE_ORDEM_SERVICO_ENDPOINT, "/ordens-servico"),
+  },
+  MICROSERVICES: {
+    SERVICE_ORDER_BASE_URL: env.VITE_ORDEM_SERVICO_BASE_URL || "",
   },
 };
 
 // Determina qual URL base usar com base no ambiente
-const isProduction = process.env.NODE_ENV === "production";
-API_CONFIG.BASE_URL = isProduction
-  ? API_CONFIG.PROD_BASE_URL
-  : API_CONFIG.DEV_BASE_URL;
+const isProduction = Boolean(env.PROD) || process.env.NODE_ENV === "production";
+API_CONFIG.BASE_URL =
+  env.VITE_API_BASE_URL ||
+  (isProduction ? API_CONFIG.PROD_BASE_URL : API_CONFIG.DEV_BASE_URL);
 
 export default API_CONFIG;

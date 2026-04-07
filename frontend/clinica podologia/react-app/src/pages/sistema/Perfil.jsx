@@ -374,14 +374,14 @@ const Perfil = () => {
       // atualizar estado local e localStorage
       setDadosPerfil((prev) => ({ ...prev, ...novosDados }));
       try {
-        // atualiza user no localStorage (se existir)
-        const stored = localStorage.getItem("user");
+        // atualiza user na sessao (se existir)
+        const stored = sessionStorage.getItem("user");
         if (stored) {
           const parsed = JSON.parse(stored);
           parsed.nomeCompleto =
             atualizado.nomeCompleto ?? atualizado.nome ?? parsed.nomeCompleto;
           parsed.email = atualizado.email ?? parsed.email;
-          localStorage.setItem("user", JSON.stringify(parsed));
+          sessionStorage.setItem("user", JSON.stringify(parsed));
         }
         // atualiza também campos separados (userName)
         if (atualizado.nomeCompleto)

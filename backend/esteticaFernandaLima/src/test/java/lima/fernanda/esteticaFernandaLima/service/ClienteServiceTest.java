@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ class ClienteServiceTest {
 
     @Test
     void buscarTodosQuandoBuscaForNull() {
-        when(repository.findAll()).thenReturn(Arrays.asList(cliente));
+        when(repository.findAll()).thenReturn(List.of(cliente));
         when(clienteAdapter.adapt(cliente)).thenReturn(response);
 
         List<ClienteResponse> result = service.buscarTodos(null);
@@ -61,14 +62,14 @@ class ClienteServiceTest {
 
     @Test
     void buscarPorNomeQuandoBuscaNaoForNull() {
-        when(repository.findByNomeCompletoContainingIgnoreCase("fernanda"))
-                .thenReturn(Arrays.asList(cliente));
+        when(repository.findByNomeCompletoContainingIgnoreCase(eq("fernanda"), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(cliente)));
         when(clienteAdapter.adapt(cliente)).thenReturn(response);
 
         List<ClienteResponse> result = service.buscarTodos("fernanda");
 
         assertEquals(1, result.size());
-        verify(repository).findByNomeCompletoContainingIgnoreCase("fernanda");
+        verify(repository).findByNomeCompletoContainingIgnoreCase(eq("fernanda"), any(Pageable.class));
     }
 
     @Test

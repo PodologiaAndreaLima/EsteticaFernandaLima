@@ -4,11 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CPF;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import java.time.LocalDate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Table(schema = "cliente")
@@ -33,17 +30,11 @@ public class Cliente {
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private List<OrdemServico> ordensServico = new ArrayList<>();
-
-    // getters e setters (incluindo ordensServico)
     public Integer getId() { return id; }
     public String getNomeCompleto() { return nomeCompleto; }
     public String getCpf() { return cpf; }
     public String getTelefone() { return telefone; }
     public String getEmail() { return email; }
-    public List<OrdemServico> getOrdensServico() { return ordensServico; }
     public LocalDate getDataNascimento() { return dataNascimento; }
 
     public void setId(Integer id) { this.id = id; }
@@ -51,6 +42,5 @@ public class Cliente {
     public void setCpf(String cpf) { this.cpf = cpf; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
     public void setEmail(String email) { this.email = email; }
-    public void setOrdensServico(List<OrdemServico> ordensServico) { this.ordensServico = ordensServico; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 }

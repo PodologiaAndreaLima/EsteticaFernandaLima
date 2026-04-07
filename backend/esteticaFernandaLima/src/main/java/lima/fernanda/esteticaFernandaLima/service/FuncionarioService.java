@@ -2,6 +2,7 @@ package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioAtualizacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.FuncionarioCriacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.FuncionarioResponse;
 import lima.fernanda.esteticaFernandaLima.model.Funcionario;
 import lima.fernanda.esteticaFernandaLima.repository.FuncionarioRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,13 @@ public class FuncionarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Funcionario> buscarTodos() {
-        return repository.findAll();
+    public List<FuncionarioResponse> buscarTodos(String busca) {
+        if (busca == null || busca.isBlank()) {
+            return repository.findAll().stream().map(FuncionarioResponse::fromFuncionario).toList();
+        }
+        return repository.findByNomeContainingIgnoreCase(busca).stream()
+                .map(FuncionarioResponse::fromFuncionario)
+                .toList();
     }
 
     public Funcionario buscarPorId(Integer id) {

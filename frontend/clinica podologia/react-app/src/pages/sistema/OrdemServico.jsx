@@ -37,6 +37,8 @@ const ModalOrdem = ({
     if (ordemInicial && (ordemInicial.idOrdemServico || ordemInicial.id)) {
       const servicos = (ordemInicial.itens || [])
         .filter((it) => {
+          if (it.comboId) return true;
+          if (it.servicoProdutoId && !it.produtoId) return true;
           if (it.combo) return true;
           if (
             it.servicoProduto &&
@@ -47,6 +49,16 @@ const ModalOrdem = ({
           return false;
         })
         .map((it) => {
+          if (it.comboId)
+            return {
+              servico: it.comboId,
+              desconto: it.desconto ?? 0,
+            };
+          if (it.servicoProdutoId && !it.produtoId)
+            return {
+              servico: it.servicoProdutoId,
+              desconto: it.desconto ?? 0,
+            };
           if (it.combo)
             return {
               servico: it.combo.idCombo ?? it.combo.id,
@@ -64,11 +76,12 @@ const ModalOrdem = ({
       const produtos = (ordemInicial.itens || [])
         .filter(
           (it) =>
+            Boolean(it.produtoId) ||
             it.servicoProduto?.isProduto === true ||
             it.servicoProduto?.produto === true,
         )
         .map((it) => ({
-          produto: it.servicoProduto.idProdutoServico,
+          produto: it.produtoId ?? it.servicoProduto?.idProdutoServico,
           quantidade: it.quantidade ?? 1,
           desconto: it.desconto ?? 0,
         }));
@@ -453,11 +466,47 @@ const ModalOrdem = ({
   );
 };
 
-const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
+const ModalVisualizarOrdem = ({
+  estaAberto,
+  aoFechar,
+  ordem,
+  listaClientes,
+  listaUsuarios,
+  listaServicos,
+  listaProdutos,
+  listaCombos,
+}) => {
   if (!estaAberto || !ordem) return null;
 
   console.log("DEBUG Modal - ordem completa:", ordem);
   console.log("DEBUG Modal - ordem.itens:", ordem.itens);
+
+  const clienteId = Number(ordem?.clienteId ?? ordem?.cliente?.id ?? 0);
+  const usuarioId = Number(ordem?.usuarioId ?? ordem?.usuario?.id ?? 0);
+  const cliente = (listaClientes || []).find((c) => Number(c.id) === clienteId);
+  const usuario = (listaUsuarios || []).find((u) => Number(u.id) === usuarioId);
+
+  const nomeCliente =
+    cliente?.nome ||
+    cliente?.nomeCompleto ||
+    ordem?.cliente?.nome ||
+    ordem?.cliente?.nomeCompleto ||
+    (typeof ordem?.cliente === "string"
+      ? ordem.cliente
+      : clienteId
+        ? `Cliente #${clienteId}`
+        : "—");
+
+  const nomeUsuario =
+    usuario?.nome ||
+    usuario?.nomeCompleto ||
+    ordem?.usuario?.nome ||
+    ordem?.usuario?.nomeCompleto ||
+    (typeof ordem?.usuario === "string"
+      ? ordem.usuario
+      : usuarioId
+        ? `Usuário #${usuarioId}`
+        : "—");
 
   // Separar serviços/combos de produtos
   const servs = (ordem.itens || [])
@@ -472,6 +521,8 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
         "produto?",
         it.servicoProduto?.produto,
       );
+      if (it.comboId) return true;
+      if (it.servicoProdutoId && !it.produtoId) return true;
       if (it.combo) return true;
       if (
         it.servicoProduto &&
@@ -481,11 +532,29 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
         return true;
       return false;
     })
-    .map((it) =>
-      it.combo
+    .map((it) => {
+      if (it.comboId) {
+        const combo = (listaCombos || []).find(
+          (c) => Number(c.id ?? c.idCombo) === Number(it.comboId),
+        );
+        return combo?.nome || `Combo #${it.comboId}`;
+      }
+
+      if (it.servicoProdutoId) {
+        const servico = (listaServicos || []).find(
+          (s) => Number(s.idProdutoServico) === Number(it.servicoProdutoId),
+        );
+        return (
+          servico?.nome ??
+          servico?.descricao ??
+          `Serviço #${it.servicoProdutoId}`
+        );
+      }
+
+      return it.combo
         ? it.combo.nome
-        : (it.servicoProduto?.nome ?? it.servicoProduto?.descricao),
-    )
+        : (it.servicoProduto?.nome ?? it.servicoProduto?.descricao ?? "");
+    })
     .join(", ");
 
   console.log("DEBUG Modal - servs final:", servs);
@@ -493,10 +562,16 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
   const prods = (ordem.itens || [])
     .filter(
       (it) =>
+        Boolean(it.produtoId) ||
         it.servicoProduto?.isProduto === true ||
         it.servicoProduto?.produto === true,
     )
-    .map((it) => `${it.servicoProduto.nome} x${it.quantidade ?? 1}`)
+    .map((it) => {
+      const produto = (listaProdutos || []).find(
+        (p) => Number(p.idProdutoServico) === Number(it.produtoId),
+      );
+      return `${produto?.nome ?? it.servicoProduto?.nome ?? `Produto #${it.produtoId}`} x${it.quantidade ?? 1}`;
+    })
     .join(", ");
 
   console.log("DEBUG Modal - servs:", servs);
@@ -518,17 +593,11 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
             <div className="linha-visualizacao">
               <div className="campo-visualizacao">
                 <span className="rotulo">Cliente</span>
-                <div className="valor">
-                  {ordem.cliente?.nome ??
-                    ordem.cliente?.nomeCompleto ??
-                    (typeof ordem.cliente === "string" ? ordem.cliente : "—")}
-                </div>
+                <div className="valor">{nomeCliente}</div>
               </div>
               <div className="campo-visualizacao">
                 <span className="rotulo">Funcionário</span>
-                <div className="valor">
-                  {ordem.usuario?.nome ?? ordem.usuario?.nomeCompleto ?? "—"}
-                </div>
+                <div className="valor">{nomeUsuario}</div>
               </div>
             </div>
 
@@ -578,6 +647,12 @@ const ModalVisualizarOrdem = ({ estaAberto, aoFechar, ordem }) => {
 
 const OrdemServico = () => {
   const [ordens, setOrdens] = useState([]);
+  const [paginacao, setPaginacao] = useState({
+    page: 0,
+    size: 20,
+    totalElements: 0,
+    totalPages: 0,
+  });
   const [modalAberto, setModalAberto] = useState(false);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [modalConfirmAberto, setModalConfirmAberto] = useState(false);
@@ -594,6 +669,82 @@ const OrdemServico = () => {
   const [listaCombos, setListaCombos] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
   const [listaUsuarios, setListaUsuarios] = useState([]);
+
+  const nomeCliente = (ordem) => {
+    const clienteId = Number(ordem?.clienteId ?? ordem?.cliente?.id ?? 0);
+    const cliente = (listaClientes || []).find(
+      (c) => Number(c.id) === clienteId,
+    );
+    return (
+      cliente?.nome ||
+      cliente?.nomeCompleto ||
+      ordem?.cliente?.nome ||
+      ordem?.cliente?.nomeCompleto ||
+      (typeof ordem?.cliente === "string"
+        ? ordem.cliente
+        : clienteId
+          ? `Cliente #${clienteId}`
+          : "—")
+    );
+  };
+
+  const nomeUsuario = (ordem) => {
+    const usuarioId = Number(ordem?.usuarioId ?? ordem?.usuario?.id ?? 0);
+    const usuario = (listaUsuarios || []).find(
+      (u) => Number(u.id) === usuarioId,
+    );
+    return (
+      usuario?.nome ||
+      usuario?.nomeCompleto ||
+      ordem?.usuario?.nome ||
+      ordem?.usuario?.nomeCompleto ||
+      (typeof ordem?.usuario === "string"
+        ? ordem.usuario
+        : usuarioId
+          ? `Usuário #${usuarioId}`
+          : "—")
+    );
+  };
+
+  const nomesServicosCombos = (ordem) => {
+    return (ordem?.itens || [])
+      .filter(
+        (it) =>
+          Boolean(it.comboId) || Boolean(it.servicoProdutoId && !it.produtoId),
+      )
+      .map((it) => {
+        if (it.comboId) {
+          const combo = (listaCombos || []).find(
+            (c) => Number(c.id ?? c.idCombo) === Number(it.comboId),
+          );
+          return combo?.nome || `Combo #${it.comboId}`;
+        }
+
+        const servico = (listaServicos || []).find(
+          (s) => Number(s.idProdutoServico) === Number(it.servicoProdutoId),
+        );
+        return (
+          servico?.nome ??
+          servico?.descricao ??
+          `Serviço #${it.servicoProdutoId}`
+        );
+      })
+      .filter(Boolean)
+      .join(", ");
+  };
+
+  const nomesProdutos = (ordem) => {
+    return (ordem?.itens || [])
+      .filter((it) => Boolean(it.produtoId))
+      .map((it) => {
+        const produto = (listaProdutos || []).find(
+          (p) => Number(p.idProdutoServico) === Number(it.produtoId),
+        );
+        const nome = produto?.nome || `Produto #${it.produtoId}`;
+        return `${nome} x${it.quantidade ?? 1}`;
+      })
+      .join(", ");
+  };
 
   const unwrap = (r) => {
     if (!r) return [];
@@ -755,13 +906,39 @@ const OrdemServico = () => {
       dataInicio: filtros?.dataInicio ?? filtros?.data ?? "",
       dataFim: filtros?.dataFim ?? "",
       usuarioId: filtros?.usuarioId ?? "",
+      page: Number(filtros?.page ?? 0),
+      size: Number(filtros?.size ?? paginacao.size ?? 20),
     };
 
-    const r = (await ordemService.list?.()) ?? ordemService.listAll?.() ?? [];
+    const r =
+      (await ordemService.list?.(filtrosAtivos)) ??
+      ordemService.listAll?.() ??
+      [];
+
+    if (r?.success === false) {
+      throw new Error(r.error?.message || r.error || "Erro ao carregar ordens");
+    }
 
     const ordensArr = unwrap(r);
     const ordensFiltradas = filtrarOrdensLocalmente(ordensArr, filtrosAtivos);
     setOrdens(ordensFiltradas);
+
+    if (r?.page) {
+      setPaginacao({
+        page: Number(r.page.page ?? filtrosAtivos.page ?? 0),
+        size: Number(r.page.size ?? filtrosAtivos.size ?? 20),
+        totalElements: Number(r.page.totalElements ?? ordensArr.length ?? 0),
+        totalPages: Number(r.page.totalPages ?? 0),
+      });
+      return;
+    }
+
+    setPaginacao((prev) => ({
+      page: Number(filtrosAtivos.page ?? 0),
+      size: Number(filtrosAtivos.size ?? prev.size ?? 20),
+      totalElements: ordensArr.length,
+      totalPages: ordensArr.length > 0 ? 1 : 0,
+    }));
   };
 
   const aplicarFiltros = async () => {
@@ -779,6 +956,8 @@ const OrdemServico = () => {
         dataInicio: filtroDataInicio,
         dataFim: filtroDataFim,
         usuarioId: filtroUsuarioId,
+        page: 0,
+        size: paginacao.size,
       });
     } catch (err) {
       console.error("Erro ao aplicar filtros de ordens", err);
@@ -792,7 +971,10 @@ const OrdemServico = () => {
     setFiltroUsuarioId("");
 
     try {
-      await carregarOrdens({});
+      await carregarOrdens({
+        page: 0,
+        size: paginacao.size,
+      });
     } catch (err) {
       console.error("Erro ao limpar filtros de ordens", err);
       error("Erro ao recarregar ordens");
@@ -865,13 +1047,26 @@ const OrdemServico = () => {
         JSON.stringify(payload, null, 2),
       );
       if (id) {
-        (await ordemService.update?.(id, payload)) ??
+        const updateResult =
+          (await ordemService.update?.(id, payload)) ??
           ordemService.updateOrder?.(id, payload);
+        if (updateResult?.success === false) {
+          throw new Error(
+            updateResult.error?.message ||
+              updateResult.error ||
+              "Erro ao atualizar ordem",
+          );
+        }
         success("Ordem atualizada com sucesso");
       } else {
         const result =
           (await ordemService.create?.(payload)) ??
           ordemService.createOrder?.(payload);
+        if (result?.success === false) {
+          throw new Error(
+            result.error?.message || result.error || "Erro ao criar ordem",
+          );
+        }
         console.log("DEBUG - Resultado após criar:", result);
         success("Ordem adicionada com sucesso");
       }
@@ -879,6 +1074,8 @@ const OrdemServico = () => {
         dataInicio: filtroDataInicio,
         dataFim: filtroDataFim,
         usuarioId: filtroUsuarioId,
+        page: paginacao.page,
+        size: paginacao.size,
       });
     } catch (err) {
       console.error("Erro ao salvar ordem", err);
@@ -906,13 +1103,23 @@ const OrdemServico = () => {
 
   const confirmarExclusao = async () => {
     try {
-      (await ordemService.remove?.(ordemParaExcluir)) ??
+      const removeResult =
+        (await ordemService.remove?.(ordemParaExcluir)) ??
         ordemService.delete?.(ordemParaExcluir);
+      if (removeResult?.success === false) {
+        throw new Error(
+          removeResult.error?.message ||
+            removeResult.error ||
+            "Erro ao excluir ordem",
+        );
+      }
       success("Ordem excluída");
       await carregarOrdens({
         dataInicio: filtroDataInicio,
         dataFim: filtroDataFim,
         usuarioId: filtroUsuarioId,
+        page: paginacao.page,
+        size: paginacao.size,
       });
     } catch (err) {
       console.error("Erro ao excluir ordem", err);
@@ -926,20 +1133,28 @@ const OrdemServico = () => {
   const ordensFiltradas = (Array.isArray(ordens) ? ordens : []).filter((o) => {
     if (!termoPesquisa) return true;
     const t = termoPesquisa.toLowerCase();
-    const clienteName =
-      o.cliente?.nome ??
-      o.cliente?.nomeCompleto ??
-      (typeof o.cliente === "string" ? o.cliente : "");
-    const usuarioName =
-      o.usuario?.nome ??
-      o.usuario?.nomeCompleto ??
-      (typeof o.usuario === "string" ? o.usuario : "");
+    const clienteName = nomeCliente(o);
+    const usuarioName = nomeUsuario(o);
     return (
       (clienteName && String(clienteName).toLowerCase().includes(t)) ||
       (usuarioName && String(usuarioName).toLowerCase().includes(t)) ||
-      (o.idOrdemServico && String(o.idOrdemServico).includes(t))
+      (o.idOrdemServico && String(o.idOrdemServico).includes(t)) ||
+      (o.id && String(o.id).includes(t))
     );
   });
+
+  const mudarPagina = async (pageAlvo) => {
+    if (pageAlvo < 0) return;
+    if (paginacao.totalPages > 0 && pageAlvo >= paginacao.totalPages) return;
+
+    await carregarOrdens({
+      dataInicio: filtroDataInicio,
+      dataFim: filtroDataFim,
+      usuarioId: filtroUsuarioId,
+      page: pageAlvo,
+      size: paginacao.size,
+    });
+  };
 
   return (
     <div className="container-ordens">
@@ -1023,11 +1238,7 @@ const OrdemServico = () => {
             key={o.idOrdemServico ?? o.id ?? Date.now()}
           >
             <div className="ordem-info">
-              <h3>
-                {o.cliente?.nome ??
-                  o.cliente?.nomeCompleto ??
-                  (typeof o.cliente === "string" ? o.cliente : "—")}
-              </h3>
+              <h3>{nomeCliente(o)}</h3>
               <div className="linha-detalhes">
                 <div className="detalhes-grade">
                   <div className="detalhe-titulo">Funcionário</div>
@@ -1037,44 +1248,11 @@ const OrdemServico = () => {
                     Valor
                   </div>
 
+                  <div className="detalhe-valor">{nomeUsuario(o)}</div>
                   <div className="detalhe-valor">
-                    {o.usuario?.nome ?? o.usuario?.nomeCompleto ?? "—"}
+                    {nomesServicosCombos(o) || "—"}
                   </div>
-                  <div className="detalhe-valor">
-                    {(o.itens || [])
-                      .filter((it) => {
-                        if (it.combo) return true;
-                        if (
-                          it.servicoProduto &&
-                          !it.servicoProduto.isProduto &&
-                          !it.servicoProduto.produto
-                        ) {
-                          return true;
-                        }
-                        return false;
-                      })
-                      .map((it) =>
-                        it.combo
-                          ? it.combo.nome
-                          : (it.servicoProduto?.nome ??
-                            it.servicoProduto?.descricao),
-                      )
-                      .filter(Boolean)
-                      .join(", ") || "—"}
-                  </div>
-                  <div className="detalhe-valor">
-                    {(o.itens || [])
-                      .filter(
-                        (it) =>
-                          it.servicoProduto?.isProduto === true ||
-                          it.servicoProduto?.produto === true,
-                      )
-                      .map(
-                        (it) =>
-                          `${it.servicoProduto.nome} x${it.quantidade ?? 1}`,
-                      )
-                      .join(", ") || "—"}
-                  </div>
+                  <div className="detalhe-valor">{nomesProdutos(o) || "—"}</div>
                   <div className="detalhe-valor detalhe-valor-preco">
                     R$ {o.valorFinal ?? o.valorVenda ?? "0,00"}
                   </div>
@@ -1108,6 +1286,33 @@ const OrdemServico = () => {
         )}
       </div>
 
+      <div className="paginacao-ordem" style={{ marginTop: 16 }}>
+        <button
+          type="button"
+          className="botao-limpar-filtro-ordem"
+          onClick={() => mudarPagina(paginacao.page - 1)}
+          disabled={paginacao.page <= 0}
+        >
+          Anterior
+        </button>
+        <span style={{ margin: "0 12px" }}>
+          Página {paginacao.totalPages > 0 ? paginacao.page + 1 : 0} de{" "}
+          {paginacao.totalPages}
+        </span>
+        <button
+          type="button"
+          className="botao-filtro-ordem"
+          onClick={() => mudarPagina(paginacao.page + 1)}
+          disabled={
+            paginacao.totalPages === 0 ||
+            paginacao.page >= paginacao.totalPages - 1
+          }
+        >
+          Próxima
+        </button>
+        <span style={{ marginLeft: 12 }}>Total: {paginacao.totalElements}</span>
+      </div>
+
       <ModalOrdem
         estaAberto={modalAberto}
         aoFechar={() => setModalAberto(false)}
@@ -1124,6 +1329,11 @@ const OrdemServico = () => {
         estaAberto={modalVisualizarAberto}
         aoFechar={() => setModalVisualizarAberto(false)}
         ordem={ordemParaVisualizar}
+        listaClientes={listaClientes}
+        listaUsuarios={listaUsuarios}
+        listaServicos={listaServicos}
+        listaProdutos={listaProdutos}
+        listaCombos={listaCombos}
       />
 
       <ModalConfirmacao

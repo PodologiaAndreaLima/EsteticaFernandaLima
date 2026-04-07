@@ -41,6 +41,13 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      "/os-ms": {
+        target: "http://localhost:8081",
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/os-ms/, ""),
+      },
+    },
   },
   // Configuração para lidar com variáveis de ambiente como no CRA
   publicDir: "public",

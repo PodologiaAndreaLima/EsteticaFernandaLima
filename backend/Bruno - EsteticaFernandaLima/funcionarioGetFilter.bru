@@ -1,0 +1,17 @@
+meta {
+  name: funcionarioGetFilter
+  type: http
+  seq: 10
+}
+get {
+  url: http://localhost:8080/funcionarios?busca=ana
+  body: none
+  auth: inherit
+}
+params:query {
+  busca: ana
+}
+settings {
+  encodeUrl: true
+}
+
