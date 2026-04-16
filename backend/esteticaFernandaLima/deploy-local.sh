@@ -11,10 +11,8 @@ docker stop api-estetica-fernanda-lima 2>/dev/null
 docker rm api-estetica-fernanda-lima 2>/dev/null
 
 # 2. Compila o projeto e gera o novo .jar
-# Usamos o ./mvnw (Maven Wrapper) que já vem no Spring Boot, assim não precisamos do Maven instalado no sistema
-# O -DskipTests pula a execução de testes para o build ser bem mais rápido
 echo "-> Compilando o projeto com Maven..."
-./mvnw clean package -DskipTests
+./mvnw clean package
 
 # 3. Constrói a imagem Docker
 echo "-> Construindo a nova imagem Docker..."
