@@ -51,22 +51,22 @@ const ModalOrdem = ({
         .map((it) => {
           if (it.comboId)
             return {
-              servico: it.comboId,
+              servico: `combo:${it.comboId}`,
               desconto: it.desconto ?? 0,
             };
           if (it.servicoProdutoId && !it.produtoId)
             return {
-              servico: it.servicoProdutoId,
+              servico: `servico:${it.servicoProdutoId}`,
               desconto: it.desconto ?? 0,
             };
           if (it.combo)
             return {
-              servico: it.combo.idCombo ?? it.combo.id,
+              servico: `combo:${it.combo.idCombo ?? it.combo.id}`,
               desconto: it.desconto ?? 0,
             };
           if (it.servicoProduto)
             return {
-              servico: it.servicoProduto.idProdutoServico,
+              servico: `servico:${it.servicoProduto.idProdutoServico}`,
               desconto: it.desconto ?? 0,
             };
           return null;
@@ -184,7 +184,11 @@ const ModalOrdem = ({
 
       // Processar serviços/combos
       for (const s of ordem.servicos) {
-        const selectedId = Number(s.servico);
+        const selectedValue = String(s.servico || "");
+        const [selectedType, rawSelectedId] = selectedValue.includes(":")
+          ? selectedValue.split(":")
+          : ["", selectedValue];
+        const selectedId = Number(rawSelectedId);
         console.log(
           "DEBUG - processando servico:",
           s,
@@ -192,20 +196,30 @@ const ModalOrdem = ({
           selectedId,
         );
         if (!selectedId) continue;
-        const isCombo = (listaCombos || []).some(
+        const comboSelecionado = (listaCombos || []).find(
           (c) => Number(c.id ?? c.idCombo) === selectedId,
         );
+        const servicoSelecionado = (listaServicos || []).find(
+          (servico) => Number(servico.idProdutoServico) === selectedId,
+        );
+        const isCombo =
+          selectedType === "combo" || (!selectedType && comboSelecionado);
         if (isCombo) {
           itens.push({
             comboId: selectedId,
             quantidade: 1,
             desconto: parseFloat(s.desconto) || 0,
+            nomeCombo: comboSelecionado?.nome || `Combo #${selectedId}`,
           });
         } else {
           itens.push({
             servicoProdutoId: selectedId,
             quantidade: 1,
             desconto: parseFloat(s.desconto) || 0,
+            nomeServicoProduto:
+              servicoSelecionado?.nome ||
+              servicoSelecionado?.descricao ||
+              `Serviço #${selectedId}`,
           });
         }
       }
@@ -215,10 +229,18 @@ const ModalOrdem = ({
         const produtoId = Number(p.produto);
         console.log("DEBUG - processando produto:", p, "produtoId:", produtoId);
         if (!produtoId) continue;
+        const produtoSelecionado = (listaProdutos || []).find(
+          (produto) => Number(produto.idProdutoServico) === produtoId,
+        );
         itens.push({
-          produtoId: produtoId, // Backend trata como servicoProdutoId
+          produtoId: produtoId,
           quantidade: Number(p.quantidade) || 1,
           desconto: parseFloat(p.desconto) || 0,
+          nomeServicoProduto:
+            produtoSelecionado?.nome ||
+            produtoSelecionado?.descricao ||
+            `Produto #${produtoId}`,
+          ehProduto: true,
         });
       }
 
@@ -317,13 +339,13 @@ const ModalOrdem = ({
                   {(listaServicos || []).map((sv) => (
                     <option
                       key={sv.idProdutoServico}
-                      value={sv.idProdutoServico}
+                      value={`servico:${sv.idProdutoServico}`}
                     >
                       {sv.nome ?? sv.descricao}
                     </option>
                   ))}
                   {(listaCombos || []).map((c) => (
-                    <option key={c.id ?? c.idCombo} value={c.id ?? c.idCombo}>
+                    <option key={c.id ?? c.idCombo} value={`combo:${c.id ?? c.idCombo}`}>
                       {c.nome}
                     </option>
                   ))}

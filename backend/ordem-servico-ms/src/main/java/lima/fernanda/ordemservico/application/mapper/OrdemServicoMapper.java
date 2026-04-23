@@ -9,8 +9,7 @@ import java.util.List;
 
 public final class OrdemServicoMapper {
 
-    private OrdemServicoMapper() {
-    }
+    private OrdemServicoMapper() {}
 
     public static OrdemServico toDomain(OrdemServicoRequest request) {
         OrdemServico ordemServico = new OrdemServico();
@@ -19,18 +18,17 @@ public final class OrdemServicoMapper {
         ordemServico.setValorFinal(request.valorFinal());
         ordemServico.setObservacao(request.observacao());
 
-        List<ItemOrdemServico> itens = request.itens() == null ? Collections.emptyList() : request.itens().stream()
-                .map(OrdemServicoMapper::toDomainItem)
-                .toList();
+        List<ItemOrdemServico> itens = request.itens() == null
+                ? Collections.emptyList()
+                : request.itens().stream().map(OrdemServicoMapper::toDomainItem).toList();
         ordemServico.setItens(itens);
         return ordemServico;
     }
 
     public static OrdemServicoResponse toResponse(OrdemServico ordemServico) {
-        List<ItemOrdemServicoResponse> itens = ordemServico.getItens() == null ? Collections.emptyList() : ordemServico.getItens()
-                .stream()
-                .map(OrdemServicoMapper::toResponseItem)
-                .toList();
+        List<ItemOrdemServicoResponse> itens = ordemServico.getItens() == null
+                ? Collections.emptyList()
+                : ordemServico.getItens().stream().map(OrdemServicoMapper::toResponseItem).toList();
 
         return new OrdemServicoResponse(
                 ordemServico.getId(),
@@ -50,6 +48,10 @@ public final class OrdemServicoMapper {
         item.setProdutoId(request.produtoId());
         item.setQuantidade(request.quantidade() != null ? request.quantidade() : 1);
         item.setDesconto(request.desconto() != null ? request.desconto() : 0.0f);
+        // Propaga campos de nome para enriquecer o evento da fila
+        item.setNomeServicoProduto(request.nomeServicoProduto());
+        item.setNomeCombo(request.nomeCombo());
+        item.setEhProduto(request.ehProduto());
         return item;
     }
 
@@ -63,4 +65,3 @@ public final class OrdemServicoMapper {
         );
     }
 }
-

@@ -10,8 +10,7 @@ import java.util.List;
 
 public final class OrdemServicoEntityMapper {
 
-    private OrdemServicoEntityMapper() {
-    }
+    private OrdemServicoEntityMapper() {}
 
     public static OrdemServicoEntity toEntity(OrdemServico domain) {
         OrdemServicoEntity entity = new OrdemServicoEntity();
@@ -22,21 +21,15 @@ public final class OrdemServicoEntityMapper {
         entity.setDataCriacao(domain.getDataCriacao());
         entity.setObservacao(domain.getObservacao());
 
-        List<ItemOrdemServicoEntity> itens = new ArrayList<>();
         if (domain.getItens() != null) {
+            List<ItemOrdemServicoEntity> entityItens = new ArrayList<>();
             for (ItemOrdemServico item : domain.getItens()) {
-                ItemOrdemServicoEntity itemEntity = new ItemOrdemServicoEntity();
-                itemEntity.setServicoProdutoId(item.getServicoProdutoId());
-                itemEntity.setComboId(item.getComboId());
-                itemEntity.setProdutoId(item.getProdutoId());
-                itemEntity.setQuantidade(item.getQuantidade());
-                itemEntity.setDesconto(item.getDesconto());
+                ItemOrdemServicoEntity itemEntity = toItemEntity(item);
                 itemEntity.setOrdemServico(entity);
-                itens.add(itemEntity);
+                entityItens.add(itemEntity);
             }
+            entity.setItens(entityItens);
         }
-        entity.setItens(itens);
-
         return entity;
     }
 
@@ -49,21 +42,37 @@ public final class OrdemServicoEntityMapper {
         domain.setDataCriacao(entity.getDataCriacao());
         domain.setObservacao(entity.getObservacao());
 
-        List<ItemOrdemServico> itens = new ArrayList<>();
         if (entity.getItens() != null) {
-            for (ItemOrdemServicoEntity itemEntity : entity.getItens()) {
-                ItemOrdemServico item = new ItemOrdemServico();
-                item.setServicoProdutoId(itemEntity.getServicoProdutoId());
-                item.setComboId(itemEntity.getComboId());
-                item.setProdutoId(itemEntity.getProdutoId());
-                item.setQuantidade(itemEntity.getQuantidade());
-                item.setDesconto(itemEntity.getDesconto());
-                itens.add(item);
-            }
+            domain.setItens(entity.getItens().stream()
+                    .map(OrdemServicoEntityMapper::toItemDomain)
+                    .toList());
         }
-        domain.setItens(itens);
-
         return domain;
     }
-}
 
+    private static ItemOrdemServicoEntity toItemEntity(ItemOrdemServico item) {
+        ItemOrdemServicoEntity entity = new ItemOrdemServicoEntity();
+        entity.setServicoProdutoId(item.getServicoProdutoId());
+        entity.setComboId(item.getComboId());
+        entity.setProdutoId(item.getProdutoId());
+        entity.setQuantidade(item.getQuantidade());
+        entity.setDesconto(item.getDesconto());
+        entity.setNomeServicoProduto(item.getNomeServicoProduto());
+        entity.setNomeCombo(item.getNomeCombo());
+        entity.setEhProduto(item.getEhProduto());
+        return entity;
+    }
+
+    private static ItemOrdemServico toItemDomain(ItemOrdemServicoEntity entity) {
+        ItemOrdemServico item = new ItemOrdemServico();
+        item.setServicoProdutoId(entity.getServicoProdutoId());
+        item.setComboId(entity.getComboId());
+        item.setProdutoId(entity.getProdutoId());
+        item.setQuantidade(entity.getQuantidade());
+        item.setDesconto(entity.getDesconto());
+        item.setNomeServicoProduto(entity.getNomeServicoProduto());
+        item.setNomeCombo(entity.getNomeCombo());
+        item.setEhProduto(entity.getEhProduto());
+        return item;
+    }
+}

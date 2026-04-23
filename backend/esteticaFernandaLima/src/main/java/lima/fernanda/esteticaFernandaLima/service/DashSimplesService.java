@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class DashSimplesService {
 
-    private static final int FUNCIONARIO_ID_FIXO = 2;
+    private static final int PROPRIETARIA_ID = 1;
 
     private final OrdemServicoMsClient ordemServicoMsClient;
     private final CustoExtraRepository extraRepository;
@@ -196,21 +196,43 @@ public class DashSimplesService {
                 .collect(Collectors.toList());
     }
 
-    public Float pegarReceitaTotalFuncionarioMesAtual() {
+    public Float pegarReceitaTotalFuncionarioMesAtual(Integer funcionarioId) {
         return (float) listarOrdensMesAtual().stream()
                 .filter(ordem -> ordem.usuarioId() != null)
-                .filter(ordem -> ordem.usuarioId().equals(FUNCIONARIO_ID_FIXO))
+                .filter(ordem -> pertenceAoFiltroFuncionario(ordem.usuarioId(), funcionarioId))
                 .map(OrdemServicoMsResponse::valorFinal)
                 .filter(java.util.Objects::nonNull)
                 .mapToDouble(Float::doubleValue)
                 .sum();
     }
 
-    public Long pegarQuantidadeOrdensFuncionarioMesAtual() {
+    public Float pegarReceitaComissionavelProprietariaMesAtual(Integer proprietarioId) {
+        return (float) listarOrdensMesAtual().stream()
+                .filter(ordem -> ordem.usuarioId() != null)
+                .filter(ordem -> proprietarioId == null || !ordem.usuarioId().equals(proprietarioId))
+                .map(OrdemServicoMsResponse::valorFinal)
+                .filter(java.util.Objects::nonNull)
+                .mapToDouble(Float::doubleValue)
+                .sum();
+    }
+
+    public Long pegarQuantidadeOrdensFuncionarioMesAtual(Integer funcionarioId) {
         return listarOrdensMesAtual().stream()
                 .filter(ordem -> ordem.usuarioId() != null)
-                .filter(ordem -> ordem.usuarioId().equals(FUNCIONARIO_ID_FIXO))
+                .filter(ordem -> pertenceAoFiltroFuncionario(ordem.usuarioId(), funcionarioId))
                 .count();
+    }
+
+    private boolean pertenceAoFiltroFuncionario(Integer usuarioId, Integer funcionarioId) {
+        if (funcionarioId == null) {
+            return true;
+        }
+
+        if (funcionarioId == PROPRIETARIA_ID) {
+            return !usuarioId.equals(PROPRIETARIA_ID);
+        }
+
+        return usuarioId.equals(funcionarioId);
     }
 
     private String buscarNomeCombo(Integer comboId) {

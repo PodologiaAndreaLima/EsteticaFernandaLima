@@ -1,7 +1,7 @@
-package lima.fernanda.ordemservico.application.dto;
+package lima.fernanda.esteticaFernandaLima.integration.ordemservico.dto;
 
 
-public record ItemOrdemServicoRequest(
+public record OrdemServicoMsItemRequest(
         Integer servicoProdutoId,
         Integer comboId,
         Integer produtoId,

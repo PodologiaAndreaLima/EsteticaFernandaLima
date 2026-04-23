@@ -6,6 +6,7 @@ import lima.fernanda.esteticaFernandaLima.service.DashSimplesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -67,13 +68,24 @@ public class DashSimplesController {
     }
 
     @GetMapping("/receita-funcionario-mes-atual")
-    public ResponseEntity<Float> getReceitaPorFuncionarioMesAtual() {
-        return ResponseEntity.ok(dashSimplesService.pegarReceitaTotalFuncionarioMesAtual());
+    public ResponseEntity<Float> getReceitaPorFuncionarioMesAtual(
+            @RequestParam(required = false) Integer funcionarioId
+    ) {
+        return ResponseEntity.ok(dashSimplesService.pegarReceitaTotalFuncionarioMesAtual(funcionarioId));
+    }
+
+    @GetMapping("/receita-comissao-proprietaria-mes-atual")
+    public ResponseEntity<Float> getReceitaComissaoProprietariaMesAtual(
+            @RequestParam(defaultValue = "1") Integer proprietarioId
+    ) {
+        return ResponseEntity.ok(dashSimplesService.pegarReceitaComissionavelProprietariaMesAtual(proprietarioId));
     }
 
     @GetMapping("/quantidade-ordens-servico-mes-atual-funcionario")
-    public ResponseEntity<Long> getQuantidadeOrdensServicoMesAtual() {
-        return ResponseEntity.ok(dashSimplesService.pegarQuantidadeOrdensFuncionarioMesAtual());
+    public ResponseEntity<Long> getQuantidadeOrdensServicoMesAtual(
+            @RequestParam(required = false) Integer funcionarioId
+    ) {
+        return ResponseEntity.ok(dashSimplesService.pegarQuantidadeOrdensFuncionarioMesAtual(funcionarioId));
     }
 }
 

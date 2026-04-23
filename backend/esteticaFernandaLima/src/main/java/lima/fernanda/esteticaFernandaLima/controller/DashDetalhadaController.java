@@ -77,7 +77,6 @@ public class DashDetalhadaController {
         return ResponseEntity.ok(dashDetalhadaService.pegarQuantidadeOrdensFuncionarioMesAtual());
     }
 
-    // Novos endpoints para dashboard detalhada com parâmetros mes e ano
     @GetMapping("/receita-bruta-mensal/{mes}/{ano}")
     public ResponseEntity<Float> getReceitaBrutaMensal(@PathVariable int mes, @PathVariable int ano) {
         return ResponseEntity.ok(dashDetalhadaService.getReceitaBrutaMensal(mes, ano));
