@@ -24,8 +24,7 @@ const Relatos = () => {
           <div className="relato-header">
             <div className="avatar"></div>
             <div>
-              <h3>Fulano</h3>
-              <small>15/04/2023</small>
+              <h3>Barbara Baia</h3>
             </div>
           </div>
           <div className="rating">
@@ -36,10 +35,8 @@ const Relatos = () => {
             <img src={images.starFilled} alt="Estrela" />
           </div>
           <p>
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat."
+            "Fe e incrivel, simpatica atenciosa extremamente caprichosa e
+            detalhista. Otima profissional."
           </p>
         </div>
 
@@ -47,8 +44,7 @@ const Relatos = () => {
           <div className="relato-header">
             <div className="avatar"></div>
             <div>
-              <h3>Fulano</h3>
-              <small>22/05/2023</small>
+              <h3>Julliany Camargo</h3>
             </div>
           </div>
           <div className="rating">
@@ -59,10 +55,8 @@ const Relatos = () => {
             <img src={images.starFilled} alt="Estrela" />
           </div>
           <p>
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat."
+            "Super profissional, ambiente organizado e limpo, amei o design de
+            sobrancelha e a limpeza de pele foi muito completa!"
           </p>
         </div>
 
@@ -70,8 +64,7 @@ const Relatos = () => {
           <div className="relato-header">
             <div className="avatar"></div>
             <div>
-              <h3>Fulano</h3>
-              <small>10/06/2023</small>
+              <h3>Sandra Nakamashi Kawata</h3>
             </div>
           </div>
           <div className="rating">
@@ -82,10 +75,8 @@ const Relatos = () => {
             <img src={images.starFilled} alt="Estrela" />
           </div>
           <p>
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat."
+            "Sou cliente ha alguns anos e sempre fui muito bem atendida.
+            Cuidado, atencao, boa vontade, eficiencia e simpatia. Recomendo."
           </p>
         </div>
       </div>

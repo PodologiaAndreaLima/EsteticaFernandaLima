@@ -14,10 +14,12 @@ const Beneficios = () => {
             <div className="icon">
               <img src="/assets/Vector.png" alt="Atendimento personalizado" />
             </div>
-            <h2>Atendimento personalizado</h2>
+            <h2>Atendimento Personalizado</h2>
+            <p>Cada cliente é único.</p>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Nossos procedimentos são indicados de acordo com as necessidades e
+              objetivos de cada pessoa, garantindo resultados mais seguros e
+              naturais.
             </p>
           </div>
 
@@ -25,27 +27,14 @@ const Beneficios = () => {
             <div className="icon">
               <img
                 src="/assets/Signing A Document.png"
-                alt="Avaliação gratuita"
+                alt="Qualidade, Segurança e Profissionalismo"
               />
             </div>
-            <h2>Avaliação gratuita</h2>
+            <h2>Qualidade, Segurança e Profissionalismo</h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </p>
-          </div>
-
-          <div className="card">
-            <div className="icon">
-              <img
-                src="/assets/mdi_clock-outline.png"
-                alt="Acompanhamento contínuo"
-              />
-            </div>
-            <h2>Acompanhamento contínuo</h2>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Utilizamos produtos de qualidade, técnicas atualizadas e seguimos
+              boas práticas para garantir conforto, segurança e bem-estar em
+              todos os atendimentos.
             </p>
           </div>
         </div>

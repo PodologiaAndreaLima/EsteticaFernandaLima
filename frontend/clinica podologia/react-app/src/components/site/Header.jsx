@@ -99,7 +99,7 @@ const Header = () => {
         <div className="header-buttons">
           <div className="auth-buttons">
             <AgendarButton
-              to="https://api.whatsapp.com/send?phone=5511999999999"
+              to="https://api.whatsapp.com/send?phone=5511980141736"
               external
               text="Agende já sua consulta!"
               className="btn-agendar"
