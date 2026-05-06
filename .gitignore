@@ -31,5 +31,6 @@ Desktop.ini
 coverage/
 
 #Outras pastas locais
+.tools/
 pids/
 tmp/
