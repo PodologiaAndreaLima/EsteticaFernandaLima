@@ -15,11 +15,11 @@ info() {
 }
 
 success() {
-  echo "OK: $1"
+  echo "Concluido: $1"
 }
 
 warn() {
-  echo "Aviso: $1"
+  echo "Atencao: $1"
 }
 
 fail() {
@@ -41,10 +41,10 @@ download_file() {
   echo "  Destino: $output"
 
   if command_exists curl; then
-    echo "Usando curl para o download..."
+    echo "Ferramenta de download: curl"
     curl -L --fail "$url" -o "$output"
   elif command_exists wget; then
-    echo "Usando wget para o download..."
+    echo "Ferramenta de download: wget"
     wget -O "$output" "$url"
   else
     fail "curl ou wget e necessario para baixar o Java 21 automaticamente."
@@ -70,14 +70,15 @@ to_windows_path() {
 
 ensure_java_21() {
   info "Verificando Java 21"
-  echo "O backend usa Java 21. Vou procurar uma instalacao existente antes de baixar outra."
+  echo "Java 21 e necessario para compilar os backends."
+  echo "Verificando instalacao local..."
 
   if command_exists java && [ "$(java_major_version java)" = "21" ]; then
     JAVA_HOME="$(detect_java_home)"
     export JAVA_HOME
     export PATH="$JAVA_HOME/bin:$PATH"
     echo "Java 21 encontrado em: $JAVA_HOME"
-    success "Java pronto para compilar os backends."
+    success "Java 21 disponivel para compilacao."
     return
   fi
 
@@ -85,13 +86,14 @@ ensure_java_21() {
     export JAVA_HOME="$JDK_DIR"
     export PATH="$JAVA_HOME/bin:$PATH"
     echo "Java 21 local encontrado em: $JAVA_HOME"
-    success "Java pronto para compilar os backends."
+    success "Java 21 disponivel para compilacao."
     return
   fi
 
   info "Baixando Java 21 localmente em .tools"
-  echo "Nao encontrei Java 21 instalado. Vou baixar uma copia local do Eclipse Temurin."
-  echo "Isso nao instala nada no sistema: fica somente dentro da pasta do projeto."
+  echo "Java 21 nao foi encontrado instalado."
+  echo "Uma copia local do Eclipse Temurin sera baixada para a pasta do projeto."
+  echo "Nenhuma instalacao global do sistema sera alterada."
 
   local os
   local arch
@@ -151,7 +153,7 @@ ensure_java_21() {
   export PATH="$JAVA_HOME/bin:$PATH"
 
   echo "Java 21 baixado em: $JAVA_HOME"
-  success "Java pronto para compilar os backends."
+  success "Java 21 disponivel para compilacao."
 }
 
 ensure_node_modules() {
@@ -162,7 +164,8 @@ ensure_node_modules() {
   cd "$FRONTEND_DIR"
 
   if command_exists npm; then
-    echo "npm encontrado. Rodando:"
+    echo "npm encontrado."
+    echo "Comando:"
     echo "  npm install"
     npm install
     success "Dependencias do frontend instaladas."
@@ -170,8 +173,10 @@ ensure_node_modules() {
   fi
 
   if command_exists docker; then
-    warn "npm nao encontrado localmente. Vou usar Docker com node:22-alpine para instalar node_modules."
-    echo "Rodando npm install dentro de um container temporario..."
+    warn "npm nao encontrado localmente."
+    echo "Instalacao das dependencias sera feita com Docker usando node:22-alpine."
+    echo "Comando executado dentro do container temporario:"
+    echo "  npm install"
     docker run --rm \
       -v "$FRONTEND_DIR:/app" \
       -w /app \
@@ -188,7 +193,7 @@ build_backend() {
   info "Compilando backend principal"
   echo "Pasta do backend principal:"
   echo "  $BACKEND_DIR"
-  echo "Rodando:"
+  echo "Comando:"
   echo "  ./mvnw clean package -DskipTests"
 
   cd "$BACKEND_DIR"
@@ -205,13 +210,14 @@ build_ordem_ms() {
   cd "$ORDEM_MS_DIR"
 
   if command_exists mvn; then
-    echo "Maven encontrado. Rodando:"
+    echo "Maven encontrado."
+    echo "Comando:"
     echo "  mvn clean package -DskipTests"
     mvn clean package -DskipTests
     success "Microservico compilado."
   else
     warn "Maven nao encontrado localmente."
-    echo "Tudo bem: o Dockerfile do microservico vai compilar com Maven dentro do container."
+    echo "O Dockerfile do microservico fara a compilacao com Maven dentro do container."
   fi
 }
 
@@ -228,7 +234,8 @@ ensure_docker() {
 
 ensure_rabbitmq() {
   info "Garantindo RabbitMQ local"
-  echo "O microservico usa RabbitMQ. Vou iniciar um container local se ainda nao existir."
+  echo "RabbitMQ e necessario para o microservico."
+  echo "Verificando container local..."
 
   if [ "${START_RABBITMQ:-true}" != "true" ]; then
     warn "START_RABBITMQ diferente de true. Pulando RabbitMQ."
@@ -263,7 +270,7 @@ ensure_rabbitmq() {
 
 start_project() {
   info "Subindo os containers do projeto"
-  echo "Agora vou buildar as imagens e subir tudo em background."
+  echo "As imagens serao buildadas e os containers serao iniciados em background."
   echo "Comando:"
   echo "  docker compose up --build -d"
 
@@ -275,7 +282,7 @@ start_project() {
 print_done() {
   echo ""
   echo "=============================================="
-  echo "Projeto rodando bonito:"
+  echo "Projeto em execucao:"
   echo "Frontend:            http://localhost:3000"
   echo "Backend principal:   http://localhost:8080"
   echo "Ordem-servico-ms:    http://localhost:8081"
@@ -298,8 +305,8 @@ main() {
   echo "Raiz do projeto:"
   echo "  $ROOT_DIR"
   echo ""
-  echo "O script vai preparar dependencias, compilar os servicos e subir tudo com Docker Compose."
-  echo "Se algo demorar, e normalmente download, npm install, Maven ou build Docker trabalhando."
+  echo "Etapas: dependencias, compilacao dos servicos e inicializacao via Docker Compose."
+  echo "Operacoes demoradas esperadas: downloads, npm install, Maven e build Docker."
 
   ensure_java_21
   ensure_node_modules
