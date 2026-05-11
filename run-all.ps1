@@ -42,7 +42,7 @@ function Test-Command {
 function Get-JavaMajorVersion {
     param([string]$JavaCommand)
 
-    $versionOutput = & $JavaCommand -version 2>&1 | Out-String
+    $versionOutput = cmd.exe /d /c "$JavaCommand -version 2>&1" | Out-String
     if ($versionOutput -match 'version "([^"]+)"') {
         return ($Matches[1].Split(".")[0])
     }
@@ -51,7 +51,7 @@ function Get-JavaMajorVersion {
 }
 
 function Get-JavaHomeFromCommand {
-    $settings = java -XshowSettings:properties -version 2>&1 | Out-String
+    $settings = cmd.exe /d /c "java -XshowSettings:properties -version 2>&1" | Out-String
     $match = [regex]::Match($settings, "java\.home\s*=\s*(.+)")
     if ($match.Success) {
         return $match.Groups[1].Value.Trim()
