@@ -27,16 +27,12 @@ public class AutenticacaoService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        System.out.println("Tentando autenticar usuário: " + username);
-
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(username);
 
         if(usuarioOpt.isEmpty()) {
-            System.out.println("Usuário não encontrado no banco: " + username);
-            throw new UsernameNotFoundException(String.format("usuario: %s não encontrado", username));
+            throw new UsernameNotFoundException(String.format("usuario não encontrado"));
         }
 
-        System.out.println("Usuário encontrado: " + usuarioOpt.get().getEmail());
         return new UsuarioDetalhesDto(usuarioOpt.get());
     }
 
@@ -51,7 +47,7 @@ public class AutenticacaoService implements UserDetailsService {
             if (tentativas >= MAX_TENTATIVAS_LOGIN) {
                 long bloqueadoAte = System.currentTimeMillis() + BLOQUEIO_MS;
                 usuario.setBloqueadoAte(bloqueadoAte);
-                System.out.println("Usuário bloqueado por 5 minutos: " + email);
+                System.out.println("Usuário bloqueado por 5 minutos");
             }
             usuarioRepository.save(usuario);
         });

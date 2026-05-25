@@ -71,9 +71,6 @@ public class UsuarioService {
         final String token = gerenciadorTokenJwt.generateToken(authentication);
 
         logger.info("=== Login realizado com sucesso ===");
-        logger.info("ID: {}", usuarioAutenticado.getId());
-        logger.info("Email: {}", usuarioAutenticado.getEmail());
-        logger.info("================================");
 
         return UsuarioMapper.of(usuarioAutenticado, token);
     }
