@@ -12,7 +12,12 @@ import java.util.Map;
 //  Parâmetros de custo (custosFixos, custosExtras) são recebidos via query param porque vivem no backend
 @RestController
 @RequestMapping("/dashboard")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:8080"}, allowCredentials = "true")
+@CrossOrigin(origins = {
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "http://32.199.242.142"
+}, allowCredentials = "true")
 public class DashboardController {
 
     private final DashboardApplicationService dashboardService;
