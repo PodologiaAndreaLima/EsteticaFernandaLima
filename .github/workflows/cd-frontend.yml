@@ -1,0 +1,51 @@
+name: CD - Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: frontend-clinica
+  CONTAINER_NAME: frontend-clinica
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, frontend]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Pull Docker image
+        run: |
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Stop existing container
+        run: docker stop ${{ env.CONTAINER_NAME }} || true
+
+      - name: Remove existing container
+        run: docker rm ${{ env.CONTAINER_NAME }} || true
+
+      - name: Run new container
+        run: |
+          docker run --name ${{ env.CONTAINER_NAME }} \
+            -d \
+            -p 80:80 \
+            --restart always \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl -f http://localhost:80 || exit 1

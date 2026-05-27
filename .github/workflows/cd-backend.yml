@@ -1,0 +1,97 @@
+name: CD - Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/esteticaFernandaLima/**'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: backend-clinica
+  CONTAINER_NAME: backend-clinica
+
+jobs:
+  deploy-backend-01:
+    runs-on: [self-hosted, backend-01]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Pull Docker image
+        run: |
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Stop existing container
+        run: docker stop ${{ env.CONTAINER_NAME }} || true
+
+      - name: Remove existing container
+        run: docker rm ${{ env.CONTAINER_NAME }} || true
+
+      - name: Run new container
+        run: |
+          docker run --name ${{ env.CONTAINER_NAME }} \
+            -d \
+            -p 8080:8080 \
+            -e DB_URL="${{ secrets.DB_URL }}" \
+            -e DB_USER="${{ secrets.DB_USER }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e ORDEMSERVICO_MS_BASE_URL="http://10.0.0.201:8081" \
+            --restart always \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Health check
+        run: |
+          sleep 15
+          curl -f http://localhost:8080/actuator/health || exit 1
+
+  deploy-backend-02:
+    runs-on: [self-hosted, backend-02]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Pull Docker image
+        run: |
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Stop existing container
+        run: docker stop ${{ env.CONTAINER_NAME }} || true
+
+      - name: Remove existing container
+        run: docker rm ${{ env.CONTAINER_NAME }} || true
+
+      - name: Run new container
+        run: |
+          docker run --name ${{ env.CONTAINER_NAME }} \
+            -d \
+            -p 8080:8080 \
+            -e DB_URL="${{ secrets.DB_URL }}" \
+            -e DB_USER="${{ secrets.DB_USER }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e ORDEMSERVICO_MS_BASE_URL="http://10.0.0.171:8081" \
+            --restart always \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Health check
+        run: |
+          sleep 15
+          curl -f http://localhost:8080/actuator/health || exit 1
