@@ -2,6 +2,7 @@ package lima.fernanda.esteticaFernandaLima.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 
 import java.util.List;
 
@@ -22,6 +23,12 @@ public class ServicoProduto {
     private String marca;
     private String categoria;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean ativo = true;
+
+    @Min(value = 0, message = "O estoque não pode ser negativo")
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private Integer estoque;
 
     @ManyToOne
     @JoinColumn(name = "fk_usuario")
@@ -117,6 +124,22 @@ public class ServicoProduto {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public Integer getEstoque() {
+        return estoque;
+    }
+
+    public void setEstoque(Integer estoque) {
+        this.estoque = estoque;
     }
 
     public List<VendaProdutoServico> getVendas() {
