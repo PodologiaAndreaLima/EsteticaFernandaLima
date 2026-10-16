@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lima.fernanda.esteticaFernandaLima.enums.StatusServicoProduto;
+import lima.fernanda.esteticaFernandaLima.enums.StatusCadastro;
 import lima.fernanda.esteticaFernandaLima.model.ServicoProduto;
 import lima.fernanda.esteticaFernandaLima.service.ServicoProdutoService;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class ServicoProdutoController {
     @ApiResponse(responseCode = "200", description = "Serviços/produtos encontrados")
     @ApiResponse(responseCode = "204", description = "Nenhum serviço/produto encontrado")
     public ResponseEntity<List<ServicoProduto>> getServicoProduto(
-            @RequestParam(defaultValue = "ATIVO") StatusServicoProduto status) {
+            @RequestParam(defaultValue = "ATIVO") StatusCadastro status) {
         List<ServicoProduto> servicoProdutos = service.buscarPorStatus(status);
         return servicoProdutos.isEmpty() ?
                 ResponseEntity.noContent().build() :

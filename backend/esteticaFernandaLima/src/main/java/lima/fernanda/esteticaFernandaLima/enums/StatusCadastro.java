@@ -1,6 +1,6 @@
 package lima.fernanda.esteticaFernandaLima.enums;
 
-public enum StatusServicoProduto {
+public enum StatusCadastro {
     ATIVO,
     INATIVO,
     TODOS

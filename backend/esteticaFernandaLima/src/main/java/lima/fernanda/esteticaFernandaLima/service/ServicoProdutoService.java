@@ -1,6 +1,6 @@
 package lima.fernanda.esteticaFernandaLima.service;
 
-import lima.fernanda.esteticaFernandaLima.enums.StatusServicoProduto;
+import lima.fernanda.esteticaFernandaLima.enums.StatusCadastro;
 import lima.fernanda.esteticaFernandaLima.model.ServicoProduto;
 import lima.fernanda.esteticaFernandaLima.repository.ServicoProdutoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class ServicoProdutoService {
         return repository.findAll();
     }
 
-    public List<ServicoProduto> buscarPorStatus(StatusServicoProduto status) {
+    public List<ServicoProduto> buscarPorStatus(StatusCadastro status) {
         return switch (status) {
             case ATIVO -> repository.findByAtivo(true);
             case INATIVO -> repository.findByAtivo(false);
