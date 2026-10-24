@@ -20,7 +20,8 @@ public class ClienteMapper {
                 cliente.getCpf(),
                 cliente.getEmail(),
                 cliente.getTelefone(),
-                cliente.getDataNascimento()
+                cliente.getDataNascimento(),
+                cliente.getAtivo()
         );
     }
 

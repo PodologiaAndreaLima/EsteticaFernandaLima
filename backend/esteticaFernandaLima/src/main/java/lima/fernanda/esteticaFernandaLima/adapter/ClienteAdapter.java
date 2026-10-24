@@ -17,7 +17,8 @@ public class ClienteAdapter implements Adapter<Cliente, ClienteResponse> {
             cliente.getCpf(),
             cliente.getEmail(),
             cliente.getTelefone(),
-            cliente.getDataNascimento()
+            cliente.getDataNascimento(),
+            cliente.getAtivo()
         );
     }
 }

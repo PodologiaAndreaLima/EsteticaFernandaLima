@@ -3,6 +3,7 @@ package lima.fernanda.esteticaFernandaLima.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lima.fernanda.esteticaFernandaLima.dto.ClienteMapper;
 import lima.fernanda.esteticaFernandaLima.dto.ClienteResponse;
+import lima.fernanda.esteticaFernandaLima.enums.StatusCadastro;
 import lima.fernanda.esteticaFernandaLima.model.Cliente;
 import lima.fernanda.esteticaFernandaLima.service.ClienteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,7 +62,7 @@ class ClienteControllerTest {
 
     @Test
     void getCliente() throws Exception {
-        when(service.buscarTodos(eq(null))).thenReturn(List.of(clienteResponse));
+        when(service.buscarTodos(eq(null), eq(StatusCadastro.TODOS))).thenReturn(List.of(clienteResponse));
 
         mockMvc.perform(get("/cliente")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -73,7 +76,7 @@ class ClienteControllerTest {
 
     @Test
     void getClienteVazio() throws Exception {
-        when(service.buscarTodos(eq(null))).thenReturn(List.of());
+        when(service.buscarTodos(eq(null), eq(StatusCadastro.TODOS))).thenReturn(List.of());
 
         mockMvc.perform(get("/cliente")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -86,7 +89,7 @@ class ClienteControllerTest {
 
     @Test
     void getClienteFiltro() throws Exception {
-        when(service.buscarTodos(eq("fernanda"))).thenReturn(List.of(clienteResponse));
+        when(service.buscarTodos(eq("fernanda"), eq(StatusCadastro.TODOS))).thenReturn(List.of(clienteResponse));
 
         mockMvc.perform(get("/cliente")
                         .param("busca", "fernanda")
@@ -99,7 +102,7 @@ class ClienteControllerTest {
 
     @Test
     void getClientePorIdNotFound() throws Exception {
-        when(service.buscarPorId(1)).thenThrow(new RuntimeException("Cliente não encontrado"));
+        when(service.buscarPorId(1)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
 
         mockMvc.perform(get("/cliente/1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -110,24 +113,50 @@ class ClienteControllerTest {
 
     @Test
     void deleteClientePorId() throws Exception {
-        doNothing().when(service).deletar(1);
+        when(service.inativar(1)).thenReturn(cliente);
 
         mockMvc.perform(delete("/cliente/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(service).deletar(1);
+        verify(service).inativar(1);
     }
 
     @Test
     void deleteClientePorIdNotFound() throws Exception {
-        doThrow(new RuntimeException("Cliente não encontrado")).when(service).deletar(1);
+        when(service.inativar(1)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
 
         mockMvc.perform(delete("/cliente/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
-        verify(service).deletar(1);
+        verify(service).inativar(1);
+    }
+
+    @Test
+    void getClienteFiltroPorStatus() throws Exception {
+        when(service.buscarTodos(eq(null), eq(StatusCadastro.ATIVO))).thenReturn(List.of(clienteResponse));
+
+        mockMvc.perform(get("/cliente")
+                        .param("status", "ATIVO")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].ativo").value(true));
+
+        verify(service).buscarTodos(eq(null), eq(StatusCadastro.ATIVO));
+    }
+
+    @Test
+    void reativarCliente() throws Exception {
+        when(service.reativar(1)).thenReturn(cliente);
+        when(mapper.toResponse(cliente)).thenReturn(clienteResponse);
+
+        mockMvc.perform(patch("/cliente/1/reativar")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+
+        verify(service).reativar(1);
     }
 
 }
