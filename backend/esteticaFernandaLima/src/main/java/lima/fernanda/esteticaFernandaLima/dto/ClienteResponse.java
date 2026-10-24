@@ -9,6 +9,7 @@ public class ClienteResponse {
     private String email;
     private String telefone;
     private LocalDate dataNascimento;
+    private Boolean ativo = true;
 
     // Construtor vazio
     public ClienteResponse() {}
@@ -21,6 +22,11 @@ public class ClienteResponse {
         this.email = email;
         this.telefone = telefone;
         this.dataNascimento = dataNascimento;
+    }
+
+    public ClienteResponse(Integer id, String nomeCompleto, String cpf, String email, String telefone, LocalDate dataNascimento, Boolean ativo) {
+        this(id, nomeCompleto, cpf, email, telefone, dataNascimento);
+        this.ativo = ativo;
     }
 
     // Sanitiza dados antes de enviar para o frontend
@@ -43,6 +49,7 @@ public class ClienteResponse {
     public String getEmail() { return email; }
     public String getTelefone() { return telefone; }
     public LocalDate getDataNascimento() { return dataNascimento; }
+    public Boolean getAtivo() { return ativo; }
 
     // Setters
     public void setId(Integer id) { this.id = id; }
@@ -51,4 +58,5 @@ public class ClienteResponse {
     public void setEmail(String email) { this.email = email; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 }
