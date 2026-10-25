@@ -25,7 +25,9 @@ public class Usuario {
     @Column(name = "foto_perfil", columnDefinition = "MEDIUMTEXT")
     private String fotoPerfil;
 
-    @ElementCollection
+    // EAGER: a lista é pequena e precisa estar carregada para montar o JSON de resposta,
+    // mesmo quando a sessão do JPA foi limpa (ex.: falha ao sincronizar o funcionário)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> servicosPrestados;
 
     @Column(unique = true)
