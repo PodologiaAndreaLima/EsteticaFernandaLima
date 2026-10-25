@@ -51,6 +51,15 @@ public class ServicoProdutoService {
         return alterarStatus(id, false);
     }
 
+    /**
+     * Mantido só por compatibilidade com testes antigos. Não apaga do banco:
+     * aplica a exclusão lógica (inativar), igual ao restante do sistema.
+     */
+    @Deprecated
+    public void deletar(Integer id) {
+        inativar(id);
+    }
+
     public ServicoProduto reativar(Integer id) {
         return alterarStatus(id, true);
     }

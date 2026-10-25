@@ -42,6 +42,25 @@ public class ComboService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Combo não encontrado"));
     }
 
+    /**
+     * Compatibilidade com a API de serviço usada pelos testes e integrações
+     * anteriores à adoção de ComboRequest.
+     */
+    @Transactional
+    public Combo salvar(Combo combo) {
+        return repository.save(combo);
+    }
+
+    /**
+     * Mantido só por compatibilidade com testes antigos. Não apaga do banco:
+     * aplica a exclusão lógica (inativar), igual ao restante do sistema.
+     */
+    @Deprecated
+    @Transactional
+    public void deletar(Integer id) {
+        inativar(id);
+    }
+
     @Transactional(readOnly = true)
     public List<ComboDetalheResponse> listarPorStatus(StatusCadastro status) {
         List<Combo> combos = switch (status) {
@@ -77,6 +96,18 @@ public class ComboService {
         }
         sincronizarItens(combo, request);
         return ComboDetalheResponse.fromCombo(repository.save(combo));
+    }
+
+    @Transactional
+    public Combo atualizar(Integer id, Combo comboAtualizado) {
+        Combo combo = buscarPorId(id);
+        combo.setNome(comboAtualizado.getNome());
+        combo.setDescricao(comboAtualizado.getDescricao());
+        combo.setValorFinal(comboAtualizado.getValorFinal());
+        if (comboAtualizado.getDesconto() != null) {
+            combo.setDesconto(comboAtualizado.getDesconto());
+        }
+        return repository.save(combo);
     }
 
     // exclusão lógica: o combo continua no banco, então vendas e dashboards não quebram

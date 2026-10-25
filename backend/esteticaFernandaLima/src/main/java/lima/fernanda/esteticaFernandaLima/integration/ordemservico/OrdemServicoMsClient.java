@@ -40,6 +40,18 @@ public class OrdemServicoMsClient {
         }
     }
 
+    /** Percorre todas as páginas da listagem do microsserviço (que tem tamanho fixo). */
+    public java.util.List<OrdemServicoMsResponse> listarTodas() {
+        java.util.List<OrdemServicoMsResponse> todas = new java.util.ArrayList<>();
+        for (int page = 0; page < 500; page++) {
+            OrdemServicoMsPageResponse resposta = listarPaginado(page);
+            if (resposta == null || resposta.getContent() == null) break;
+            todas.addAll(resposta.getContent());
+            if (page + 1 >= resposta.getTotalPages()) break;
+        }
+        return todas;
+    }
+
     public OrdemServicoMsResponse criar(OrdemServicoMsRequest request) {
         try {
             return restTemplate.postForObject(
@@ -62,6 +74,17 @@ public class OrdemServicoMsClient {
             ).getBody();
         } catch (RestClientException ex) {
             throw new RuntimeException("Falha ao atualizar ordem no microservico", ex);
+        }
+    }
+
+    public OrdemServicoMsResponse buscarPorId(Integer id) {
+        try {
+            return restTemplate.getForObject(
+                    baseUrl + "/ordens-servico/{id}",
+                    OrdemServicoMsResponse.class,
+                    id);
+        } catch (RestClientException ex) {
+            throw new RuntimeException("Falha ao consultar ordem no microservico", ex);
         }
     }
 
