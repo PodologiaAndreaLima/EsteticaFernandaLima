@@ -97,6 +97,26 @@ class LembreteOrdemServicoSyncTest {
     }
 
     @Test
+    void retornoUsaUltimoAtendimentoConcluidoQueTemProcedimento() {
+        LocalDateTime comPeeling = LocalDateTime.of(2026, 10, 1, 15, 0);
+        LocalDateTime semItens = LocalDateTime.of(2026, 10, 24, 16, 0);
+        LocalDateTime retorno = LocalDateTime.of(2026, 11, 1, 0, 0);
+        OrdemServicoMsResponse concluidaSemItens = new OrdemServicoMsResponse(3, 7, 1, 80f, LocalDate.now(), null,
+                List.of(), semItens, "CONCLUIDA", false);
+        when(client.listarTodas()).thenReturn(List.of(
+                os(1, 20, comPeeling, "CONCLUIDA", false),
+                concluidaSemItens,
+                os(2, 10, retorno, "PENDENTE", true)));
+
+        sync.sincronizar("default");
+
+        ArgumentCaptor<Lembrete> captor = ArgumentCaptor.forClass(Lembrete.class);
+        verify(lembreteRepository).save(captor.capture());
+        assertEquals("Peeling facial", captor.getValue().getProcedimento());
+        assertEquals(LocalDate.of(2026, 10, 1), captor.getValue().getDataUltimoAtendimento());
+    }
+
+    @Test
     void ignoraOsConcluidaCanceladaOuNoPassado() {
         when(client.listarTodas()).thenReturn(List.of(
                 os(1, 10, LocalDateTime.now().plusDays(2), "CONCLUIDA", false),

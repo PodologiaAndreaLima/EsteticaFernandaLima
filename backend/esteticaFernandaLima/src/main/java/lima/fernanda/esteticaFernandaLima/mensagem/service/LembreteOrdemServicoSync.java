@@ -107,7 +107,7 @@ public class LembreteOrdemServicoSync {
             lembrete.setDataHora(os.dtHora());
             lembrete.setObservacao(limitar(os.observacao(), 500));
             if (tipo == TipoMensagem.RETORNO) {
-                OrdemServicoMsResponse anterior = ultimoAtendimentoConcluido(ordens, os);
+                OrdemServicoMsResponse anterior = ultimoAtendimentoConcluido(ordens, os, this::nomesDosItens);
                 lembrete.setDataRetornoPrevisto(os.dtHora().toLocalDate());
                 lembrete.setDataUltimoAtendimento(anterior == null ? null : anterior.dtHora().toLocalDate());
                 String procedimento = anterior == null ? null : nomesDosItens(anterior);
@@ -126,15 +126,24 @@ public class LembreteOrdemServicoSync {
         return true;
     }
 
+    /**
+     * Última OS CONCLUIDA da mesma cliente antes do retorno. Dá preferência à mais recente que
+     * tenha procedimento identificável, para que data e procedimento venham do mesmo atendimento.
+     */
     static OrdemServicoMsResponse ultimoAtendimentoConcluido(List<OrdemServicoMsResponse> ordens,
-                                                            OrdemServicoMsResponse retorno) {
-        return ordens.stream()
+                                                            OrdemServicoMsResponse retorno,
+                                                            java.util.function.Function<OrdemServicoMsResponse, String> nomes) {
+        List<OrdemServicoMsResponse> concluidas = ordens.stream()
                 .filter(o -> o != null && o.dtHora() != null && !Objects.equals(o.id(), retorno.id()))
                 .filter(o -> Objects.equals(o.clienteId(), retorno.clienteId()))
                 .filter(o -> o.statusIgual("CONCLUIDA"))
                 .filter(o -> o.dtHora().isBefore(retorno.dtHora()))
-                .max(Comparator.comparing(OrdemServicoMsResponse::dtHora))
-                .orElse(null);
+                .sorted(Comparator.comparing(OrdemServicoMsResponse::dtHora).reversed())
+                .toList();
+        return concluidas.stream()
+                .filter(o -> nomes.apply(o) != null)
+                .findFirst()
+                .orElse(concluidas.isEmpty() ? null : concluidas.get(0));
     }
 
     private String nomesDosItens(OrdemServicoMsResponse os) {
