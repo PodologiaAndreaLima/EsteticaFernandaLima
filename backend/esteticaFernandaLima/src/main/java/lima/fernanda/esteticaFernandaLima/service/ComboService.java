@@ -51,12 +51,14 @@ public class ComboService {
         return repository.save(combo);
     }
 
+    /**
+     * Mantido só por compatibilidade com testes antigos. Não apaga do banco:
+     * aplica a exclusão lógica (inativar), igual ao restante do sistema.
+     */
+    @Deprecated
     @Transactional
     public void deletar(Integer id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Combo não encontrado");
-        }
-        repository.deleteById(id);
+        inativar(id);
     }
 
     @Transactional(readOnly = true)

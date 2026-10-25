@@ -52,14 +52,12 @@ public class ServicoProdutoService {
     }
 
     /**
-     * Compatibilidade com a API legada. A exclusão física continua disponível
-     * apenas para consumidores antigos; o controller atual usa inativar().
+     * Mantido só por compatibilidade com testes antigos. Não apaga do banco:
+     * aplica a exclusão lógica (inativar), igual ao restante do sistema.
      */
+    @Deprecated
     public void deletar(Integer id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Servico/produto não encontrado");
-        }
-        repository.deleteById(id);
+        inativar(id);
     }
 
     public ServicoProduto reativar(Integer id) {

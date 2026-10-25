@@ -19,6 +19,10 @@ public class MensagemExceptionHandler {
     ResponseEntity<?> conflict(RegraMensagemException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body(e.getMessage()));
     }
+    @ExceptionHandler(ValidacaoMensagemException.class)
+    ResponseEntity<?> invalid(ValidacaoMensagemException e) {
+        return ResponseEntity.badRequest().body(body(e.getMessage()));
+    }
     @ExceptionHandler(GeracaoMensagemException.class)
     ResponseEntity<?> generation(GeracaoMensagemException e) {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(body(e.getMessage()));

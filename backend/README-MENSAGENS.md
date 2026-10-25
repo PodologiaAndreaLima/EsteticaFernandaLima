@@ -14,7 +14,7 @@ esse domínio for implementado.
 | GET | `/lembretes/{id}?clinicaId=default` | Consulta um lembrete |
 | PATCH | `/lembretes/{id}/cancelar?clinicaId=default` | Cancela um lembrete pendente |
 | POST | `/lembretes/{id}/gerar?clinicaId=default` | Gera sugestão para revisão, sem enviar |
-| POST | `/lembretes/{id}/enviar?canal=WHATSAPP&clinicaId=default` | Envia conteúdo revisado |
+| POST | `/lembretes/{id}/enviar?canal=WHATSAPP&clinicaId=default` | Registra o envio do conteúdo revisado e devolve o `whatsappUrl` |
 | GET | `/mensagens?page=0&size=20&lembreteId=1&clinicaId=default` | Consulta histórico paginado |
 | GET | `/lembretes/historico/mensagens?page=0&size=20` | Alias do histórico |
 
@@ -23,9 +23,12 @@ O Swagger fica disponível em `/swagger-ui/index.html`.
 ## Regras
 
 - O cliente precisa existir e possuir telefone para envio.
-- Lembretes são criados como `PENDENTE`, passam a `ENVIADO` somente após o
-  provedor aceitar a mensagem e podem ser cancelados apenas enquanto pendentes.
-- Lembrete cancelado não pode ser enviado.
+- Lembretes são criados como `PENDENTE`, passam a `ENVIADO` quando o envio é
+  registrado e podem ser cancelados apenas enquanto pendentes.
+- Lembrete cancelado não pode ser enviado. Lembrete já enviado pode ser
+  reenviado, porque o envio é manual (cada tentativa fica no histórico).
+- Lembrete de agendamento precisa ter `dataHora` no futuro; lembrete de
+  `RETORNO` aceita a data do último atendimento (passada).
 - A geração retorna uma sugestão e não cria histórico nem chama o provedor de envio.
 - O envio pode receber o texto revisado em `EnviarMensagemRequest.conteudo`.
 - Falhas do provedor ficam no histórico como `FALHA`, com a mensagem do erro.
@@ -34,6 +37,20 @@ O Swagger fica disponível em `/swagger-ui/index.html`.
   mensagens filtram pelo tenant para impedir vazamento entre clínicas.
 - Os estados possíveis são `PENDENTE`, `ENVIADO`, `CANCELADO`,
   `GERADA`, `ENVIADA` e `FALHA`.
+
+## Envio pelo WhatsApp (manual)
+
+O provedor padrão é `whatsapp-link` (`MESSAGENS_PROVIDER`). O backend não
+dispara a mensagem: `POST /lembretes/{id}/enviar` grava o texto revisado no
+histórico e devolve `whatsappUrl` no formato
+`https://wa.me/55DDDNUMERO?text=MENSAGEM`. O app abre esse link e o WhatsApp do
+celular já aparece na conversa do cliente com a mensagem digitada; o usuário
+só toca em enviar. O telefone do cliente é normalizado (só dígitos, com DDI 55
+quando vier apenas DDD + número). Telefone inválido gera registro `FALHA`.
+
+`GET /lembretes` também devolve `telefoneCliente` para o app exibir no modal.
+
+Outros provedores: `fake` (simulação para testes) e `http` (gateway real).
 
 ## Execução
 
@@ -45,13 +62,15 @@ Na pasta `backend/esteticaFernandaLima`:
 
 As tabelas podem ser criadas pelo `ddl-auto=update` existente ou pela migration
 `src/main/resources/db/migration/V1__create_messaging_tables.sql` em ambientes
-que utilizem Flyway. A migration inclui os dados de retorno e procedimento usados
+que utilizem Flyway. A migration já inclui os dados de retorno e procedimento usados
 na geração de `RETORNO`. O seed opcional está em
 `src/main/resources/data-messaging.sql` e não é executado automaticamente.
 
 ## Teste local da OpenAI
 
-A integração é habilitada somente com `MESSAGENS_AI_ENABLED=true` e lê a chave
+A integração vem desligada por padrão (sem a chave, o backend usa o gerador
+padrão de texto e sobe normalmente). Ela é habilitada somente com
+`MESSAGENS_AI_ENABLED=true` e lê a chave
 exclusivamente de `OPENAI_API_KEY`. A chave não deve ser colocada no código,
 em arquivos versionados, no Git ou em logs.
 
@@ -89,7 +108,11 @@ Para simular falha do provedor fake:
 .\mvnw.cmd test
 ```
 
-Os testes novos cobrem deduplicação, tentativa sem telefone e validação HTTP.
+Os testes do módulo cobrem deduplicação, tentativa sem telefone, validação
+HTTP, reenvio, datas por tipo de lembrete e a montagem do link do WhatsApp.
+
+Senha do banco: use as variáveis `DB_USER` e `DB_PASSWORD` (na configuração de
+execução do IntelliJ), em vez de escrever a senha no `application.properties`.
 No estado atual do repositório, a suíte completa também contém testes legados
 que não compilam por APIs ausentes de `ComboService` e
 `ServicoProdutoService`; isso é independente do módulo de mensagens.

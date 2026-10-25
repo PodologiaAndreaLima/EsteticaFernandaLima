@@ -51,6 +51,9 @@ public class LembreteService {
     @Transactional
     public LembreteResponse criar(CriarLembreteRequest request) {
         String clinica = normalizarClinica(request.clinicaId());
+        if (request.tipo() != TipoMensagem.RETORNO && !request.dataHora().isAfter(LocalDateTime.now())) {
+            throw new ValidacaoMensagemException("dataHora: o atendimento precisa estar no futuro");
+        }
         if (lembreteRepository.existsByClinicaIdAndClienteIdAndDataHoraAndTipo(
                 clinica, request.clienteId(), request.dataHora(), request.tipo())) {
             throw new RegraMensagemException("Já existe um lembrete igual para este cliente e horário");
@@ -99,7 +102,7 @@ public class LembreteService {
         return mapper.toResponse(lembreteRepository.save(lembrete));
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = RegraMensagemException.class)
     public MensagemResponse enviar(Long id, String clinicaId, CanalMensagem canal) {
         return enviar(id, clinicaId, new EnviarMensagemRequest(canal, null));
     }
@@ -117,13 +120,18 @@ public class LembreteService {
         return new GerarMensagemResponse(lembrete.getId(), lembrete.getTipo(), conteudo.trim(), true);
     }
 
-    @Transactional
+    /**
+     * Registra o envio no histórico. Com o provedor padrão (whatsapp-link) nada é
+     * disparado: a resposta traz o whatsappUrl para o app abrir o WhatsApp com o
+     * número e a mensagem prontos. Como o envio final é manual, o mesmo lembrete
+     * pode ser reenviado (cada tentativa vira um registro no histórico).
+     * noRollbackFor mantém o registro de FALHA quando o cliente não tem telefone.
+     */
+    @Transactional(noRollbackFor = RegraMensagemException.class)
     public MensagemResponse enviar(Long id, String clinicaId, EnviarMensagemRequest request) {
         Lembrete lembrete = buscar(id, clinicaId);
         if (lembrete.getStatus() == StatusLembrete.CANCELADO)
             throw new RegraMensagemException("Não é permitido enviar lembrete cancelado");
-        if (lembrete.getStatus() == StatusLembrete.ENVIADO)
-            throw new RegraMensagemException("Lembrete já foi enviado");
         String telefone = lembrete.getCliente().getTelefone();
         if (telefone == null || telefone.isBlank()) {
             Mensagem mensagemSemTelefone = new Mensagem();
@@ -132,6 +140,9 @@ public class LembreteService {
             mensagemSemTelefone.setCanal(request == null || request.canal() == null
                     ? CanalMensagem.WHATSAPP : request.canal());
             mensagemSemTelefone.setTelefoneDestino("");
+            String conteudoInformado = request == null ? null : request.conteudo();
+            mensagemSemTelefone.setConteudo(conteudoInformado == null || conteudoInformado.isBlank()
+                    ? "(mensagem não enviada: cliente sem telefone)" : conteudoInformado.trim());
             mensagemSemTelefone.setStatus(StatusMensagem.FALHA);
             mensagemSemTelefone.setErroProvedor("Cliente não possui telefone para envio");
             mensagemRepository.save(mensagemSemTelefone);

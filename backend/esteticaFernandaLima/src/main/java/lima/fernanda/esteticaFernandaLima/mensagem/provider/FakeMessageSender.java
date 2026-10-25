@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-@ConditionalOnProperty(name = "mensagens.provider", havingValue = "fake", matchIfMissing = true)
+@ConditionalOnProperty(name = "mensagens.provider", havingValue = "fake")
 public class FakeMessageSender implements MessageSender {
     private final boolean fail;
     private final List<String> sentMessages = new ArrayList<>();

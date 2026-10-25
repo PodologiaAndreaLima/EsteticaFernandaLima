@@ -1,6 +1,5 @@
 package lima.fernanda.esteticaFernandaLima.mensagem.dto;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 public record CriarLembreteRequest(
         @Positive @NotNull Integer clienteId,
         @Positive Long agendamentoId,
-        @NotNull @Future LocalDateTime dataHora,
+        @NotNull LocalDateTime dataHora,
         @NotNull TipoMensagem tipo,
         @Size(max = 500) String observacao,
         LocalDate dataUltimoAtendimento,
