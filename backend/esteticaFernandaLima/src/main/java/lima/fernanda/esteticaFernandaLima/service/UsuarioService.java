@@ -2,6 +2,8 @@ package lima.fernanda.esteticaFernandaLima.service;
 
 import lima.fernanda.esteticaFernandaLima.config.GerenciadorTokenJwt;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizadoDto;
+import lima.fernanda.esteticaFernandaLima.dto.UsuarioDetalhesDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioListarDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioMapper;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -86,6 +89,10 @@ public class UsuarioService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
     String cpfAnterior = usuario.getCpf();
+    String emailAnterior = usuario.getEmail();
+
+    // localiza o funcionario ainda com os dados antigos (cpf/e-mail podem mudar abaixo)
+    Funcionario funcionarioVinculado = buscarFuncionarioParaSincronizar(cpfAnterior, usuario);
 
     if (usuarioAtualizacaoDto.getNomeCompleto() != null) {
         usuario.setNomeCompleto(usuarioAtualizacaoDto.getNomeCompleto());
@@ -103,10 +110,36 @@ public class UsuarioService {
         usuario.setServicosPrestados(usuarioAtualizacaoDto.getServicosPrestados());
     }
 
+    boolean emailAlterado = false;
+    if (usuarioAtualizacaoDto.getEmail() != null && !usuarioAtualizacaoDto.getEmail().isBlank()) {
+        String novoEmail = usuarioAtualizacaoDto.getEmail().trim().toLowerCase();
+        if (!novoEmail.equalsIgnoreCase(emailAnterior)) {
+            usuarioRepository.findByEmail(novoEmail)
+                .filter(outro -> !outro.getId().equals(id))
+                .ifPresent(outro -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Este e-mail já está em uso por outro usuário");
+                });
+            usuario.setEmail(novoEmail);
+            emailAlterado = true;
+        }
+    }
+
+    if (usuarioAtualizacaoDto.getFotoPerfil() != null) {
+        String foto = usuarioAtualizacaoDto.getFotoPerfil().trim();
+        if (foto.isEmpty()) {
+            usuario.setFotoPerfil(null); // remove a foto
+        } else {
+            validarFotoPerfil(foto);
+            usuario.setFotoPerfil(foto);
+        }
+    }
+
     Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
     try {
-        Funcionario funcionario = buscarFuncionarioParaSincronizar(cpfAnterior, usuarioSalvo);
+        Funcionario funcionario = funcionarioVinculado != null
+            ? funcionarioVinculado
+            : buscarFuncionarioParaSincronizar(cpfAnterior, usuarioSalvo);
 
         if (funcionario != null) {
             if (usuarioAtualizacaoDto.getNomeCompleto() != null) {
@@ -121,6 +154,9 @@ public class UsuarioService {
             if (usuarioAtualizacaoDto.getBio() != null) {
                 funcionario.setDescricao(usuarioAtualizacaoDto.getBio());
             }
+            if (emailAlterado) {
+                funcionario.setEmail(usuarioSalvo.getEmail());
+            }
 
             funcionarioRepository.save(funcionario);
             logger.info("Funcionário sincronizado com sucesso para o usuário: {}", id);
@@ -128,10 +164,48 @@ public class UsuarioService {
             logger.warn("Nenhum funcionário correspondente encontrado para sincronização do usuário: {}", id);
         }
     } catch (Exception e) {
-        logger.warn("Erro ao sincronizar funcionário para usuário {}: {}", id, e.getMessage());
+        logger.warn("Erro ao sincronizar funcionário para usuário {} ({}): {}",
+                id, e.getClass().getSimpleName(), e.getMessage());
     }
 
     return usuarioSalvo;
+    }
+
+    /**
+     * Atualiza o usuario e, se for o proprio usuario logado trocando o e-mail,
+     * devolve um novo token (o token antigo tem o e-mail anterior como subject).
+     */
+    public UsuarioAtualizadoDto atualizarComToken(Long id, UsuarioAtualizacaoDto dto, boolean ehProprioUsuario) {
+        String emailAnterior = usuarioRepository.findById(id).map(Usuario::getEmail).orElse(null);
+        Usuario usuarioSalvo = atualizar(id, dto);
+
+        boolean emailMudou = emailAnterior != null && !emailAnterior.equalsIgnoreCase(usuarioSalvo.getEmail());
+        String novoToken = (emailMudou && ehProprioUsuario) ? gerarToken(usuarioSalvo) : null;
+        return UsuarioMapper.of(usuarioSalvo, novoToken, novoToken != null);
+    }
+
+    private String gerarToken(Usuario usuario) {
+        UsuarioDetalhesDto detalhes = new UsuarioDetalhesDto(usuario);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                detalhes.getUsername(), null, detalhes.getAuthorities()
+        );
+        return gerenciadorTokenJwt.generateToken(authentication);
+    }
+
+    private void validarFotoPerfil(String foto) {
+        int virgula = foto.indexOf(',');
+        String cabecalho = virgula > 0 ? foto.substring(0, virgula) : "";
+        boolean formatoValido = cabecalho.equals("data:image/jpeg;base64")
+                || cabecalho.equals("data:image/png;base64")
+                || cabecalho.equals("data:image/webp;base64");
+        if (!formatoValido) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Foto de perfil deve ser uma imagem JPEG, PNG ou WEBP");
+        }
+        try {
+            Base64.getDecoder().decode(foto.substring(virgula + 1));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Foto de perfil inválida");
+        }
     }
 
     private Funcionario buscarFuncionarioParaSincronizar(String cpfAnterior, Usuario usuarioSalvo) {
