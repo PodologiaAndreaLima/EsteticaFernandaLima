@@ -1,0 +1,6 @@
+-- Seed opcional para desenvolvimento. Execute após data.sql e com um cliente existente.
+-- O módulo não ativa este arquivo automaticamente para não alterar os dados existentes.
+-- INSERT INTO lembrete
+-- (clinica_id, cliente_id, data_hora, tipo, status, observacao, criado_em)
+-- VALUES ('default', 1, '2099-12-10 14:30:00', 'LEMBRETE_AGENDAMENTO',
+--         'PENDENTE', 'Seed de desenvolvimento', CURRENT_TIMESTAMP);

@@ -65,6 +65,17 @@ public class OrdemServicoMsClient {
         }
     }
 
+    public OrdemServicoMsResponse buscarPorId(Integer id) {
+        try {
+            return restTemplate.getForObject(
+                    baseUrl + "/ordens-servico/{id}",
+                    OrdemServicoMsResponse.class,
+                    id);
+        } catch (RestClientException ex) {
+            throw new RuntimeException("Falha ao consultar ordem no microservico", ex);
+        }
+    }
+
     public void deletar(Integer id) {
         try {
             restTemplate.delete(baseUrl + "/ordens-servico/{id}", id);

@@ -51,6 +51,17 @@ public class ServicoProdutoService {
         return alterarStatus(id, false);
     }
 
+    /**
+     * Compatibilidade com a API legada. A exclusão física continua disponível
+     * apenas para consumidores antigos; o controller atual usa inativar().
+     */
+    public void deletar(Integer id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Servico/produto não encontrado");
+        }
+        repository.deleteById(id);
+    }
+
     public ServicoProduto reativar(Integer id) {
         return alterarStatus(id, true);
     }
