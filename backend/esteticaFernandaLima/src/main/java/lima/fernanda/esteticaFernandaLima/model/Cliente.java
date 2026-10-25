@@ -30,12 +30,17 @@ public class Cliente {
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
+    // exclusão lógica: cliente com ordens de serviço não pode ser apagado (FK em ordem_servico)
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean ativo = true;
+
     public Integer getId() { return id; }
     public String getNomeCompleto() { return nomeCompleto; }
     public String getCpf() { return cpf; }
     public String getTelefone() { return telefone; }
     public String getEmail() { return email; }
     public LocalDate getDataNascimento() { return dataNascimento; }
+    public Boolean getAtivo() { return ativo; }
 
     public void setId(Integer id) { this.id = id; }
     public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
@@ -43,4 +48,5 @@ public class Cliente {
     public void setTelefone(String telefone) { this.telefone = telefone; }
     public void setEmail(String email) { this.email = email; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 }
