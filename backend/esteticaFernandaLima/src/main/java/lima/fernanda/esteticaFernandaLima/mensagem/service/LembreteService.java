@@ -27,18 +27,20 @@ public class LembreteService {
     private final MessageGenerator generator;
     private final MessageSender sender;
     private final OrdemServicoMsClient ordemServicoClient;
+    private final LembreteOrdemServicoSync ordemServicoSync;
 
     public LembreteService(LembreteRepository lembreteRepository, MensagemRepository mensagemRepository,
                            ClienteRepository clienteRepository, MensagemMapper mapper,
                            MessageGenerator generator, MessageSender sender) {
-        this(lembreteRepository, mensagemRepository, clienteRepository, mapper, generator, sender, null);
+        this(lembreteRepository, mensagemRepository, clienteRepository, mapper, generator, sender, null, null);
     }
 
     @org.springframework.beans.factory.annotation.Autowired
     public LembreteService(LembreteRepository lembreteRepository, MensagemRepository mensagemRepository,
                            ClienteRepository clienteRepository, MensagemMapper mapper,
                            MessageGenerator generator, MessageSender sender,
-                           OrdemServicoMsClient ordemServicoClient) {
+                           OrdemServicoMsClient ordemServicoClient,
+                           LembreteOrdemServicoSync ordemServicoSync) {
         this.lembreteRepository = lembreteRepository;
         this.mensagemRepository = mensagemRepository;
         this.clienteRepository = clienteRepository;
@@ -46,6 +48,7 @@ public class LembreteService {
         this.generator = generator;
         this.sender = sender;
         this.ordemServicoClient = ordemServicoClient;
+        this.ordemServicoSync = ordemServicoSync;
     }
 
     @Transactional
@@ -73,8 +76,11 @@ public class LembreteService {
         return mapper.toResponse(lembreteRepository.save(lembrete));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageResponse<LembreteResponse> listar(String clinicaId, int page, int size) {
+        if (ordemServicoSync != null) {
+            ordemServicoSync.sincronizar(normalizarClinica(clinicaId)); // lembretes vêm das ordens de serviço
+        }
         Page<Lembrete> result = lembreteRepository.findByClinicaId(normalizarClinica(clinicaId),
                 PageRequest.of(page, size, Sort.by("dataHora").ascending()));
         return PageResponse.from(result.map(mapper::toResponse));
@@ -178,11 +184,7 @@ public class LembreteService {
             try {
                 OrdemServicoMsResponse ordem = ordemServicoClient.buscarPorId(lembrete.getAgendamentoId().intValue());
                 if (ordem == null) throw new GeracaoMensagemException("Ordem de serviço não encontrada");
-                if (ultimo == null) ultimo = ordem.dataCriacao();
-                if ((procedimento == null || procedimento.isBlank())
-                        && ordem.observacao() != null && !ordem.observacao().isBlank()) {
-                    procedimento = ordem.observacao();
-                }
+                if (ultimo == null && lembrete.getTipo() != TipoMensagem.RETORNO) ultimo = ordem.dataCriacao();
             } catch (GeracaoMensagemException ex) {
                 throw ex;
             } catch (RuntimeException ex) {

@@ -10,4 +10,6 @@ public interface LembreteRepository extends JpaRepository<Lembrete, Long> {
     boolean existsByClinicaIdAndClienteIdAndDataHoraAndTipo(String clinicaId, Integer clienteId,
                                                              java.time.LocalDateTime dataHora, TipoMensagem tipo);
     java.util.Optional<Lembrete> findByIdAndClinicaId(Long id, String clinicaId);
+    /** Lembretes gerados a partir de ordens de serviço (agendamentoId guarda o id da OS). */
+    java.util.List<Lembrete> findByClinicaIdAndAgendamentoIdIsNotNull(String clinicaId);
 }

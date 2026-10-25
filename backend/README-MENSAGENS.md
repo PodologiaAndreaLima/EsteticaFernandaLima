@@ -38,6 +38,21 @@ O Swagger fica disponível em `/swagger-ui/index.html`.
 - Os estados possíveis são `PENDENTE`, `ENVIADO`, `CANCELADO`,
   `GERADA`, `ENVIADA` e `FALHA`.
 
+## Lembretes a partir das ordens de serviço
+
+Ao listar (`GET /lembretes`), o backend consulta o microsserviço de OS
+(`ordemservico.ms.base-url`) e monta os lembretes automaticamente:
+
+- **Horário:** OS que não é retorno, com status `PENDENTE` e `dt_hora` no futuro.
+- **Retorno:** OS marcada como `retorno` e status `PENDENTE`. A data do retorno é o
+  `dt_hora` dela; o procedimento e a data do último atendimento vêm da última OS
+  `CONCLUIDA` da mesma cliente antes do retorno.
+- O nome do procedimento vem dos itens da OS (serviço/produto ou combo cadastrados).
+- Quando a OS é concluída, cancelada, excluída ou o horário passa, o lembrete
+  pendente vira `CANCELADO` (some da lista). Lembretes já enviados não mudam.
+- O id da OS fica em `agendamentoId`. Lembretes criados manualmente continuam valendo.
+- Se o microsserviço estiver fora do ar, a lista mostra o que já existe.
+
 ## Envio pelo WhatsApp (manual)
 
 O provedor padrão é `whatsapp-link` (`MESSAGENS_PROVIDER`). O backend não
