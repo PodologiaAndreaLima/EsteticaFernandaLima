@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lima.fernanda.ordemservico.application.dto.OrdemServicoRequest;
 import lima.fernanda.ordemservico.application.dto.OrdemServicoResponse;
 import lima.fernanda.ordemservico.application.dto.PageResponse;
+import lima.fernanda.ordemservico.application.dto.StatusOrdemServicoRequest;
 import lima.fernanda.ordemservico.application.service.OrdemServicoApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,12 @@ public class OrdemServicoController {
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<OrdemServicoResponse> atualizarStatus(@PathVariable Integer id,
+            @RequestBody @Valid StatusOrdemServicoRequest request) {
+        return ResponseEntity.ok(service.atualizarStatus(id, request));
     }
 }
 

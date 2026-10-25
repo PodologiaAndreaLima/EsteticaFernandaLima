@@ -1,0 +1,4 @@
+db\migration\V1__Atendimento_status_retorno.class
+lima\fernanda\ordemservico\application\dto\StatusOrdemServicoRequest.class
+lima\fernanda\ordemservico\domain\service\OrdemServicoProcessamentoDomainService$2.class
+lima\fernanda\ordemservico\domain\model\StatusOrdemServico.class

@@ -1,6 +1,7 @@
 package lima.fernanda.ordemservico.domain.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,16 @@ public class OrdemServico {
     private Integer usuarioId;
     private Float valorFinal;
     private LocalDate dataCriacao;
+    private LocalDateTime dtHora;
+    private StatusOrdemServico status = StatusOrdemServico.PENDENTE;
+    private boolean retorno;
+
+    public LocalDateTime getDtHora() { return dtHora; }
+    public void setDtHora(LocalDateTime dtHora) { this.dtHora = dtHora; }
+    public StatusOrdemServico getStatus() { return status; }
+    public void setStatus(StatusOrdemServico status) { this.status = status; }
+    public boolean isRetorno() { return retorno; }
+    public void setRetorno(boolean retorno) { this.retorno = retorno; }
     private String observacao;
     private List<ItemOrdemServico> itens = new ArrayList<>();
 

@@ -3,6 +3,8 @@ package lima.fernanda.ordemservico.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lima.fernanda.ordemservico.domain.model.StatusOrdemServico;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,23 @@ public class OrdemServicoEntity {
 
     @Column(name = "data_criacao", nullable = false)
     private LocalDate dataCriacao;
+
+    @Column(name = "dt_hora", nullable = false, columnDefinition = "datetime")
+    private LocalDateTime dtHora;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 16)
+    private StatusOrdemServico status = StatusOrdemServico.PENDENTE;
+
+    @Column(name = "retorno", nullable = false)
+    private boolean retorno;
+
+    public LocalDateTime getDtHora() { return dtHora; }
+    public void setDtHora(LocalDateTime dtHora) { this.dtHora = dtHora; }
+    public StatusOrdemServico getStatus() { return status; }
+    public void setStatus(StatusOrdemServico status) { this.status = status; }
+    public boolean isRetorno() { return retorno; }
+    public void setRetorno(boolean retorno) { this.retorno = retorno; }
 
     @Column(name = "observacao")
     private String observacao;
