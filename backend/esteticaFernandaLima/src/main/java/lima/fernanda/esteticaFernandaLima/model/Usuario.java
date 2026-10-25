@@ -20,6 +20,11 @@ public class Usuario {
     private String telefone;
     private String bio;
 
+    // foto de perfil como data URI (data:image/jpeg;base64,...), redimensionada pelo app
+    @Lob
+    @Column(name = "foto_perfil", columnDefinition = "MEDIUMTEXT")
+    private String fotoPerfil;
+
     @ElementCollection
     private List<String> servicosPrestados;
 
@@ -80,6 +85,14 @@ public class Usuario {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 
     public List<String> getServicosPrestados() {
