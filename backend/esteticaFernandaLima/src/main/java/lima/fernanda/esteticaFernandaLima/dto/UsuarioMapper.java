@@ -61,7 +61,8 @@ public class UsuarioMapper {
     usuarioListarDto.setCpf(usuario.getCpf());
     usuarioListarDto.setTelefone(usuario.getTelefone());
     usuarioListarDto.setBio(usuario.getBio());
-    usuarioListarDto.setServicosPrestados(usuario.getServicosPrestados());
+    usuarioListarDto.setServicosPrestados(
+        usuario.getServicosPrestados() == null ? null : new java.util.ArrayList<>(usuario.getServicosPrestados()));
     usuarioListarDto.setFotoPerfil(usuario.getFotoPerfil());
     
     if (usuario.getRole() != null) {

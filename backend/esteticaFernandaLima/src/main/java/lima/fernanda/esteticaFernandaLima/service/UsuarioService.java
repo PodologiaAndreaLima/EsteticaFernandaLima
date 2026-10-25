@@ -164,7 +164,8 @@ public class UsuarioService {
             logger.warn("Nenhum funcionário correspondente encontrado para sincronização do usuário: {}", id);
         }
     } catch (Exception e) {
-        logger.warn("Erro ao sincronizar funcionário para usuário {}: {}", id, e.getMessage());
+        logger.warn("Erro ao sincronizar funcionário para usuário {} ({}): {}",
+                id, e.getClass().getSimpleName(), e.getMessage());
     }
 
     return usuarioSalvo;

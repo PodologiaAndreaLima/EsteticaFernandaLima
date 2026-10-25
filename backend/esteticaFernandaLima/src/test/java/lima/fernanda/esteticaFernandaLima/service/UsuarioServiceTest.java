@@ -214,4 +214,23 @@ class UsuarioServiceTest {
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.atualizar(1L, dto));
         assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
     }
+
+    @Test
+    void atualizarComTokenDeveResponderMesmoSeSincronizacaoDoFuncionarioFalhar() {
+        usuario.setServicosPrestados(new java.util.ArrayList<>(List.of("Limpeza de pele")));
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByEmail("nova@email.com")).thenReturn(Optional.empty());
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(funcionarioRepository.findAllByCpf("53428213807")).thenReturn(List.of(funcionario));
+        when(funcionarioRepository.save(any(Funcionario.class))).thenThrow(new RuntimeException("CPF invalido"));
+        when(gerenciadorTokenJwt.generateToken(any())).thenReturn("token-novo");
+
+        UsuarioAtualizadoDto resposta = service.atualizarComToken(1L, dtoComEmail("nova@email.com"), true);
+
+        assertEquals("nova@email.com", resposta.getEmail());
+        assertEquals("token-novo", resposta.getToken());
+        assertEquals(List.of("Limpeza de pele"), resposta.getServicosPrestados());
+        // o DTO tem a própria lista, desligada da coleção da entidade
+        org.junit.jupiter.api.Assertions.assertNotSame(usuario.getServicosPrestados(), resposta.getServicosPrestados());
+    }
 }
