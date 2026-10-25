@@ -1,7 +1,6 @@
 package db.migration;
 
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.FlywayException;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,14 +40,16 @@ class NomeTabelaMigrationTest {
     }
 
     @Test
-    void naoDeveSobrescreverTabelaLegadaQuandoOsDoisNomesExistirem() throws Exception {
+    void mantemAsDuasTabelasQuandoOsDoisNomesExistirem() throws Exception {
         var ds = banco("conflito-nome-os");
         try (var connection = ds.getConnection(); var sql = connection.createStatement()) {
             sql.execute("CREATE TABLE ordem_servico (id INTEGER PRIMARY KEY, observacao VARCHAR(255))");
             sql.execute("INSERT INTO ordem_servico VALUES(7,'Registro legado')");
         }
-        assertThrows(FlywayException.class, () -> Flyway.configure().dataSource(ds)
-                .table("flyway_ordem_servico_history").target("2").load().migrate());
+        // Banco criado pelo ScriptBD.sql: tabela legada ordem_servico + ordem_servico_ms.
+        // V2 e V3 não renomeiam nada, a inicialização segue e nenhum dado é sobrescrito.
+        assertDoesNotThrow(() -> Flyway.configure().dataSource(ds)
+                .table("flyway_ordem_servico_history").load().migrate());
         try (var connection = ds.getConnection(); var sql = connection.createStatement();
              var result = sql.executeQuery("SELECT observacao FROM ordem_servico WHERE id=7")) {
             assertTrue(result.next());

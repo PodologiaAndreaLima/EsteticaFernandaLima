@@ -11,8 +11,10 @@ public class V3__Restaurar_nome_ordem_servico_ms extends BaseJavaMigration {
         boolean origem = tabelaExiste(connection, "ordem_servico");
         boolean destino = tabelaExiste(connection, "ordem_servico_ms");
         if (origem && destino) {
-            throw new IllegalStateException("As tabelas ordem_servico e ordem_servico_ms já existem. "
-                    + "A restauração foi interrompida para não sobrescrever dados.");
+            // Bancos criados pelo ScriptBD.sql já têm a tabela legada ordem_servico (do backend
+            // principal) ao lado de ordem_servico_ms. Nesse caso não há o que renomear: o
+            // microsserviço continua usando ordem_servico_ms e a tabela legada fica intacta.
+            return;
         }
         if (origem) {
             try (var sql = connection.createStatement()) {
