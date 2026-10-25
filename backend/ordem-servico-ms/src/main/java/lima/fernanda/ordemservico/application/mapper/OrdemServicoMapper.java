@@ -17,6 +17,8 @@ public final class OrdemServicoMapper {
         ordemServico.setUsuarioId(request.usuarioId());
         ordemServico.setValorFinal(request.valorFinal());
         ordemServico.setObservacao(request.observacao());
+        ordemServico.setDtHora(request.dtHora());
+        ordemServico.setRetorno(Boolean.TRUE.equals(request.retorno()));
 
         List<ItemOrdemServico> itens = request.itens() == null
                 ? Collections.emptyList()
@@ -37,7 +39,10 @@ public final class OrdemServicoMapper {
                 ordemServico.getValorFinal(),
                 ordemServico.getDataCriacao(),
                 ordemServico.getObservacao(),
-                itens
+                itens,
+                ordemServico.getDtHora(),
+                ordemServico.getStatus(),
+                ordemServico.isRetorno()
         );
     }
 

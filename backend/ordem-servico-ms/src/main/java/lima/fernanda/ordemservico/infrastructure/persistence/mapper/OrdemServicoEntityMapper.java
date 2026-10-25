@@ -19,6 +19,9 @@ public final class OrdemServicoEntityMapper {
         entity.setUsuarioId(domain.getUsuarioId());
         entity.setValorFinal(domain.getValorFinal());
         entity.setDataCriacao(domain.getDataCriacao());
+        entity.setDtHora(domain.getDtHora());
+        entity.setStatus(domain.getStatus());
+        entity.setRetorno(domain.isRetorno());
         entity.setObservacao(domain.getObservacao());
 
         if (domain.getItens() != null) {
@@ -40,6 +43,9 @@ public final class OrdemServicoEntityMapper {
         domain.setUsuarioId(entity.getUsuarioId());
         domain.setValorFinal(entity.getValorFinal());
         domain.setDataCriacao(entity.getDataCriacao());
+        domain.setDtHora(entity.getDtHora());
+        domain.setStatus(entity.getStatus());
+        domain.setRetorno(entity.isRetorno());
         domain.setObservacao(entity.getObservacao());
 
         if (entity.getItens() != null) {

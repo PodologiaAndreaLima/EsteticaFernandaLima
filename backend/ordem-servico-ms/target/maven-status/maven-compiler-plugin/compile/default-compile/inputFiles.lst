@@ -1,3 +1,6 @@
+C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\db\migration\V1__Atendimento_status_retorno.java
+C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\db\migration\V2__Nome_tabela_ordem_servico.java
+C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\db\migration\V3__Restaurar_nome_ordem_servico_ms.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\adapters\web\ApiExceptionHandler.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\adapters\web\DashboardController.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\adapters\web\OrdemServicoController.java
@@ -6,6 +9,7 @@ C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\or
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\dto\OrdemServicoRequest.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\dto\OrdemServicoResponse.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\dto\PageResponse.java
+C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\dto\StatusOrdemServicoRequest.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\mapper\OrdemServicoMapper.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\service\DashboardApplicationService.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\application\service\OrdemServicoApplicationService.java
@@ -16,11 +20,13 @@ C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\or
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\model\DashboardOrdemServico.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\model\ItemOrdemServico.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\model\OrdemServico.java
+C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\model\StatusOrdemServico.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\repository\DashboardOrdemServicoRepositoryPort.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\repository\OrdemServicoEventPublisherPort.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\repository\OrdemServicoRepositoryPort.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\domain\service\OrdemServicoProcessamentoDomainService.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\infrastructure\config\DomainServiceConfig.java
+C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\infrastructure\config\OrdemServicoDataConfig.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\infrastructure\messaging\rabbitmq\config\RabbitMqConfig.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\infrastructure\messaging\rabbitmq\health\RabbitMqHealthIndicator.java
 C:\Users\schar\Desktop\fernanda-lima-beauty-care\EsteticaFernandaLima\backend\ordem-servico-ms\src\main\java\lima\fernanda\ordemservico\infrastructure\messaging\rabbitmq\test\RabbitMqTestConfiguration.java

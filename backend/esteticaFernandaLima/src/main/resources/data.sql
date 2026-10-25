@@ -124,32 +124,32 @@ INSERT IGNORE INTO cliente (nome_completo, cpf, telefone, email, data_nascimento
 ---- =============================
 ---- OUTUBRO 2025
 ---- =============================
---INSERT INTO ordem_servico (fk_cliente, fk_usuario, dt_hora, observacao, valor_final) VALUES
---(1, 1, '2025-10-03 11:10:00', 'Limpeza facial', 148.00),
---(2, 1, '2025-10-09 14:40:00', 'Massagem terapêutica', 230.00),
---(3, 1, '2025-10-15 16:20:00', 'Henna', 69.00),
---(1, 1, '2025-10-21 10:00:00', 'Peeling suave', 235.00),
---(3, 1, '2025-10-27 15:35:00', 'Depilação', 118.00);
---
+-- INSERT INTO ordem_servico (fk_cliente, fk_usuario, dt_hora, observacao, valor_final) VALUES
+-- (1, 1, '2025-10-03 11:10:00', 'Limpeza facial', 148.00),
+-- (2, 1, '2025-10-09 14:40:00', 'Massagem terapêutica', 230.00),
+-- (3, 1, '2025-10-15 16:20:00', 'Henna', 69.00),
+-- (1, 1, '2025-10-21 10:00:00', 'Peeling suave', 235.00),
+-- (3, 1, '2025-10-27 15:35:00', 'Depilação', 118.00);
+
 ---- =============================
 ---- NOVEMBRO 2025
 ---- =============================
---INSERT INTO ordem_servico (fk_cliente, fk_usuario, dt_hora, observacao, valor_final) VALUES
---(2, 1, '2025-11-05 09:40:00', 'Limpeza profunda', 160.00),
---(1, 1, '2025-11-10 12:30:00', 'Massagem relaxante', 220.00),
---(3, 1, '2025-11-16 14:10:00', 'Design de sobrancelha', 58.00),
---(2, 1, '2025-11-22 16:00:00', 'Hidratação facial', 140.00),
---(1, 1, '2025-11-29 11:50:00', 'Depilação', 125.00);
---
+-- INSERT INTO ordem_servico (fk_cliente, fk_usuario, dt_hora, observacao, valor_final) VALUES
+-- (2, 1, '2025-11-05 09:40:00', 'Limpeza profunda', 160.00),
+-- (1, 1, '2025-11-10 12:30:00', 'Massagem relaxante', 220.00),
+-- (3, 1, '2025-11-16 14:10:00', 'Design de sobrancelha', 58.00),
+-- (2, 1, '2025-11-22 16:00:00', 'Hidratação facial', 140.00),
+-- (1, 1, '2025-11-29 11:50:00', 'Depilação', 125.00);
+
 ---- =============================
 ---- DEZEMBRO 2025
 ---- =============================
---INSERT INTO ordem_servico (fk_cliente, fk_usuario, dt_hora, observacao, valor_final) VALUES
---(1, 1, '2025-12-04 10:10:00', 'Limpeza de pele', 155.00),
---(3, 1, '2025-12-09 15:00:00', 'Massagem premium', 250.00),
---(2, 1, '2025-12-14 16:45:00', 'Henna', 70.00),
---(1, 1, '2025-12-21 13:30:00', 'Peeling', 245.00),
---(2, 1, '2025-12-28 17:20:00', 'Depilação', 120.00);
+-- INSERT INTO ordem_servico (fk_cliente, fk_usuario, dt_hora, observacao, valor_final) VALUES
+-- (1, 1, '2025-12-04 10:10:00', 'Limpeza de pele', 155.00),
+-- (3, 1, '2025-12-09 15:00:00', 'Massagem premium', 250.00),
+-- (2, 1, '2025-12-14 16:45:00', 'Henna', 70.00),
+-- (1, 1, '2025-12-21 13:30:00', 'Peeling', 245.00),
+-- (2, 1, '2025-12-28 17:20:00', 'Depilação', 120.00);
 
 -- ==================
 -- PRODUTOS DE ESTETICA (produto = true)
