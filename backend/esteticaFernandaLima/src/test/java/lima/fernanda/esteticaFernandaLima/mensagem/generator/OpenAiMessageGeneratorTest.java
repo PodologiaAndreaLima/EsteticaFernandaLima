@@ -67,6 +67,35 @@ class OpenAiMessageGeneratorTest {
     }
 
     @Test
+    void enviaSoOPrimeiroNomeParaAOpenAi() {
+        OpenAiMessageGenerator generator = new OpenAiMessageGenerator(
+                new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000);
+        var restTemplate = (org.springframework.web.client.RestTemplate)
+                ReflectionTestUtils.getField(generator, "restTemplate");
+        MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+        server.expect(requestTo("https://api.openai.test/v1/chat/completions"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Primeiro nome da cliente: Mariana")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString("Souza"))))
+                .andRespond(withSuccess("""
+                        {"choices":[{"message":{"role":"assistant","content":"Olá, Mariana!"}}]}
+                        """, MediaType.APPLICATION_JSON));
+
+        Lembrete lembrete = lembrete(TipoMensagem.LEMBRETE_AGENDAMENTO);
+        lembrete.getCliente().setNomeCompleto("Mariana Souza Lima");
+
+        assertFalse(generator.generate(lembrete).isBlank());
+        server.verify();
+    }
+
+    @Test
+    void primeiroNomeIgnoraEspacosExtras() {
+        assertEquals("Mariana", NomeCliente.primeiroNome("  Mariana   Souza "));
+        assertEquals("Ana", NomeCliente.primeiroNome("Ana"));
+    }
+
+    @Test
     void rejeitaDadosEssenciaisAusentesPorTipo() {
         OpenAiMessageGenerator generator = new OpenAiMessageGenerator(
                 new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000);

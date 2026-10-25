@@ -28,7 +28,7 @@ public class OpenAiMessageGenerator implements MessageGenerator {
             - Use um tom humanizado, cordial, respeitoso e profissional.
             - Prefira frases simples e fáceis de entender.
             - Evite linguagem robótica, formalidade excessiva, exageros e expressões comerciais insistentes.
-            - Use o nome da cliente naturalmente, sem repetições desnecessárias.
+            - Trate a cliente apenas pelo primeiro nome informado, de forma natural e sem repetições desnecessárias.
 
             USO DOS DADOS:
             - Utilize exclusivamente as informações fornecidas pelo sistema.
@@ -137,7 +137,8 @@ public class OpenAiMessageGenerator implements MessageGenerator {
     private String prompt(Lembrete lembrete, MessageGenerationContext context) {
         StringBuilder prompt = new StringBuilder();
         prompt.append("Tipo de lembrete: ").append(lembrete.getTipo()).append('\n');
-        prompt.append("Nome do cliente: ").append(required(context.nomeCliente(), "nome do cliente")).append('\n');
+        prompt.append("Primeiro nome da cliente: ")
+                .append(NomeCliente.primeiroNome(required(context.nomeCliente(), "nome do cliente"))).append('\n');
         if (lembrete.getTipo() == lima.fernanda.esteticaFernandaLima.mensagem.model.TipoMensagem.RETORNO) {
             prompt.append("Procedimento anterior: ").append(required(context.procedimento(), "procedimento anterior")).append('\n');
             prompt.append("Último atendimento: ").append(value(context.dataUltimoAtendimento(), "não informado")).append('\n');

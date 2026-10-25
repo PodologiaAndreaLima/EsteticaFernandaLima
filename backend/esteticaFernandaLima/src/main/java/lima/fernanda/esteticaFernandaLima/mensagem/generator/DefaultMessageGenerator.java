@@ -14,12 +14,12 @@ public class DefaultMessageGenerator implements MessageGenerator {
     @Override
     public String generate(Lembrete lembrete) {
         if (lembrete.getTipo() == lima.fernanda.esteticaFernandaLima.mensagem.model.TipoMensagem.RETORNO) {
-            return "Olá, " + lembrete.getCliente().getNomeCompleto() + "! "
+            return "Olá, " + NomeCliente.primeiroNome(lembrete.getCliente().getNomeCompleto()) + "! "
                     + "Estamos entrando em contato para lembrar sobre seu retorno"
                     + (lembrete.getProcedimento() == null ? "" : " referente ao procedimento de " + lembrete.getProcedimento())
                     + ". Se desejar, podemos ajudar você a verificar a disponibilidade de horários.";
         }
-        return "Olá, " + lembrete.getCliente().getNomeCompleto() + "! "
+        return "Olá, " + NomeCliente.primeiroNome(lembrete.getCliente().getNomeCompleto()) + "! "
                 + "Este é um lembrete do seu atendimento em "
                 + lembrete.getDataHora().format(FORMATTER) + ".";
     }
