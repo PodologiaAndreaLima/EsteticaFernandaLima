@@ -27,7 +27,7 @@ public class ServicoProduto {
     private Boolean ativo = true;
 
     @Min(value = 0, message = "O estoque não pode ser negativo")
-    @Column(nullable = false, columnDefinition = "int default 0")
+    @Column(nullable = false)
     private Integer estoque;
 
     @ManyToOne

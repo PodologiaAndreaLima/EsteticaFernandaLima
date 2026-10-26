@@ -18,10 +18,6 @@ import lima.fernanda.esteticaFernandaLima.dto.UsuarioLoginDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioTokenDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioCriacaoDto;
 import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizacaoDto;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioAtualizadoDto;
-import lima.fernanda.esteticaFernandaLima.dto.UsuarioDetalhesDto;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import lima.fernanda.esteticaFernandaLima.dto.ResetSenhaAdminDto;
 import lima.fernanda.esteticaFernandaLima.dto.TrocaSenhaDto;
 
@@ -81,29 +77,21 @@ public class UsuarioController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @SecurityRequirement(name = "Bearer")
-public ResponseEntity<UsuarioAtualizadoDto> atualizar(
+public ResponseEntity<UsuarioListarDto> atualizar(
     @PathVariable Long id,
-    @RequestBody @Valid UsuarioAtualizacaoDto usuarioAtualizacaoDto,
-    @AuthenticationPrincipal UsuarioDetalhesDto usuarioLogado) {
+    @RequestBody @Valid UsuarioAtualizacaoDto usuarioAtualizacaoDto) {
     try {
         //Valida ID contra injection
         if (id <= 0) {
             logger.warn("⚠️ ID suspeito: {}", id);
             return ResponseEntity.status(400).build();
         }
-
-        // novo token só vai para quem está editando o próprio perfil
-        boolean ehProprioUsuario = usuarioLogado != null && id.equals(usuarioLogado.getId());
-        UsuarioAtualizadoDto usuarioAtualizado =
-            usuarioService.atualizarComToken(id, usuarioAtualizacaoDto, ehProprioUsuario);
+        
+        Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioAtualizacaoDto);
         logger.info("Usuário atualizado: {}", id);
-        return ResponseEntity.ok(usuarioAtualizado);
+        return ResponseEntity.ok(UsuarioMapper.of(usuarioAtualizado));
     } catch (org.springframework.web.server.ResponseStatusException e) {
         throw e;
-    } catch (DataIntegrityViolationException e) {
-        logger.warn("Conflito ao atualizar usuário {}: {}", id, e.getMessage());
-        throw new org.springframework.web.server.ResponseStatusException(
-            org.springframework.http.HttpStatus.CONFLICT, "Este e-mail já está em uso por outro usuário");
     } catch (Exception e) {
         logger.error("Erro ao atualizar usuário: {}", e.getMessage());
         return ResponseEntity.status(400).build();

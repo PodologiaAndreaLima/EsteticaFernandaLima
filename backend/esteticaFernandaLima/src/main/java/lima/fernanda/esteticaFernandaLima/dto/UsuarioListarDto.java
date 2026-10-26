@@ -32,9 +32,6 @@ public class UsuarioListarDto {
     @Schema(description = "Cargo/Role do usuário", example = "ADMIN")
     private String role;
 
-    @Schema(description = "Foto de perfil em data URI", example = "data:image/jpeg;base64,/9j/4AAQ...")
-    private String fotoPerfil;
-
     public Long getId() {
         return id;
     }
@@ -97,14 +94,6 @@ public class UsuarioListarDto {
 
     public void setServicosPrestados(List<String> servicosPrestados) {
         this.servicosPrestados = servicosPrestados;
-    }
-
-    public String getFotoPerfil() {
-        return fotoPerfil;
-    }
-
-    public void setFotoPerfil(String fotoPerfil) {
-        this.fotoPerfil = fotoPerfil;
     }
 
     public String getRole() {
