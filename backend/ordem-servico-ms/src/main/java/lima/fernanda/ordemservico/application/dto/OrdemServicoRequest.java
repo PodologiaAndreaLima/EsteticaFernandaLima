@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lima.fernanda.ordemservico.domain.model.StatusOrdemServico;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import java.util.List;
@@ -19,7 +20,15 @@ public record OrdemServicoRequest(
         @Valid List<@NotNull ItemOrdemServicoRequest> itens,
         @NotNull @JsonProperty("dt_hora") LocalDateTime dtHora,
         StatusOrdemServico status,
-        Boolean retorno
+        Boolean retorno,
+        // Data prevista do retorno da cliente (opcional). Deve ser posterior ao atendimento.
+        LocalDate dataRetorno
 ) {
+    /** Mantém compatibilidade com quem ainda não envia dataRetorno. */
+    public OrdemServicoRequest(Integer clienteId, Integer usuarioId, Float valorFinal, String observacao,
+                               List<ItemOrdemServicoRequest> itens, LocalDateTime dtHora,
+                               StatusOrdemServico status, Boolean retorno) {
+        this(clienteId, usuarioId, valorFinal, observacao, itens, dtHora, status, retorno, null);
+    }
 }
 

@@ -27,10 +27,13 @@ import java.util.stream.Collectors;
  * Monta os lembretes a partir das ordens de serviço do microsserviço de OS.
  *
  * Regras:
- * - Lembrete de horário: OS que não é retorno, status PENDENTE e atendimento no futuro.
- * - Lembrete de retorno: OS marcada como retorno e status PENDENTE. A data do retorno é
- *   o dt_hora dela; o procedimento e a data do último atendimento vêm da última OS
- *   CONCLUIDA da mesma cliente antes do retorno.
+ * - Lembrete de horário: OS com status PENDENTE e atendimento no futuro.
+ * - Lembrete de retorno: OS com data de retorno prevista ("Precisa de retorno?") e que não foi
+ *   cancelada. O atendimento da própria OS é o último atendimento e os itens dela são o
+ *   procedimento. Uma OS pode gerar os dois lembretes.
+ * - OS antigas marcadas como retorno (sem data prevista): status PENDENTE; a data do retorno é
+ *   o dt_hora dela e o procedimento e a data do último atendimento vêm da última OS CONCLUIDA
+ *   da mesma cliente antes do retorno.
  * - OS que deixa de se encaixar (concluída, cancelada, excluída, horário já passou)
  *   cancela o lembrete se ele ainda estiver PENDENTE. Lembretes já enviados não mudam.
  * - Lembretes criados manualmente (sem OS) não são tocados.
@@ -76,54 +79,97 @@ public class LembreteOrdemServicoSync {
 
         for (OrdemServicoMsResponse os : ordens) {
             if (os == null || os.id() == null || os.dtHora() == null) continue;
-            TipoMensagem tipo = os.ehRetorno() ? TipoMensagem.RETORNO : TipoMensagem.LEMBRETE_AGENDAMENTO;
-            String chave = chave(os.id().longValue(), tipo);
-            vistos.add(chave);
-            Lembrete lembrete = existentes.get(chave);
-
-            boolean elegivel = os.statusIgual("PENDENTE") && (os.ehRetorno() || os.dtHora().isAfter(agora));
-            Cliente cliente = elegivel && os.clienteId() != null
-                    ? clienteRepository.findById(os.clienteId()).orElse(null) : null;
-            if (cliente != null && Boolean.FALSE.equals(cliente.getAtivo())) cliente = null;
-
-            if (cliente == null) {
-                cancelarSePendente(lembrete);
-                continue;
-            }
-            if (lembrete == null) {
-                if (lembreteRepository.existsByClinicaIdAndClienteIdAndDataHoraAndTipo(
-                        clinicaId, cliente.getId(), os.dtHora(), tipo)) {
-                    continue; // já existe um lembrete manual igual para esta cliente e horário
-                }
-                lembrete = new Lembrete();
-                lembrete.setClinicaId(clinicaId);
-                lembrete.setAgendamentoId(os.id().longValue());
-                lembrete.setTipo(tipo);
-                lembrete.setStatus(StatusLembrete.PENDENTE);
-            } else if (lembrete.getStatus() == StatusLembrete.CANCELADO) {
-                lembrete.setStatus(StatusLembrete.PENDENTE); // OS voltou a valer
-            }
-            lembrete.setCliente(cliente);
-            lembrete.setDataHora(os.dtHora());
-            lembrete.setObservacao(limitar(os.observacao(), 500));
-            if (tipo == TipoMensagem.RETORNO) {
-                OrdemServicoMsResponse anterior = ultimoAtendimentoConcluido(ordens, os, this::nomesDosItens);
-                lembrete.setDataRetornoPrevisto(os.dtHora().toLocalDate());
-                lembrete.setDataUltimoAtendimento(anterior == null ? null : anterior.dtHora().toLocalDate());
-                String procedimento = anterior == null ? null : nomesDosItens(anterior);
-                lembrete.setProcedimento(limitar(procedimento != null ? procedimento : nomesDosItens(os), 300));
+            if (os.dataRetorno() != null) {
+                // OS com "Precisa de retorno?": lembrete do horário (se ainda vai acontecer) e do retorno
+                sincronizarHorario(clinicaId, os, existentes, vistos, agora);
+                sincronizarRetornoPrevisto(clinicaId, os, existentes, vistos);
+            } else if (os.ehRetorno()) {
+                sincronizarRetornoLegado(clinicaId, os, ordens, existentes, vistos);
             } else {
-                lembrete.setProcedimento(limitar(nomesDosItens(os), 300));
-                lembrete.setDataRetornoPrevisto(null);
-                lembrete.setDataUltimoAtendimento(null);
+                sincronizarHorario(clinicaId, os, existentes, vistos, agora);
             }
-            lembreteRepository.save(lembrete);
         }
 
         for (Map.Entry<String, Lembrete> entry : existentes.entrySet()) {
             if (!vistos.contains(entry.getKey())) cancelarSePendente(entry.getValue()); // OS excluída
         }
         return true;
+    }
+
+    /** Lembrete de horário: OS PENDENTE com atendimento no futuro. */
+    private void sincronizarHorario(String clinicaId, OrdemServicoMsResponse os, Map<String, Lembrete> existentes,
+                                    Set<String> vistos, LocalDateTime agora) {
+        boolean elegivel = os.statusIgual("PENDENTE") && os.dtHora().isAfter(agora);
+        Lembrete lembrete = preparar(clinicaId, os, TipoMensagem.LEMBRETE_AGENDAMENTO, os.dtHora(), elegivel, existentes, vistos);
+        if (lembrete == null) return;
+        lembrete.setProcedimento(limitar(nomesDosItens(os), 300));
+        lembrete.setDataRetornoPrevisto(null);
+        lembrete.setDataUltimoAtendimento(null);
+        lembreteRepository.save(lembrete);
+    }
+
+    /**
+     * Lembrete de retorno a partir da data prevista na OS. O atendimento desta OS é o último
+     * atendimento e os itens dela são o procedimento. Só deixa de valer se a OS for cancelada.
+     */
+    private void sincronizarRetornoPrevisto(String clinicaId, OrdemServicoMsResponse os, Map<String, Lembrete> existentes,
+                                            Set<String> vistos) {
+        boolean elegivel = !os.statusIgual("CANCELADA");
+        Lembrete lembrete = preparar(clinicaId, os, TipoMensagem.RETORNO, os.dataRetorno().atStartOfDay(), elegivel, existentes, vistos);
+        if (lembrete == null) return;
+        lembrete.setDataRetornoPrevisto(os.dataRetorno());
+        lembrete.setDataUltimoAtendimento(os.dtHora().toLocalDate());
+        lembrete.setProcedimento(limitar(nomesDosItens(os), 300));
+        lembreteRepository.save(lembrete);
+    }
+
+    /** OS antigas marcadas como "é um retorno": a data do retorno é o dt_hora dela. */
+    private void sincronizarRetornoLegado(String clinicaId, OrdemServicoMsResponse os, List<OrdemServicoMsResponse> ordens,
+                                          Map<String, Lembrete> existentes, Set<String> vistos) {
+        Lembrete lembrete = preparar(clinicaId, os, TipoMensagem.RETORNO, os.dtHora(), os.statusIgual("PENDENTE"), existentes, vistos);
+        if (lembrete == null) return;
+        OrdemServicoMsResponse anterior = ultimoAtendimentoConcluido(ordens, os, this::nomesDosItens);
+        lembrete.setDataRetornoPrevisto(os.dtHora().toLocalDate());
+        lembrete.setDataUltimoAtendimento(anterior == null ? null : anterior.dtHora().toLocalDate());
+        String procedimento = anterior == null ? null : nomesDosItens(anterior);
+        lembrete.setProcedimento(limitar(procedimento != null ? procedimento : nomesDosItens(os), 300));
+        lembreteRepository.save(lembrete);
+    }
+
+    /**
+     * Devolve o lembrete (novo ou existente) já com cliente, data e observação, ou null quando não
+     * há o que salvar. Lembrete pendente de OS que deixou de ser elegível é cancelado.
+     */
+    private Lembrete preparar(String clinicaId, OrdemServicoMsResponse os, TipoMensagem tipo, LocalDateTime dataHora,
+                              boolean elegivel, Map<String, Lembrete> existentes, Set<String> vistos) {
+        String chave = chave(os.id().longValue(), tipo);
+        vistos.add(chave);
+        Lembrete lembrete = existentes.get(chave);
+
+        Cliente cliente = elegivel && os.clienteId() != null
+                ? clienteRepository.findById(os.clienteId()).orElse(null) : null;
+        if (cliente != null && Boolean.FALSE.equals(cliente.getAtivo())) cliente = null;
+        if (cliente == null) {
+            cancelarSePendente(lembrete);
+            return null;
+        }
+        if (lembrete == null) {
+            if (lembreteRepository.existsByClinicaIdAndClienteIdAndDataHoraAndTipo(
+                    clinicaId, cliente.getId(), dataHora, tipo)) {
+                return null; // já existe um lembrete manual igual para esta cliente e data
+            }
+            lembrete = new Lembrete();
+            lembrete.setClinicaId(clinicaId);
+            lembrete.setAgendamentoId(os.id().longValue());
+            lembrete.setTipo(tipo);
+            lembrete.setStatus(StatusLembrete.PENDENTE);
+        } else if (lembrete.getStatus() == StatusLembrete.CANCELADO) {
+            lembrete.setStatus(StatusLembrete.PENDENTE); // OS voltou a valer
+        }
+        lembrete.setCliente(cliente);
+        lembrete.setDataHora(dataHora);
+        lembrete.setObservacao(limitar(os.observacao(), 500));
+        return lembrete;
     }
 
     /**

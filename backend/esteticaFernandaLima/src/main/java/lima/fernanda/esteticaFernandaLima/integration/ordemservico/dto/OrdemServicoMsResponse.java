@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * dtHora, status e retorno vêm do microsserviço de OS (atendimento, situação e
- * se a OS é um retorno). São usados pela jornada de lembretes.
+ * dtHora, status, retorno e dataRetorno vêm do microsserviço de OS. São usados pela
+ * jornada de lembretes: dataRetorno é a data prevista para a cliente voltar ("Precisa de
+ * retorno?" na OS); retorno é a marcação antiga de OS que é ela própria um retorno.
  */
 public record OrdemServicoMsResponse(
         Integer id,
@@ -20,12 +21,20 @@ public record OrdemServicoMsResponse(
         List<OrdemServicoMsItemResponse> itens,
         @JsonProperty("dt_hora") LocalDateTime dtHora,
         String status,
-        Boolean retorno
+        Boolean retorno,
+        LocalDate dataRetorno
 ) {
     public OrdemServicoMsResponse(Integer id, Integer clienteId, Integer usuarioId, Float valorFinal,
                                   LocalDate dataCriacao, String observacao,
+                                  List<OrdemServicoMsItemResponse> itens, LocalDateTime dtHora,
+                                  String status, Boolean retorno) {
+        this(id, clienteId, usuarioId, valorFinal, dataCriacao, observacao, itens, dtHora, status, retorno, null);
+    }
+
+    public OrdemServicoMsResponse(Integer id, Integer clienteId, Integer usuarioId, Float valorFinal,
+                                  LocalDate dataCriacao, String observacao,
                                   List<OrdemServicoMsItemResponse> itens) {
-        this(id, clienteId, usuarioId, valorFinal, dataCriacao, observacao, itens, null, null, null);
+        this(id, clienteId, usuarioId, valorFinal, dataCriacao, observacao, itens, null, null, null, null);
     }
 
     public boolean ehRetorno() {

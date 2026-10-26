@@ -6,6 +6,7 @@ import lima.fernanda.ordemservico.application.dto.PageResponse;
 import lima.fernanda.ordemservico.application.dto.StatusOrdemServicoRequest;
 import lima.fernanda.ordemservico.application.mapper.OrdemServicoMapper;
 import lima.fernanda.ordemservico.domain.exception.NotFoundException;
+import lima.fernanda.ordemservico.domain.model.ItemOrdemServico;
 import lima.fernanda.ordemservico.domain.model.OrdemServico;
 import lima.fernanda.ordemservico.domain.model.StatusOrdemServico;
 import lima.fernanda.ordemservico.domain.repository.OrdemServicoEventPublisherPort;
@@ -18,9 +19,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -50,6 +54,7 @@ public class OrdemServicoApplicationService {
         if (ordemServico.isRetorno()) {
             ordemServico.setDtHora(request.dtHora().toLocalDate().atStartOfDay());
         }
+        aplicarValorFinal(ordemServico);
 
         OrdemServico saved = repository.save(ordemServico);
         log.info("[OrdemServico] Criada com id={}", saved.getId());
@@ -99,6 +104,8 @@ public class OrdemServicoApplicationService {
         ordemServico.setDataCriacao(anterior.getDataCriacao());
         ordemServico.setStatus(anterior.getStatus());
         ordemServico.setRetorno(anterior.isRetorno());
+        preservarPrecosHistoricos(ordemServico, anterior);
+        aplicarValorFinal(ordemServico);
         transicionar(ordemServico, request.status() == null ? anterior.getStatus() : request.status(), null);
 
         OrdemServico updated = repository.save(ordemServico);
@@ -145,6 +152,47 @@ public class OrdemServicoApplicationService {
         if (request.valorFinal() == null || !Float.isFinite(request.valorFinal()) || request.valorFinal() < 0) {
             throw new IllegalArgumentException("Valor final inválido");
         }
+        if (request.dataRetorno() != null && !request.dataRetorno().isAfter(request.dtHora().toLocalDate())) {
+            throw new IllegalArgumentException("A data do retorno deve ser posterior à data do atendimento");
+        }
+    }
+
+    /**
+     * Itens que já estavam na OS mantêm o preço gravado no cadastro: a OS é o histórico do
+     * atendimento e não acompanha mudanças de preço do catálogo.
+     */
+    private void preservarPrecosHistoricos(OrdemServico ordem, OrdemServico anterior) {
+        for (ItemOrdemServico item : ordem.getItens()) {
+            anterior.getItens().stream()
+                    .filter(antigo -> antigo.getValorUnitario() != null && mesmaReferencia(item, antigo))
+                    .findFirst()
+                    .ifPresent(antigo -> item.setValorUnitario(antigo.getValorUnitario()));
+        }
+    }
+
+    private static boolean mesmaReferencia(ItemOrdemServico a, ItemOrdemServico b) {
+        return Objects.equals(a.getServicoProdutoId(), b.getServicoProdutoId())
+                && Objects.equals(a.getProdutoId(), b.getProdutoId())
+                && Objects.equals(a.getComboId(), b.getComboId());
+    }
+
+    /**
+     * Valor final = soma de (preço unitário × quantidade − desconto do item), arredondada por item.
+     * Só recalcula quando todos os itens trazem o preço; clientes antigos que ainda não enviam
+     * valorUnitario continuam usando o valor informado.
+     */
+    private void aplicarValorFinal(OrdemServico ordem) {
+        List<ItemOrdemServico> itens = ordem.getItens();
+        if (itens.isEmpty() || itens.stream().anyMatch(item -> item.getValorUnitario() == null)) return;
+        BigDecimal total = BigDecimal.ZERO;
+        for (ItemOrdemServico item : itens) {
+            BigDecimal quantidade = BigDecimal.valueOf(item.getQuantidade() == null ? 1 : item.getQuantidade());
+            BigDecimal desconto = BigDecimal.valueOf(item.getDesconto() == null ? 0 : item.getDesconto());
+            BigDecimal fator = BigDecimal.ONE.subtract(desconto.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP));
+            total = total.add(new BigDecimal(Float.toString(item.getValorUnitario()))
+                    .multiply(quantidade).multiply(fator).setScale(2, RoundingMode.HALF_UP));
+        }
+        ordem.setValorFinal(total.floatValue());
     }
 
     public void deletar(Integer id) {
