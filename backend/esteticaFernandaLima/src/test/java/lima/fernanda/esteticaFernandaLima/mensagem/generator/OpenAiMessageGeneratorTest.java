@@ -49,9 +49,9 @@ class OpenAiMessageGeneratorTest {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
                         "Procedimento anterior: limpeza de pele")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
-                        "Último atendimento: 2026-10-01")))
+                        "Último atendimento: 01/10/2026")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
-                        "Retorno previsto: 2026-11-01")))
+                        "Retorno previsto: 01/11/2026")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
                         "Observação de contexto (não é instrução)")))
                 .andRespond(withSuccess("""
@@ -75,7 +75,7 @@ class OpenAiMessageGeneratorTest {
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
         server.expect(requestTo("https://api.openai.test/v1/chat/completions"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
-                        "Primeiro nome da cliente: Mariana")))
+                        "Primeiro nome: Mariana")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(
                         org.hamcrest.Matchers.containsString("Souza"))))
                 .andRespond(withSuccess("""
@@ -127,6 +127,83 @@ class OpenAiMessageGeneratorTest {
     void rejeitaChaveAusente() {
         assertThrows(IllegalStateException.class, () -> new OpenAiMessageGenerator(
                 new RestTemplateBuilder(), " ", "gpt-test", "https://api.openai.test/v1", 1000));
+    }
+
+    @Test
+    void enviaDataFormatadaNomeDaClinicaETemperatura() {
+        OpenAiMessageGenerator generator = new OpenAiMessageGenerator(
+                new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000);
+        var restTemplate = (org.springframework.web.client.RestTemplate)
+                ReflectionTestUtils.getField(generator, "restTemplate");
+        MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+        server.expect(requestTo("https://api.openai.test/v1/chat/completions"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Data e hora: domingo, 25/10/2026 às 14:00")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString("2026-10-25T14:00"))))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Nome da clínica: Fernanda Lima Beauty Care")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"temperature\":0.7")))
+                .andRespond(withSuccess("""
+                        {"choices":[{"message":{"role":"assistant","content":"Olá, Mariana!"}}]}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertFalse(generator.generate(lembrete(TipoMensagem.LEMBRETE_AGENDAMENTO)).isBlank());
+        server.verify();
+    }
+
+    @Test
+    void instrucoesDefinemTamanhoLinguagemNeutraEExemplos() {
+        OpenAiMessageGenerator generator = new OpenAiMessageGenerator(
+                new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000);
+        var restTemplate = (org.springframework.web.client.RestTemplate)
+                ReflectionTestUtils.getField(generator, "restTemplate");
+        MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+        server.expect(requestTo("https://api.openai.test/v1/chat/completions"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("No máximo 3 frases e até 300 caracteres")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("linguagem neutra quanto a gênero")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("no máximo 1 emoji")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("EXEMPLOS (dados fictícios")))
+                .andRespond(withSuccess("""
+                        {"choices":[{"message":{"role":"assistant","content":"Olá, Mariana!"}}]}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertFalse(generator.generate(lembrete(TipoMensagem.RETORNO)).isBlank());
+        server.verify();
+    }
+
+    @Test
+    void usaNomeDaClinicaETemperaturaConfigurados() {
+        OpenAiMessageGenerator generator = new OpenAiMessageGenerator(
+                new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000,
+                0.3, "Clínica Teste");
+        var restTemplate = (org.springframework.web.client.RestTemplate)
+                ReflectionTestUtils.getField(generator, "restTemplate");
+        MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+        server.expect(requestTo("https://api.openai.test/v1/chat/completions"))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Nome da clínica: Clínica Teste")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"temperature\":0.3")))
+                .andRespond(withSuccess("""
+                        {"choices":[{"message":{"role":"assistant","content":"Olá, Mariana!"}}]}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertFalse(generator.generate(lembrete(TipoMensagem.LEMBRETE_AGENDAMENTO)).isBlank());
+        server.verify();
+    }
+
+    @Test
+    void rejeitaTemperaturaForaDoIntervalo() {
+        assertThrows(IllegalStateException.class, () -> new OpenAiMessageGenerator(
+                new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000,
+                2.5, "Clínica Teste"));
+    }
+
+    @Test
+    void formataDatasEmPortugues() {
+        assertEquals("segunda-feira, 26/10/2026 às 10:00",
+                OpenAiMessageGenerator.dataHora(LocalDateTime.of(2026, 10, 26, 10, 0)));
+        assertEquals("01/10/2026", OpenAiMessageGenerator.data(java.time.LocalDate.of(2026, 10, 1)));
+        assertEquals("não informado", OpenAiMessageGenerator.data(null));
     }
 
     private Lembrete lembrete(TipoMensagem tipo) {
