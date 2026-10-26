@@ -143,7 +143,7 @@ class OpenAiMessageGeneratorTest {
                         org.hamcrest.Matchers.containsString("2026-10-25T14:00"))))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
                         "Nome da clínica: Fernanda Lima Beauty Care")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"temperature\":0.7")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"temperature\":0.9")))
                 .andRespond(withSuccess("""
                         {"choices":[{"message":{"role":"assistant","content":"Olá, Mariana!"}}]}
                         """, MediaType.APPLICATION_JSON));
@@ -164,6 +164,8 @@ class OpenAiMessageGeneratorTest {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("linguagem neutra quanto a gênero")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("no máximo 1 emoji")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("EXEMPLOS (dados fictícios")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Nunca reutilize as frases deles")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Variação de estilo: ")))
                 .andRespond(withSuccess("""
                         {"choices":[{"message":{"role":"assistant","content":"Olá, Mariana!"}}]}
                         """, MediaType.APPLICATION_JSON));
@@ -196,6 +198,17 @@ class OpenAiMessageGeneratorTest {
         assertThrows(IllegalStateException.class, () -> new OpenAiMessageGenerator(
                 new RestTemplateBuilder(), "test-key", "gpt-test", "https://api.openai.test/v1", 1000,
                 2.5, "Clínica Teste"));
+    }
+
+    @Test
+    void sorteiaVariacaoDeEstiloDaLista() {
+        java.util.Set<String> sorteadas = new java.util.HashSet<>();
+        for (int i = 0; i < 200; i++) {
+            String variacao = OpenAiMessageGenerator.sortearVariacao();
+            assertTrue(OpenAiMessageGenerator.VARIACOES_DE_ESTILO.contains(variacao));
+            sorteadas.add(variacao);
+        }
+        assertTrue(sorteadas.size() > 1, "a variação de estilo deve mudar entre as gerações");
     }
 
     @Test
