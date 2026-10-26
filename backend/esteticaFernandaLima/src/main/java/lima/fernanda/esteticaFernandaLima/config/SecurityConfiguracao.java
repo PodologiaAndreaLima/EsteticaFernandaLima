@@ -21,10 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lima.fernanda.esteticaFernandaLima.dto.nota.NotaContrato.CodigoErro;
+import lima.fernanda.esteticaFernandaLima.dto.nota.NotaContrato.Erro;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import lima.fernanda.esteticaFernandaLima.service.AutenticacaoService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.time.Clock;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +41,12 @@ public class SecurityConfiguracao {
 
     @Autowired
     private AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private NotaProperties notaProperties;
 
     private static final String[] URLS_PERMITIDAS = {
             "/swagger-ui/**",
@@ -72,11 +83,18 @@ public class SecurityConfiguracao {
                         .authenticated()
                 )
                 .exceptionHandling(handling -> handling
-                        .authenticationEntryPoint(autenticacaoJwtEntryPoint))
+                        .authenticationEntryPoint(autenticacaoJwtEntryPoint)
+                        .defaultAuthenticationEntryPointFor((request, response, exception) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json;charset=UTF-8");
+                            objectMapper.writeValue(response.getWriter(),
+                                    new Erro(CodigoErro.SEM_ACESSO, "Acesso não autorizado.", null, null));
+                        }, new AntPathRequestMatcher("/estoque/notas/**")))
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new NotaFiscalProtecaoFilter(objectMapper, Clock.systemUTC(), notaProperties), AutenticacaoFilter.class);
 
         return http.build();
     }

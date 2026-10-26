@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: Importação de notas de estoque (contrato v1)
+  version: '1.0'
+security:
+  - Bearer: []
+paths:
+  /estoque/notas:
+    post:
+      summary: Reserva importação e job durável antes de responder
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [imagem]
+              additionalProperties: false
+              properties:
+                imagem: {type: string, format: binary, description: 'Um arquivo jpeg/png/webp validado pela assinatura, decodificação, bytes e pixels'}
+      responses:
+        '202':
+          description: Importação reservada, não processada
+          headers:
+            Location: {description: 'Caminho relativo /estoque/notas/{id}', schema: {type: string}}
+            Cache-Control: {schema: {type: string, enum: [no-store]}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UploadResposta'}
+        '400': {$ref: '#/components/responses/Erro'}
+        '401': {$ref: '#/components/responses/Erro'}
+        '403': {$ref: '#/components/responses/Erro'}
+        '409': {$ref: '#/components/responses/Erro'}
+        '413': {$ref: '#/components/responses/Erro'}
+        '422': {$ref: '#/components/responses/Erro'}
+        '429': {$ref: '#/components/responses/Erro'}
+        '500': {$ref: '#/components/responses/Erro'}
+        '503': {$ref: '#/components/responses/Erro'}
+  /estoque/notas/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer, format: int64, minimum: 1}
+    get:
+      summary: Estado da importação da conta autenticada
+      responses:
+        '200':
+          description: Estado atual, com resumoConfirmacao somente quando CONFIRMADA
+          headers:
+            Cache-Control: {schema: {type: string, enum: [no-store]}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NotaResposta'}
+        '400': {$ref: '#/components/responses/Erro'}
+        '401': {$ref: '#/components/responses/Erro'}
+        '403': {$ref: '#/components/responses/Erro'}
+        '404': {$ref: '#/components/responses/Erro'}
+        '429': {$ref: '#/components/responses/Erro'}
+        '500': {$ref: '#/components/responses/Erro'}
+  /estoque/notas/{id}/confirmar:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer, format: int64, minimum: 1}
+    post:
+      summary: Confirmar todas as decisões da revisão em transação única
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ConfirmarRequest'}
+      responses:
+        '200':
+          description: Resultado persistido, inclusive zero aprovados
+          headers:
+            Cache-Control: {schema: {type: string, enum: [no-store]}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResumoConfirmacao'}
+        '400': {$ref: '#/components/responses/Erro'}
+        '401': {$ref: '#/components/responses/Erro'}
+        '403': {$ref: '#/components/responses/Erro'}
+        '404': {$ref: '#/components/responses/Erro'}
+        '409': {$ref: '#/components/responses/Erro'}
+        '429': {$ref: '#/components/responses/Erro'}
+        '500': {$ref: '#/components/responses/Erro'}
+  /estoque/notas/{id}/descartar:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer, format: int64, minimum: 1}
+    post:
+      summary: Descartar sem body, sem movimentos
+      responses:
+        '204': {description: Sem corpo}
+        '400': {$ref: '#/components/responses/Erro'}
+        '401': {$ref: '#/components/responses/Erro'}
+        '403': {$ref: '#/components/responses/Erro'}
+        '404': {$ref: '#/components/responses/Erro'}
+        '409': {$ref: '#/components/responses/Erro'}
+        '429': {$ref: '#/components/responses/Erro'}
+        '500': {$ref: '#/components/responses/Erro'}
+  /estoque/notas/produtos:
+    get:
+      summary: Catálogo ETL da conta (contrato adicional necessário para UI; rota ainda não implementada)
+      responses:
+        '200':
+          description: Somente produtos ativos, de tipo produto e do principal; lista vazia válida
+          headers:
+            Cache-Control: {schema: {type: string, enum: [no-store]}}
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/ProdutoCatalogo'}}
+        '401': {$ref: '#/components/responses/Erro'}
+        '403': {$ref: '#/components/responses/Erro'}
+        '429': {$ref: '#/components/responses/Erro'}
+        '500': {$ref: '#/components/responses/Erro'}
+components:
+  securitySchemes:
+    Bearer: {type: http, scheme: bearer, bearerFormat: JWT}
+  responses:
+    Erro:
+      description: Erro sanitizado; notaId só para duplicata própria e statusAtual só para conflito próprio
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Erro'}
+  schemas:
+    EstadoNota: {type: string, enum: [PROCESSANDO, EM_REVISAO, CONFIRMADA, FALHA, DESCARTADA]}
+    EstadoItem: {type: string, enum: [PENDENTE, VALIDO, INVALIDO, CONFIRMADO, REJEITADO]}
+    Confianca: {type: string, enum: [ALTA, MEDIA, BAIXA]}
+    CodigoFalha: {type: string, enum: [IMAGEM_ILEGIVEL, EXTRACAO_INVALIDA, NOTA_INVALIDA, PROVEDOR_INDISPONIVEL, DUPLICADA, PROCESSAMENTO_FALHOU]}
+    MotivoRejeicao: {type: string, enum: [SEM_PRODUTO, REJEITADO_PELA_USUARIA, DADOS_INVALIDOS]}
+    Acao: {type: string, enum: [ASSOCIAR, CRIAR_NOVO, REJEITAR]}
+    Dinheiro: {type: number, format: decimal, minimum: 0, multipleOf: 0.01, description: 'Decimal exato em JSON, não arredondar'}
+    UploadResposta:
+      type: object
+      required: [notaId, status]
+      additionalProperties: false
+      properties:
+        notaId: {type: integer, format: int64, minimum: 1}
+        status: {$ref: '#/components/schemas/EstadoNota'}
+    Fornecedor:
+      type: object
+      required: [cnpj, razaoSocial]
+      additionalProperties: false
+      properties:
+        cnpj: {type: string, nullable: true}
+        razaoSocial: {type: string, nullable: true}
+    ProdutoSugerido:
+      type: object
+      required: [id, nome]
+      additionalProperties: false
+      properties:
+        id: {type: integer, format: int64, minimum: 1}
+        nome: {type: string}
+    Rejeicao:
+      type: object
+      required: [codigo, texto]
+      additionalProperties: false
+      properties:
+        codigo: {$ref: '#/components/schemas/MotivoRejeicao'}
+        texto: {type: string, maxLength: 160}
+    Item:
+      type: object
+      required: [itemId, textoOriginal, quantidade, valorUnitario, valorTotal, produtoSugerido, confianca, status, motivoRejeicao]
+      additionalProperties: false
+      properties:
+        itemId: {type: integer, format: int64, minimum: 1}
+        textoOriginal: {type: string}
+        quantidade: {type: integer, nullable: true}
+        valorUnitario: {type: number, nullable: true, format: decimal}
+        valorTotal: {type: number, nullable: true, format: decimal}
+        produtoSugerido: {allOf: [{$ref: '#/components/schemas/ProdutoSugerido'}], nullable: true}
+        confianca: {allOf: [{$ref: '#/components/schemas/Confianca'}], nullable: true}
+        status: {$ref: '#/components/schemas/EstadoItem'}
+        motivoRejeicao: {allOf: [{$ref: '#/components/schemas/Rejeicao'}], nullable: true}
+    NotaResposta:
+      type: object
+      required: [notaId, status, fornecedor, dataEmissao, totalNota, chaveAcesso, avisos, codigoFalha, itens, resumoConfirmacao]
+      additionalProperties: false
+      properties:
+        notaId: {type: integer, format: int64, minimum: 1}
+        status: {$ref: '#/components/schemas/EstadoNota'}
+        fornecedor: {allOf: [{$ref: '#/components/schemas/Fornecedor'}], nullable: true}
+        dataEmissao: {type: string, format: date, nullable: true}
+        totalNota: {type: number, format: decimal, nullable: true}
+        chaveAcesso: {type: string, nullable: true}
+        avisos: {type: array, items: {type: string}}
+        codigoFalha: {allOf: [{$ref: '#/components/schemas/CodigoFalha'}], nullable: true}
+        itens: {type: array, items: {$ref: '#/components/schemas/Item'}}
+        resumoConfirmacao: {allOf: [{$ref: '#/components/schemas/ResumoConfirmacao'}], nullable: true}
+    ConfirmarRequest:
+      type: object
+      required: [itens]
+      additionalProperties: false
+      properties:
+        itens: {type: array, minItems: 1, items: {$ref: '#/components/schemas/DecisaoItem'}}
+    DecisaoItem:
+      type: object
+      required: [itemId, acao, produtoId, criarNovo, nomeNovo, quantidade, valorUnitario]
+      additionalProperties: false
+      properties:
+        itemId: {type: integer, format: int64, minimum: 1}
+        acao: {$ref: '#/components/schemas/Acao'}
+        produtoId: {type: integer, format: int64, minimum: 1, nullable: true}
+        criarNovo: {type: boolean}
+        nomeNovo:
+          type: string
+          maxLength: 200
+          nullable: true
+          description: "Obrigatório e não vazio/branco quando acao=CRIAR_NOVO; null nas demais ações. Máximo de 200 unidades de código UTF-16 (String.length(), medido antes do trim aplicado ao persistir). Não pode conter caracteres de controle ISO (U+0000-U+001F e U+007F-U+009F). Violação retorna 400 estrutural."
+        quantidade: {type: integer, minimum: 1, nullable: true}
+        valorUnitario: {type: number, format: decimal, minimum: 0.01, maximum: 9999999.99, multipleOf: 0.01, nullable: true}
+    ItemConfirmado:
+      type: object
+      required: [itemId, produtoId, quantidade, custoUnitario]
+      additionalProperties: false
+      properties:
+        itemId: {type: integer, format: int64, minimum: 1}
+        produtoId: {type: integer, format: int64, minimum: 1}
+        quantidade: {type: integer, minimum: 1}
+        custoUnitario: {$ref: '#/components/schemas/Dinheiro'}
+    ItemRejeitado:
+      type: object
+      required: [itemId, motivo]
+      additionalProperties: false
+      properties:
+        itemId: {type: integer, format: int64, minimum: 1}
+        motivo: {$ref: '#/components/schemas/MotivoRejeicao'}
+    ProdutoAfetado:
+      type: object
+      required: [id, estoqueAtual, ultimoCusto, valorVenda]
+      additionalProperties: false
+      properties:
+        id: {type: integer, format: int64, minimum: 1}
+        estoqueAtual: {type: integer, minimum: 0}
+        ultimoCusto: {$ref: '#/components/schemas/Dinheiro'}
+        valorVenda: {type: number, format: decimal, nullable: true}
+    ResumoConfirmacao:
+      type: object
+      required: [notaId, status, itensConfirmados, itensRejeitados, produtosAfetados]
+      additionalProperties: false
+      properties:
+        notaId: {type: integer, format: int64, minimum: 1}
+        status: {$ref: '#/components/schemas/EstadoNota'}
+        itensConfirmados: {type: array, items: {$ref: '#/components/schemas/ItemConfirmado'}}
+        itensRejeitados: {type: array, items: {$ref: '#/components/schemas/ItemRejeitado'}}
+        produtosAfetados: {type: array, items: {$ref: '#/components/schemas/ProdutoAfetado'}}
+    Erro:
+      type: object
+      required: [codigo, mensagem, notaId, statusAtual]
+      additionalProperties: false
+      properties:
+        codigo: {type: string, enum: [SOLICITACAO_INVALIDA, IMAGEM_INVALIDA, DUPLICADA, NOTA_INVALIDA, CONFLITO_ESTADO, SEM_ACESSO, LIMITE_EXCEDIDO, SERVICO_INDISPONIVEL]}
+        mensagem: {type: string}
+        notaId: {type: integer, format: int64, minimum: 1, nullable: true}
+        statusAtual: {allOf: [{$ref: '#/components/schemas/EstadoNota'}], nullable: true}
+    ProdutoCatalogo:
+      type: object
+      required: [id, nome]
+      additionalProperties: false
+      properties:
+        id: {type: integer, format: int64, minimum: 1}
+        nome: {type: string}

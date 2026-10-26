@@ -61,9 +61,7 @@ public class UsuarioMapper {
     usuarioListarDto.setCpf(usuario.getCpf());
     usuarioListarDto.setTelefone(usuario.getTelefone());
     usuarioListarDto.setBio(usuario.getBio());
-    usuarioListarDto.setServicosPrestados(
-        usuario.getServicosPrestados() == null ? null : new java.util.ArrayList<>(usuario.getServicosPrestados()));
-    usuarioListarDto.setFotoPerfil(usuario.getFotoPerfil());
+    usuarioListarDto.setServicosPrestados(usuario.getServicosPrestados());
     
     if (usuario.getRole() != null) {
         usuarioListarDto.setRole(usuario.getRole().name());
@@ -73,23 +71,4 @@ public class UsuarioMapper {
     
     return usuarioListarDto;
 }
-
-    public static UsuarioAtualizadoDto of(Usuario usuario, String novoToken, boolean comToken) {
-        UsuarioAtualizadoDto dto = new UsuarioAtualizadoDto();
-        UsuarioListarDto base = of(usuario);
-        dto.setId(base.getId());
-        dto.setNome(base.getNome());
-        dto.setNomeCompleto(base.getNomeCompleto());
-        dto.setEmail(base.getEmail());
-        dto.setCpf(base.getCpf());
-        dto.setTelefone(base.getTelefone());
-        dto.setBio(base.getBio());
-        dto.setServicosPrestados(base.getServicosPrestados());
-        dto.setRole(base.getRole());
-        dto.setFotoPerfil(base.getFotoPerfil());
-        if (comToken) {
-            dto.setToken(novoToken);
-        }
-        return dto;
-    }
 }

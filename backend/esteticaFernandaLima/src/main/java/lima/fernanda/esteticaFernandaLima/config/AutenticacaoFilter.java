@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import lima.fernanda.esteticaFernandaLima.service.AutenticacaoService;
@@ -57,13 +56,7 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            try {
-                addUsernameInContext(request, username, jwtToken);
-            } catch (UsernameNotFoundException exception) {
-                // token de um e-mail que não existe mais (e-mail alterado ou usuário excluído):
-                // segue sem autenticação e o entry point responde 401, levando o app de volta ao login
-                LOGGER.info("[FALHA AUTENTICACAO] - Usuario do token nao encontrado: {}", username);
-            }
+            addUsernameInContext(request, username, jwtToken);
         }
 
         filterChain.doFilter(request, response);
