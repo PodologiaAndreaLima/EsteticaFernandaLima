@@ -19,6 +19,7 @@ public final class OrdemServicoMapper {
         ordemServico.setObservacao(request.observacao());
         ordemServico.setDtHora(request.dtHora());
         ordemServico.setRetorno(Boolean.TRUE.equals(request.retorno()));
+        ordemServico.setDataRetorno(request.dataRetorno());
 
         List<ItemOrdemServico> itens = request.itens() == null
                 ? Collections.emptyList()
@@ -42,7 +43,8 @@ public final class OrdemServicoMapper {
                 itens,
                 ordemServico.getDtHora(),
                 ordemServico.getStatus(),
-                ordemServico.isRetorno()
+                ordemServico.isRetorno(),
+                ordemServico.getDataRetorno()
         );
     }
 
@@ -57,6 +59,7 @@ public final class OrdemServicoMapper {
         item.setNomeServicoProduto(request.nomeServicoProduto());
         item.setNomeCombo(request.nomeCombo());
         item.setEhProduto(request.ehProduto());
+        item.setValorUnitario(request.valorUnitario());
         return item;
     }
 
@@ -66,7 +69,11 @@ public final class OrdemServicoMapper {
                 item.getComboId(),
                 item.getProdutoId(),
                 item.getQuantidade(),
-                item.getDesconto()
+                item.getDesconto(),
+                item.getNomeServicoProduto(),
+                item.getNomeCombo(),
+                item.getEhProduto(),
+                item.getValorUnitario()
         );
     }
 }

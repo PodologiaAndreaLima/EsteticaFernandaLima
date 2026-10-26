@@ -16,7 +16,8 @@ public record OrdemServicoResponse(
         List<ItemOrdemServicoResponse> itens,
         @JsonProperty("dt_hora") LocalDateTime dtHora,
         StatusOrdemServico status,
-        boolean retorno
+        boolean retorno,
+        LocalDate dataRetorno
 ) {
 }
 

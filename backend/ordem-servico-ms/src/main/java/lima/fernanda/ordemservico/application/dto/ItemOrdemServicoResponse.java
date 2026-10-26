@@ -5,7 +5,11 @@ public record ItemOrdemServicoResponse(
         Integer comboId,
         Integer produtoId,
         Integer quantidade,
-        Float desconto
+        Float desconto,
+        String nomeServicoProduto,
+        String nomeCombo,
+        Boolean ehProduto,
+        Float valorUnitario
 ) {
 }
 
