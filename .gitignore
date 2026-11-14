@@ -9,6 +9,10 @@
 .env.
 !.env.example
 
+# Configuracoes locais dos backends (modelos .example versionados)
+/backend/esteticaFernandaLima/src/main/resources/application.properties
+/backend/ordem-servico-ms/src/main/resources/application.properties
+
 #Logs
 .log
 logs/

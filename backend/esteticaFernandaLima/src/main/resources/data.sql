@@ -4,7 +4,19 @@
 
 -- Usuário padrão (id = 1)
 INSERT IGNORE INTO usuario (nome_completo, email, senha, role)
-VALUES ('Fernanda Lima', 'fernanda@lima.com', '$2a$10$8CIK425IhU.E163FXCoFD.eaGCBNvU5JGzcy.rLHkbvZv3A.Gdzsm', 'ADMIN');
+VALUES ('Fernanda Lima', 'fernanda@lima.com', '$2a$10$q0QgTjJ.Xytkw8IEESzKnu5Dfkd/Xz8Xaa79vtedFc6snlsooPNfu', 'ADMIN');
+
+-- Administrador adicional (senha armazenada em BCrypt)
+INSERT IGNORE INTO usuario (nome_completo, email, senha, role)
+VALUES ('Administrador', 'admin@email.com', '$2a$10$q0QgTjJ.Xytkw8IEESzKnu5Dfkd/Xz8Xaa79vtedFc6snlsooPNfu', 'ADMIN');
+
+-- Sincroniza a senha padrao das duas contas de desenvolvimento, mesmo se ja existirem.
+-- A cada execucao deste seed, redefine a senha e remove bloqueios de login dessas contas.
+UPDATE usuario
+SET senha = '$2a$10$q0QgTjJ.Xytkw8IEESzKnu5Dfkd/Xz8Xaa79vtedFc6snlsooPNfu',
+    tentativas_login = 0,
+    bloqueado_ate = NULL
+WHERE email IN ('fernanda@lima.com', 'admin@email.com');
 
 -- Clientes
 INSERT IGNORE INTO cliente (nome_completo, cpf, telefone, email, data_nascimento) VALUES
@@ -154,19 +166,19 @@ INSERT IGNORE INTO cliente (nome_completo, cpf, telefone, email, data_nascimento
 -- ==================
 -- PRODUTOS DE ESTETICA (produto = true)
 -- ==========================================
-INSERT INTO servico_produto (produto, nome, despesa, valor_venda, descricao, marca, categoria, fk_usuario) VALUES
-(true, 'Creme Hidratante Facial', 35.00, 89.90, 'Hidratante facial com ácido hialurônico e vitamina E', 'Dermage', 'Hidratação', 1),
-(true, 'Sérum Anti-Idade', 58.00, 149.90, 'Sérum facial com vitamina C e colágeno', 'Vichy', 'Anti-Idade', 1),
-(true, 'Máscara Facial de Argila', 22.00, 59.90, 'Máscara purificante com argila verde', 'L\'Oréal', 'Limpeza', 1),
-(true, 'Tônico Facial', 18.00, 49.90, 'Tônico facial adstringente com água de rosas', 'Natura', 'Limpeza', 1),
-(true, 'Protetor Solar FPS 50', 42.00, 109.90, 'Protetor solar facial com toque seco', 'La Roche-Posay', 'Proteção Solar', 1);
+INSERT INTO servico_produto (produto, nome, despesa, valor_venda, descricao, marca, categoria, fk_usuario, estoque) VALUES
+(true, 'Creme Hidratante Facial', 35.00, 89.90, 'Hidratante facial com ácido hialurônico e vitamina E', 'Dermage', 'Hidratação', 1, 5),
+(true, 'Sérum Anti-Idade', 58.00, 149.90, 'Sérum facial com vitamina C e colágeno', 'Vichy', 'Anti-Idade', 1, 5),
+(true, 'Máscara Facial de Argila', 22.00, 59.90, 'Máscara purificante com argila verde', 'L\'Oréal', 'Limpeza', 1, 5),
+(true, 'Tônico Facial', 18.00, 49.90, 'Tônico facial adstringente com água de rosas', 'Natura', 'Limpeza', 1, 5),
+(true, 'Protetor Solar FPS 50', 42.00, 109.90, 'Protetor solar facial com toque seco', 'La Roche-Posay', 'Proteção Solar', 1, 5);
 
 -- ==========================================
 -- SERVICOS DE ESTETICA (produto = false)
 -- ==========================================
-INSERT INTO servico_produto (produto, nome, despesa, valor_venda, descricao, marca, categoria, fk_usuario) VALUES
-(false, 'Limpeza de Pele Profunda', 30.00, 150.00, 'Limpeza facial completa com extração e máscara', NULL, 'Limpeza Facial', 1),
-(false, 'Peeling Químico', 45.00, 250.00, 'Renovação celular com ácidos específicos', NULL, 'Tratamento Facial', 1),
-(false, 'Drenagem Linfática Facial', 25.00, 120.00, 'Massagem facial para redução de inchaço', NULL, 'Massagem', 1),
-(false, 'Design de Sobrancelhas', 8.00, 50.00, 'Modelagem e design de sobrancelhas com pinça', NULL, 'Sobrancelhas', 1),
-(false, 'Hidratação Facial Profunda', 35.00, 180.00, 'Tratamento intensivo de hidratação com máscaras', NULL, 'Hidratação', 1);
+INSERT INTO servico_produto (produto, nome, despesa, valor_venda, descricao, marca, categoria, fk_usuario, estoque) VALUES
+(false, 'Limpeza de Pele Profunda', 30.00, 150.00, 'Limpeza facial completa com extração e máscara', NULL, 'Limpeza Facial', 1, 5),
+(false, 'Peeling Químico', 45.00, 250.00, 'Renovação celular com ácidos específicos', NULL, 'Tratamento Facial', 1, 5),
+(false, 'Drenagem Linfática Facial', 25.00, 120.00, 'Massagem facial para redução de inchaço', NULL, 'Massagem', 1, 5),
+(false, 'Design de Sobrancelhas', 8.00, 50.00, 'Modelagem e design de sobrancelhas com pinça', NULL, 'Sobrancelhas', 1, 5),
+(false, 'Hidratação Facial Profunda', 35.00, 180.00, 'Tratamento intensivo de hidratação com máscaras', NULL, 'Hidratação', 1, 5);
