@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.time.Duration;
 
 @Validated
@@ -40,13 +39,7 @@ public record NotaProperties(@Valid @NotNull Gemini gemini,
     }
 
     public record Imagem(@Min(1) @Max(10_485_760) long maxBytes,
-                         @Min(1) @Max(20_000_000) long maxPixels,
-                         @NotNull Path diretorioPrivado) {
-        public Imagem {
-            if (diretorioPrivado == null || !diretorioPrivado.isAbsolute()) {
-                throw new IllegalArgumentException("nota.imagem.diretorio-privado deve ser absoluto");
-            }
-        }
+                         @Min(1) @Max(20_000_000) long maxPixels) {
     }
 
     public record Validacao(@NotNull @DecimalMin("0.01") @DecimalMax("1.00") BigDecimal toleranciaTotal) {

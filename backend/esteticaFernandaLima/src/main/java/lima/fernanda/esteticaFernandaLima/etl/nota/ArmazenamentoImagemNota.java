@@ -9,5 +9,9 @@ public interface ArmazenamentoImagemNota {
     Imagem guardar(InputStream dados) throws IOException;
     byte[] ler(String chave) throws IOException;
     void excluir(String chave) throws IOException;
-    void verificarDisponibilidade() throws IOException;
+
+    /** Imagem ausente: expirou ou o processo reiniciou antes da extracao terminar. */
+    class ImagemIndisponivelException extends IOException {
+        public ImagemIndisponivelException() { super("Imagem indisponivel para processamento"); }
+    }
 }

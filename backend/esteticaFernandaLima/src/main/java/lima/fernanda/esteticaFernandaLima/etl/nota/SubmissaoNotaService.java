@@ -33,12 +33,9 @@ public class SubmissaoNotaService {
         var cliente = processador.getIfAvailable();
         if (cliente == null || !cliente.disponivel()) throw erro(HttpStatus.SERVICE_UNAVAILABLE, CodigoErro.SERVICO_INDISPONIVEL);
         ArmazenamentoImagemNota.Imagem imagem;
-        try {
-            armazenamento.verificarDisponibilidade();
-            try (var entrada = arquivo.getInputStream()) {
-                imagem = armazenamento.guardar(entrada);
-            }
-        } catch (ArmazenamentoImagemNotaPrivado.ImagemInvalidaException invalida) {
+        try (var entrada = arquivo.getInputStream()) {
+            imagem = armazenamento.guardar(entrada);
+        } catch (ArmazenamentoImagemNotaMemoria.ImagemInvalidaException invalida) {
             throw erro(HttpStatus.BAD_REQUEST, CodigoErro.IMAGEM_INVALIDA);
         } catch (IOException falha) {
             throw erro(HttpStatus.SERVICE_UNAVAILABLE, CodigoErro.SERVICO_INDISPONIVEL);

@@ -57,6 +57,14 @@ public interface NotaFiscalImportacaoRepository extends JpaRepository<NotaFiscal
     int registrarImagemExcluida(@Param("id") Long id, @Param("usuarioId") Long usuarioId,
                                 @Param("versao") Long versao, @Param("instante") Instant instante);
 
+    // Possivel duplicata sem chave de acesso: mesmo fornecedor (CNPJ), data e total de uma nota ja confirmada do usuario.
+    @Query("select count(n) from NotaFiscalImportacao n where n.usuario.id = :usuarioId " +
+            "and n.status = 'CONFIRMADA' and n.fornecedorCnpj = :cnpj and n.dataEmissao = :data " +
+            "and n.totalNota = :total and n.id <> :id")
+    long contarConfirmadaSemelhante(@Param("usuarioId") Long usuarioId, @Param("id") Long id,
+                                    @Param("cnpj") String cnpj, @Param("data") java.time.LocalDate data,
+                                    @Param("total") java.math.BigDecimal total);
+
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update NotaFiscalImportacao n set n.estadoLimpeza = 'FALHOU', n.limpezaCodigo = :codigo, " +
             "n.limpezaEm = :instante, n.limpezaTentativas = n.limpezaTentativas + 1, n.versao = n.versao + 1 " +
