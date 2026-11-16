@@ -4,6 +4,7 @@ import lima.fernanda.esteticaFernandaLima.dto.nota.NotaContrato.EstadoItem;
 import lima.fernanda.esteticaFernandaLima.dto.nota.NotaContrato.EstadoNota;
 import lima.fernanda.esteticaFernandaLima.dto.nota.NotaContrato.CodigoFalha;
 import lima.fernanda.esteticaFernandaLima.dto.nota.NotaContrato.MotivoRejeicao;
+import lima.fernanda.esteticaFernandaLima.integration.gemini.ExtracaoNota;
 import lima.fernanda.esteticaFernandaLima.integration.gemini.ExtracaoNotaClient;
 import lima.fernanda.esteticaFernandaLima.integration.gemini.ExtracaoNotaException;
 import lima.fernanda.esteticaFernandaLima.model.NotaFiscalIdentidade.Tipo;
@@ -13,6 +14,8 @@ import lima.fernanda.esteticaFernandaLima.repository.NotaFiscalIdentidadeReposit
 import lima.fernanda.esteticaFernandaLima.repository.NotaFiscalImportacaoRepository;
 import lima.fernanda.esteticaFernandaLima.repository.NotaFiscalItemRepository;
 import lima.fernanda.esteticaFernandaLima.repository.ServicoProdutoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Conditional;
@@ -29,6 +32,7 @@ import java.util.List;
 @Component
 @Conditional(ChaveGeminiDisponivel.class)
 public final class ProcessadorExtracaoNota implements ProcessadorImagemNota {
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessadorExtracaoNota.class);
     private final ExtracaoNotaClient cliente;
     private final NotaFiscalImportacaoRepository notas;
     private final NotaFiscalItemRepository itens;
@@ -54,7 +58,18 @@ public final class ProcessadorExtracaoNota implements ProcessadorImagemNota {
 
     @Override
     public void processar(Long notaId, Long usuarioId, byte[] imagem, String mime) {
-        var validada = normalizador.validar(cliente.extrair(imagem, mime));
+        var extracao = cliente.extrair(imagem, mime);
+        String chaveGemini = extracao.chaveAcesso();
+        // O QR code da NFC-e, quando legível e com dígito verificador válido, é a fonte da chave de acesso.
+        var chaveQr = LeitorQrNota.lerChave(imagem).filter(NormalizadorExtracaoNota::chaveValida);
+        if (chaveQr.isPresent()) {
+            extracao = new ExtracaoNota(extracao.legivel(), extracao.motivo(), extracao.fornecedor(),
+                    extracao.dataEmissao(), extracao.totalNota(), chaveQr.get(), extracao.itens());
+        }
+        boolean divergente = chaveQr.isPresent() && chaveGemini != null
+                && !chaveGemini.replaceAll("\\D", "").equals(chaveQr.get());
+        var validada = comAvisoDivergencia(normalizador.validar(extracao), divergente);
+        registrarOrigemDaChave(notaId, chaveQr.isPresent(), divergente, validada);
         List<ServicoProduto> candidatos = produtos.findByUsuarioIdAndProdutoTrueAndAtivoTrueOrderByIdProdutoServicoAsc(usuarioId)
                 .stream().filter(p -> p.getUsuario() != null && usuarioId.equals(p.getUsuario().getId())).toList();
         try {
@@ -67,6 +82,29 @@ public final class ProcessadorExtracaoNota implements ProcessadorImagemNota {
             }
             throw colisao;
         }
+    }
+
+    /** Diagnostico: de onde veio a chave de acesso. Nunca registra o valor da chave. */
+    private static void registrarOrigemDaChave(Long notaId, boolean doQr, boolean divergente,
+                                               NormalizadorExtracaoNota.Nota dados) {
+        if (doQr) {
+            LOG.info("Nota {}: chave de acesso obtida do QR Code{}", notaId,
+                    divergente ? " (a leitura do texto impresso divergia e foi descartada)" : "");
+        } else if (dados.chave() != null) {
+            LOG.info("Nota {}: chave de acesso obtida do texto impresso (QR Code ausente ou ilegivel)", notaId);
+        } else if (dados.avisos().contains("CHAVE_NAO_CONFIRMADA")) {
+            LOG.warn("Nota {}: chave de acesso nao confirmada (QR Code ilegivel e texto impresso invalido); seguindo sem chave", notaId);
+        } else {
+            LOG.info("Nota {}: sem chave de acesso (QR Code ausente e nenhuma chave lida no texto)", notaId);
+        }
+    }
+
+    private static NormalizadorExtracaoNota.Nota comAvisoDivergencia(NormalizadorExtracaoNota.Nota dados, boolean divergente) {
+        if (!divergente) return dados;
+        List<String> avisos = new java.util.ArrayList<>(dados.avisos());
+        avisos.add("CHAVE_DIVERGENTE");
+        return new NormalizadorExtracaoNota.Nota(dados.cnpj(), dados.fornecedor(), dados.data(), dados.total(),
+                dados.chave(), dados.linhas(), List.copyOf(avisos));
     }
 
     private void publicar(Long id, Long usuarioId, NormalizadorExtracaoNota.Nota dados,
@@ -83,7 +121,13 @@ public final class ProcessadorExtracaoNota implements ProcessadorImagemNota {
         }
         nota.setFornecedorCnpj(dados.cnpj());
         nota.setFornecedorNome(dados.fornecedor());
-        nota.setAvisosExtracao(String.join(",", dados.avisos()));
+        List<String> avisos = new java.util.ArrayList<>(dados.avisos());
+        if (dados.cnpj() != null && dados.data() != null && dados.total() != null
+                && notas.contarConfirmadaSemelhante(usuarioId, id, dados.cnpj(), dados.data(), dados.total()) > 0) {
+            // Sem chave de acesso nao ha como provar duplicidade: a usuaria decide na revisao.
+            avisos.add("POSSIVEL_DUPLICATA");
+        }
+        nota.setAvisosExtracao(String.join(",", avisos));
         nota.setDataEmissao(dados.data());
         nota.setTotalNota(dados.total());
         nota.setChaveAcesso(dados.chave());

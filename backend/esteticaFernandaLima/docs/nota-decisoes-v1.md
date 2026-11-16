@@ -52,3 +52,11 @@ Todos exigem JWT Bearer, dono checado em **cada** acesso e rate limit de leitura
 `POST /estoque/notas` → `202 {"notaId":42,"status":"PROCESSANDO"}`. `GET /estoque/notas/42` → `200 {"notaId":42,"status":"FALHA","fornecedor":null,"dataEmissao":null,"totalNota":null,"chaveAcesso":null,"avisos":[],"codigoFalha":"NOTA_INVALIDA","itens":[],"resumoConfirmacao":null}`. `POST /estoque/notas/42/confirmar` (após confirmação anterior) → `409 {"codigo":"CONFLITO_ESTADO","mensagem":"Confira o estado da nota.","notaId":null,"statusAtual":"CONFIRMADA"}`. `GET` CONFIRMADA inclui `resumoConfirmacao` com as cinco chaves de `ResumoConfirmacao`, mesmo se os três arrays estiverem vazios; `GET /estoque/notas/produtos` → `200 [{"id":17,"nome":"Produto cadastrado"}]`.
 
 **Gates pendentes de integração**: endpoint catálogo adicionado ao contrato por necessidade do app, não constava nos quatro endpoints de 05; backend/app devem ratificar antes de implementar. Anotações DTO não impõem sozinhas correspondência de IDs, combinações condicionais, limites em respostas, no-store, ownership, rate limit, sanitização, SHA-256, exclusão ou transições; testar na fase de lógica. Catálogo não pode reutilizar `ServicoProdutoController` legado (`controller/ServicoProdutoController.java:28-38`) pois devolve entidade sem owner; segredo legado/configuração global e TRACE em `SecurityConfiguracao.java:112-132` são achados preexistentes fora deste escopo.
+
+## Alteração: foto só em memória (substitui D3 no ponto de armazenamento)
+
+- A foto não é mais gravada em disco (o armazenamento privado em arquivo foi removido, junto com `NOTA_PRIVATE_DIR`).
+- A imagem fica na memória do processo até a extração terminar e é removida logo após o Gemini responder em `EM_REVISAO`, ou ao finalizar em `FALHA`/`DESCARTADA`/`CONFIRMADA` (a limpeza no banco continua registrada como antes, de forma idempotente).
+- Reinício do processo durante `PROCESSANDO` finaliza a nota em `FALHA` (`PROCESSAMENTO_FALHOU`) sem retry; a usuária reenvia a foto.
+- O contrato HTTP (202 + polling) não muda. Backend deve rodar em instância única.
+- Consequência a validar com o app: a revisão continua usando só dados estruturados (nenhuma tela exibe a foto).

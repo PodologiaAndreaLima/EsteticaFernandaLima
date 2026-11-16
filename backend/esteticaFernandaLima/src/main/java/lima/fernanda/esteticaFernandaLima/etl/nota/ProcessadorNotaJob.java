@@ -79,6 +79,9 @@ public class ProcessadorNotaJob {
             if (atual.getStatus() == EstadoNota.PROCESSANDO) throw new IllegalStateException("Processamento sem transicao");
             transacao.executeWithoutResult(status -> jobs.encerrar(id, ate, NotaFiscalJob.Estado.CONCLUIDO));
             if (atual.getStatus() == EstadoNota.FALHA) limpeza.limpar(id);
+            // A foto ja cumpriu seu papel: sai da memoria antes da revisao. O registro de limpeza
+            // fica pendente e a confirmacao/descarte apenas marca a exclusao (idempotente).
+            if (atual.getStatus() == EstadoNota.EM_REVISAO) armazenamento.excluir(nota.getImagemChave());
         } catch (Exception falha) {
             var atual = notas.findById(id).orElseThrow(() -> new IllegalStateException("Job sem nota"));
             if (atual.getStatus() != EstadoNota.PROCESSANDO) {
@@ -105,6 +108,8 @@ public class ProcessadorNotaJob {
     }
 
     private boolean deveFinalizarFalha(Exception falha, NotaFiscalJob job) {
+        // Sem a foto em memoria nao ha o que tentar de novo: a usuaria precisa reenviar.
+        if (falha instanceof ArmazenamentoImagemNota.ImagemIndisponivelException) return true;
         if (falha instanceof ExtracaoNotaException extracao
                 && extracao.codigo() != CodigoFalha.PROVEDOR_INDISPONIVEL) return true;
         return job.getTentativas() >= propriedades.worker().maxTentativas();

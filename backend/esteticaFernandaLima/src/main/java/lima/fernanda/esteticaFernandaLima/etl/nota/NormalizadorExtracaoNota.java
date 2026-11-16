@@ -27,14 +27,18 @@ public final class NormalizadorExtracaoNota {
         LocalDate data = data(extracao.dataEmissao());
         BigDecimal total = dinheiro(extracao.totalNota());
         if (total == null || total.signum() <= 0 || extracao.itens() == null || extracao.itens().isEmpty()
-                || extracao.itens().size() > 100) throw erro(CodigoFalha.NOTA_INVALIDA);
-        String chave = digitos(extracao.chaveAcesso(), 44);
-        if (chave != null && !chaveValida(chave)) throw erro(CodigoFalha.NOTA_INVALIDA);
+                || extracao.itens().size() > 100) {
+            throw erro(CodigoFalha.NOTA_INVALIDA);
+        }
+        // A chave so serve para detectar duplicidade. Lida com erro, nao derruba a nota: segue sem chave, com aviso.
+        String chave = chaveConfiavel(extracao.chaveAcesso());
+        boolean chaveInformada = extracao.chaveAcesso() != null && !extracao.chaveAcesso().isBlank();
         String nome = extracao.fornecedor() == null ? null : texto(extracao.fornecedor().razaoSocial(), 200);
         String cnpj = extracao.fornecedor() == null ? null : cnpj(extracao.fornecedor().cnpj());
         List<String> avisos = new ArrayList<>();
         if (nome == null) avisos.add("FORNECEDOR_AUSENTE");
         if (cnpj == null || !cnpjValido(cnpj)) { cnpj = null; avisos.add("CNPJ_INVALIDO"); }
+        if (chaveInformada && chave == null) avisos.add("CHAVE_NAO_CONFIRMADA");
         List<Linha> linhas = extracao.itens().stream().map(this::linha).toList();
         if (linhas.stream().allMatch(l -> !l.valida())) throw erro(CodigoFalha.NOTA_INVALIDA);
         if (linhas.stream().allMatch(l -> l.total() != null)) {
@@ -87,11 +91,10 @@ public final class NormalizadorExtracaoNota {
         return valor.strip();
     }
 
-    private static String digitos(String valor, int tamanho) {
+    private static String chaveConfiavel(String valor) {
         if (valor == null) return null;
         String numero = valor.replaceAll("[ ./-]", "");
-        if (!numero.matches("[0-9]{" + tamanho + "}")) throw erro(CodigoFalha.NOTA_INVALIDA);
-        return numero;
+        return numero.matches("[0-9]{44}") && chaveValida(numero) ? numero : null;
     }
 
     private static String cnpj(String valor) {
@@ -111,7 +114,7 @@ public final class NormalizadorExtracaoNota {
         return true;
     }
 
-    private static boolean chaveValida(String numero) {
+    static boolean chaveValida(String numero) {
         int soma = 0;
         for (int i = 0; i < 43; i++) soma += (numero.charAt(i) - '0') * (2 + (42 - i) % 8);
         int digito = 11 - soma % 11;
