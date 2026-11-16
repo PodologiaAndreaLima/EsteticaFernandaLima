@@ -154,6 +154,54 @@ class LembreteOrdemServicoSyncTest {
         assertEquals(StatusLembrete.ENVIADO, jaEnviado.getStatus());
     }
 
+    private OrdemServicoMsResponse comRetorno(int id, LocalDateTime dtHora, String status, LocalDate dataRetorno) {
+        return new OrdemServicoMsResponse(id, 7, 1, 100f, LocalDate.now(), "obs",
+                List.of(new OrdemServicoMsItemResponse(20, null, null, 1, 0f)), dtHora, status, false, dataRetorno);
+    }
+
+    @Test
+    void criaLembreteDeRetornoPelaDataPrevistaNaOs() {
+        LocalDateTime atendimento = LocalDateTime.of(2026, 9, 20, 10, 0);
+        LocalDate dataRetorno = LocalDate.of(2026, 10, 20);
+        when(client.listarTodas()).thenReturn(List.of(comRetorno(5, atendimento, "CONCLUIDA", dataRetorno)));
+
+        sync.sincronizar("default");
+
+        ArgumentCaptor<Lembrete> captor = ArgumentCaptor.forClass(Lembrete.class);
+        verify(lembreteRepository).save(captor.capture());
+        Lembrete lembrete = captor.getValue();
+        assertEquals(TipoMensagem.RETORNO, lembrete.getTipo());
+        assertEquals(5L, lembrete.getAgendamentoId());
+        assertEquals(dataRetorno, lembrete.getDataRetornoPrevisto());
+        assertEquals(dataRetorno.atStartOfDay(), lembrete.getDataHora());
+        assertEquals(LocalDate.of(2026, 9, 20), lembrete.getDataUltimoAtendimento());
+        assertEquals("Peeling facial", lembrete.getProcedimento());
+    }
+
+    @Test
+    void osFuturaComRetornoGeraLembreteDeHorarioEDeRetorno() {
+        LocalDateTime amanha = LocalDateTime.now().plusDays(1).withNano(0);
+        when(client.listarTodas()).thenReturn(List.of(
+                comRetorno(6, amanha, "PENDENTE", amanha.toLocalDate().plusDays(30))));
+
+        sync.sincronizar("default");
+
+        ArgumentCaptor<Lembrete> captor = ArgumentCaptor.forClass(Lembrete.class);
+        verify(lembreteRepository, times(2)).save(captor.capture());
+        assertEquals(List.of(TipoMensagem.LEMBRETE_AGENDAMENTO, TipoMensagem.RETORNO),
+                captor.getAllValues().stream().map(Lembrete::getTipo).toList());
+    }
+
+    @Test
+    void naoCriaLembreteDeRetornoParaOsCancelada() {
+        when(client.listarTodas()).thenReturn(List.of(
+                comRetorno(7, LocalDateTime.of(2026, 9, 20, 10, 0), "CANCELADA", LocalDate.of(2026, 10, 20))));
+
+        sync.sincronizar("default");
+
+        verify(lembreteRepository, never()).save(any());
+    }
+
     @Test
     void naoQuebraQuandoOMicrosservicoNaoResponde() {
         when(client.listarTodas()).thenThrow(new RuntimeException("Connection refused"));

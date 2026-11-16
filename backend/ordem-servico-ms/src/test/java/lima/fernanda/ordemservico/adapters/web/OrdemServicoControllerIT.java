@@ -196,5 +196,66 @@ class OrdemServicoControllerIT {
                 .andExpect(jsonPath("$.content.length()").value(10))
                 .andExpect(jsonPath("$.totalElements").value(11));
     }
+
+    private String ordemComItens(String itens, String dataRetorno) {
+        return """
+                {"clienteId":1,"usuarioId":1,"valorFinal":999,"observacao":"Itens",
+                "itens":[%s],"dt_hora":"2026-11-05T14:30:00","retorno":false,"dataRetorno":%s}
+                """.formatted(itens, dataRetorno == null ? "null" : "\"" + dataRetorno + "\"");
+    }
+
+    @Test
+    void deveCalcularValorFinalPelosItensComDescontoPorItem() throws Exception {
+        // 2 × 100 com 10% = 180,00 ; combo 250 sem desconto = 250,00 → 430,00
+        String itens = """
+                {"servicoProdutoId":1,"quantidade":2,"desconto":10,"valorUnitario":100,"nomeServicoProduto":"Limpeza"},
+                {"comboId":3,"quantidade":1,"desconto":0,"valorUnitario":250,"nomeCombo":"Pacote"}
+                """;
+        mockMvc.perform(post("/ordens-servico").contentType(MediaType.APPLICATION_JSON).content(ordemComItens(itens, null)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.valorFinal").value(430.0))
+                .andExpect(jsonPath("$.itens[0].valorUnitario").value(100.0))
+                .andExpect(jsonPath("$.itens[0].nomeServicoProduto").value("Limpeza"))
+                .andExpect(jsonPath("$.itens[1].nomeCombo").value("Pacote"));
+    }
+
+    @Test
+    void deveManterPrecoHistoricoDosItensAoEditar() throws Exception {
+        String response = mockMvc.perform(post("/ordens-servico").contentType(MediaType.APPLICATION_JSON)
+                        .content(ordemComItens("{\"servicoProdutoId\":1,\"quantidade\":1,\"desconto\":0,\"valorUnitario\":100}", null)))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        entityManager.flush(); entityManager.clear();
+        int id = objectMapper.readTree(response).get("id").asInt();
+
+        // o catálogo mudou para 130, mas o item já existente mantém 100; o item novo entra com o preço atual
+        String itens = """
+                {"servicoProdutoId":1,"quantidade":2,"desconto":0,"valorUnitario":130},
+                {"produtoId":7,"quantidade":1,"desconto":0,"valorUnitario":40}
+                """;
+        mockMvc.perform(put("/ordens-servico/" + id).contentType(MediaType.APPLICATION_JSON)
+                        .content(ordemComItens(itens, null).replace("\"retorno\":false", "\"retorno\":false,\"status\":\"PENDENTE\"")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itens[0].valorUnitario").value(100.0))
+                .andExpect(jsonPath("$.valorFinal").value(240.0));
+    }
+
+    @Test
+    void deveGravarDataDoRetornoPosteriorAoAtendimento() throws Exception {
+        String item = "{\"servicoProdutoId\":1,\"quantidade\":1,\"desconto\":0,\"valorUnitario\":100}";
+        mockMvc.perform(post("/ordens-servico").contentType(MediaType.APPLICATION_JSON).content(ordemComItens(item, "2026-12-05")))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.dataRetorno").value("2026-12-05"))
+                .andExpect(jsonPath("$.dt_hora").value("2026-11-05T14:30:00"));
+        mockMvc.perform(post("/ordens-servico").contentType(MediaType.APPLICATION_JSON).content(ordemComItens(item, "2026-11-05")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveManterValorInformadoQuandoItensNaoTrazemPreco() throws Exception {
+        mockMvc.perform(post("/ordens-servico").contentType(MediaType.APPLICATION_JSON)
+                        .content(ordemComItens("{\"servicoProdutoId\":1,\"quantidade\":1,\"desconto\":0}", null)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.valorFinal").value(999.0));
+    }
 }
 

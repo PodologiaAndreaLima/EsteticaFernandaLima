@@ -24,6 +24,7 @@ public class OrdemServicoEvent {
         private String nomeServicoProduto;
         private String nomeCombo;
         private Boolean ehProduto;
+        private Float valorUnitario;
 
         public ItemEvent() {}
 
@@ -56,6 +57,8 @@ public class OrdemServicoEvent {
         public void setNomeCombo(String n) { this.nomeCombo = n; }
         public Boolean getEhProduto() { return ehProduto; }
         public void setEhProduto(Boolean ep) { this.ehProduto = ep; }
+        public Float getValorUnitario() { return valorUnitario; }
+        public void setValorUnitario(Float v) { this.valorUnitario = v; }
     }
 
     private Integer ordemServicoId;

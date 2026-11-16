@@ -22,6 +22,7 @@ public final class OrdemServicoEntityMapper {
         entity.setDtHora(domain.getDtHora());
         entity.setStatus(domain.getStatus());
         entity.setRetorno(domain.isRetorno());
+        entity.setDataRetorno(domain.getDataRetorno());
         entity.setObservacao(domain.getObservacao());
 
         if (domain.getItens() != null) {
@@ -46,6 +47,7 @@ public final class OrdemServicoEntityMapper {
         domain.setDtHora(entity.getDtHora());
         domain.setStatus(entity.getStatus());
         domain.setRetorno(entity.isRetorno());
+        domain.setDataRetorno(entity.getDataRetorno());
         domain.setObservacao(entity.getObservacao());
 
         if (entity.getItens() != null) {
@@ -66,6 +68,7 @@ public final class OrdemServicoEntityMapper {
         entity.setNomeServicoProduto(item.getNomeServicoProduto());
         entity.setNomeCombo(item.getNomeCombo());
         entity.setEhProduto(item.getEhProduto());
+        entity.setValorUnitario(item.getValorUnitario());
         return entity;
     }
 
@@ -79,6 +82,7 @@ public final class OrdemServicoEntityMapper {
         item.setNomeServicoProduto(entity.getNomeServicoProduto());
         item.setNomeCombo(entity.getNomeCombo());
         item.setEhProduto(entity.getEhProduto());
+        item.setValorUnitario(entity.getValorUnitario());
         return item;
     }
 }

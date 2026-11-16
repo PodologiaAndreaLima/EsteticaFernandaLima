@@ -39,6 +39,11 @@ public class OrdemServicoEntity {
     @Column(name = "retorno", nullable = false)
     private boolean retorno;
 
+    @Column(name = "data_retorno")
+    private LocalDate dataRetorno;
+    public LocalDate getDataRetorno() { return dataRetorno; }
+    public void setDataRetorno(LocalDate dataRetorno) { this.dataRetorno = dataRetorno; }
+
     public LocalDateTime getDtHora() { return dtHora; }
     public void setDtHora(LocalDateTime dtHora) { this.dtHora = dtHora; }
     public StatusOrdemServico getStatus() { return status; }

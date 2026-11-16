@@ -18,6 +18,8 @@ public class ItemOrdemServico {
     private String nomeServicoProduto;
     private String nomeCombo;
     private Boolean ehProduto;
+    // Preço unitário no momento do atendimento (histórico: não acompanha mudanças do catálogo)
+    private Float valorUnitario;
 
     public Integer getServicoProdutoId() { return servicoProdutoId; }
     public void setServicoProdutoId(Integer servicoProdutoId) { this.servicoProdutoId = servicoProdutoId; }
@@ -42,4 +44,6 @@ public class ItemOrdemServico {
 
     public Boolean getEhProduto() { return ehProduto; }
     public void setEhProduto(Boolean ehProduto) { this.ehProduto = ehProduto; }
+    public Float getValorUnitario() { return valorUnitario; }
+    public void setValorUnitario(Float valorUnitario) { this.valorUnitario = valorUnitario; }
 }

@@ -115,18 +115,19 @@ sugestão para revisão; não chame `/enviar` durante esse teste.
 
 - **Instruções fixas (system):** tom cordial, linguagem neutra quanto a gênero,
   no máximo 3 frases (até 300 caracteres), no máximo 1 emoji, nome da clínica
-  uma vez, nada inventado, regra por tipo (`LEMBRETE_AGENDAMENTO` termina
+  uma vez, nada inventado, texto variado a cada geração, regra por tipo (`LEMBRETE_AGENDAMENTO` termina
   dizendo que basta responder para remarcar; `RETORNO` convida a responder para
   agendar) e um exemplo fictício de cada tipo.
 - **Dados (user):** tipo, nome da clínica, primeiro nome, procedimento e datas
   já formatadas em português (ex.: `segunda-feira, 26/10/2026 às 10:00`), para
-  a IA só copiar. Telefone e sobrenome não são enviados.
+  a IA só copiar, e uma "variação de estilo" sorteada a cada pedido (para o
+  "Gerar outra mensagem" trazer um texto diferente). Telefone e sobrenome não são enviados.
 
 Variáveis opcionais:
 
 | Variável | Padrão | Uso |
 |---|---|---|
-| `OPENAI_TEMPERATURE` | `0.7` | 0 = mais previsível, 2 = mais criativo |
+| `OPENAI_TEMPERATURE` | `0.9` | 0 = mais previsível, 2 = mais criativo |
 | `CLINICA_NOME` | `Fernanda Lima Beauty Care` | Nome que aparece na mensagem |
 
 Para simular falha do provedor fake:

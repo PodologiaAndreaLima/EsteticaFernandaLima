@@ -88,7 +88,7 @@ public class OrdemServicoEventPublisherAdapter implements OrdemServicoEventPubli
      * atualizado no back-scr que faz lookup no ServicoProdutoRepository e ComboRepository).
      */
     private OrdemServicoEvent.ItemEvent toItemEvent(ItemOrdemServico item) {
-        return new OrdemServicoEvent.ItemEvent(
+        OrdemServicoEvent.ItemEvent evento = new OrdemServicoEvent.ItemEvent(
                 item.getServicoProdutoId(),
                 item.getComboId(),
                 item.getProdutoId(),
@@ -98,6 +98,8 @@ public class OrdemServicoEventPublisherAdapter implements OrdemServicoEventPubli
                 item.getNomeCombo(),
                 item.getEhProduto()
         );
+        evento.setValorUnitario(item.getValorUnitario());
+        return evento;
     }
 
     private void publicar(OrdemServicoEvent event) {

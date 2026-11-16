@@ -38,6 +38,10 @@ public class ItemOrdemServicoEntity {
     @Column(name = "eh_produto")
     private Boolean ehProduto;
 
+    /** Preço unitário gravado na criação do item (caráter histórico) */
+    @Column(name = "valor_unitario")
+    private Float valorUnitario;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordem_servico_id", referencedColumnName = "id", nullable = false)
     private OrdemServicoEntity ordemServico;
@@ -60,6 +64,8 @@ public class ItemOrdemServicoEntity {
     public void setNomeCombo(String n) { this.nomeCombo = n; }
     public Boolean getEhProduto() { return ehProduto; }
     public void setEhProduto(Boolean ep) { this.ehProduto = ep; }
+    public Float getValorUnitario() { return valorUnitario; }
+    public void setValorUnitario(Float v) { this.valorUnitario = v; }
     public OrdemServicoEntity getOrdemServico() { return ordemServico; }
     public void setOrdemServico(OrdemServicoEntity os) { this.ordemServico = os; }
 }

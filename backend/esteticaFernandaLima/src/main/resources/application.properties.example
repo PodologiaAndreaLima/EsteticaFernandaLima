@@ -18,7 +18,7 @@ jwt.secret=${JWT_SECRET}
 
 spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/esteticafernandalima?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=America/Sao_Paulo}
 spring.datasource.username=${DB_USER:root}
-spring.datasource.password=${DB_PASSWORD:sua_senha}
+spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA / Hibernate
@@ -39,8 +39,8 @@ openai.api-key=${OPENAI_API_KEY:}
 openai.model=${OPENAI_MODEL:gpt-4o-mini}
 openai.base-url=${OPENAI_BASE_URL:https://api.openai.com/v1}
 openai.timeout-ms=${OPENAI_TIMEOUT_MS:10000}
-# 0 = mais previsivel | 2 = mais criativo (0.7 varia o texto no "Gerar outra mensagem" sem fugir das regras)
-openai.temperature=${OPENAI_TEMPERATURE:0.7}
+# 0 = mais previsivel | 2 = mais criativo (0.9 varia o texto no "Gerar outra mensagem" sem fugir das regras)
+openai.temperature=${OPENAI_TEMPERATURE:0.9}
 # Nome que a IA usa para identificar quem esta escrevendo
 mensagens.clinica.nome=${CLINICA_NOME:Fernanda Lima Beauty Care}
 

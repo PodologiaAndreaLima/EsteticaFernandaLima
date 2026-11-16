@@ -15,6 +15,10 @@ public class OrdemServico {
     private LocalDateTime dtHora;
     private StatusOrdemServico status = StatusOrdemServico.PENDENTE;
     private boolean retorno;
+    // Data prevista para a cliente voltar ("Precisa de retorno?"); null quando não há retorno
+    private LocalDate dataRetorno;
+    public LocalDate getDataRetorno() { return dataRetorno; }
+    public void setDataRetorno(LocalDate dataRetorno) { this.dataRetorno = dataRetorno; }
 
     public LocalDateTime getDtHora() { return dtHora; }
     public void setDtHora(LocalDateTime dtHora) { this.dtHora = dtHora; }
