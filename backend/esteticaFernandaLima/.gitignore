@@ -1,10 +1,17 @@
-HELP.md
+### Build (Maven) ###
 target/
+HELP.md
 .mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+build/
 
-### STS ###
+### Configuração local (contém senhas / segredos) ###
+src/main/resources/application.properties
+src/main/resources/application-*.properties
+!src/main/resources/application.properties.example
+*.env
+.env
+
+### STS / Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -14,7 +21,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -25,9 +32,11 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
+
+### Sistema ###
+.DS_Store
+Thumbs.db
+*.log

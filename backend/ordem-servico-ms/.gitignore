@@ -1,0 +1,42 @@
+### Build (Maven) ###
+target/
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+build/
+
+### Configuração local (contém senhas / segredos) ###
+src/main/resources/application.properties
+src/main/resources/application-*.properties
+!src/main/resources/application.properties.example
+*.env
+.env
+
+### STS / Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Sistema ###
+.DS_Store
+Thumbs.db
+*.log

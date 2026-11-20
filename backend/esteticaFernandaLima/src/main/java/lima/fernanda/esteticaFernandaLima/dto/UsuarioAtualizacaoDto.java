@@ -26,8 +26,14 @@ public class UsuarioAtualizacaoDto {
     private List<String> servicosPrestados;
 
     @Email
-    @Schema(description = "Email do usuario (somente leitura, nao pode alterar aqui)", example = "fernanda@lima.com")
+    @Size(max = 255)
+    @Schema(description = "Email do usuario (unico). Ao alterar o proprio email, a resposta traz um novo token", example = "fernanda@lima.com")
     private String email;
+
+    // ~1,1 MB de imagem em base64; o app envia 400x400 JPEG (bem abaixo disso)
+    @Size(max = 1_500_000)
+    @Schema(description = "Foto de perfil em data URI (jpeg/png/webp). String vazia remove a foto", example = "data:image/jpeg;base64,/9j/4AAQ...")
+    private String fotoPerfil;
 
     @Schema(description = "Role do usuario (somente leitura, nao pode alterar aqui)", example = "USER")
     private String role;
@@ -78,6 +84,14 @@ public class UsuarioAtualizacaoDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 
     public String getRole() {

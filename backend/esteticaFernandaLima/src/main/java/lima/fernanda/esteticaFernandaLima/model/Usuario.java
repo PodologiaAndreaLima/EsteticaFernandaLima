@@ -20,7 +20,14 @@ public class Usuario {
     private String telefone;
     private String bio;
 
-    @ElementCollection
+    // foto de perfil como data URI (data:image/jpeg;base64,...), redimensionada pelo app
+    @Lob
+    @Column(name = "foto_perfil", columnDefinition = "MEDIUMTEXT")
+    private String fotoPerfil;
+
+    // EAGER: a lista é pequena e precisa estar carregada para montar o JSON de resposta,
+    // mesmo quando a sessão do JPA foi limpa (ex.: falha ao sincronizar o funcionário)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> servicosPrestados;
 
     @Column(unique = true)
@@ -80,6 +87,14 @@ public class Usuario {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 
     public List<String> getServicosPrestados() {
